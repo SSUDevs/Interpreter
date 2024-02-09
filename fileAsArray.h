@@ -14,11 +14,14 @@ class fileAsArray {
 public:
     fileAsArray(std::string fileName);
     void readFile();
+    std::vector<char> File_w_no_comments();
 
 private:
     std::vector<char> file;
     std::ifstream inputStream;
     std::string inputFileName;
+
+
 
 
 };
