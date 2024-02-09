@@ -9,6 +9,7 @@
 #include <iostream>
 #include <string>
 #include <fstream>
+#include "fileAsArray.h"
 using namespace std;
 
 int main(int argc, char *argv[]) {
@@ -31,6 +32,9 @@ int main(int argc, char *argv[]) {
 
 	// close file
 	codeFile.close();
+
+    fileAsArray fileArray(argv[1]);
+    fileArray.readFile();
 
 	return 0;
 }
