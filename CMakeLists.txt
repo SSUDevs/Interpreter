@@ -7,4 +7,6 @@ add_executable(assignment1_460 main.cpp
         Token.cpp
         Token.h
         Tokenizer.cpp
-        Tokenizer.h)
+        Tokenizer.h
+        fileAsArray.h
+        fileAsArray.cpp)

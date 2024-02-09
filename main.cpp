@@ -11,16 +11,16 @@
 #include <fstream>
 using namespace std;
 
-int main() {
+int main(int argc, char *argv[]) {
 
 	// open file
 	ifstream codeFile;
-	string fileName = "programming_assignment_1-test_file_1.c";
-	codeFile.open(fileName);
+	//string fileName = "programming_assignment_1-test_file_1.c";
+	codeFile.open(argv[1]);
 
 	// check if file opened
 	if (!codeFile.is_open()) {
-		cerr << "Couldn't open file: " << fileName << endl;
+		cerr << "Couldn't open file: " << argv[1] << endl;
 		exit(0);
 	}
 

@@ -24,3 +24,6 @@ private:
 
 
 #endif //ASSIGNMENT1_460_TOKEN_H
+int state =0;
+
+
