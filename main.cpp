@@ -36,5 +36,16 @@ int main(int argc, char *argv[]) {
     fileAsArray fileArray(argv[1]);
     fileArray.readFile();
 
-	return 0;
+    // Try-catch for parsing out comments
+    try {
+        fileArray.File_w_no_comments();
+    } catch (const std::exception& error) {
+        // Catch and handle the exception
+        std::cerr << "Exception caught: " << error.what() << std::endl;
+    }
+
+    // Print the modified content without comments
+    fileArray.printVector();
+
+    return 0;
 }
