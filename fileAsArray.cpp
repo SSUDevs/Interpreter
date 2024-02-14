@@ -161,6 +161,7 @@ std::pair<bool, int> fileAsArray::isDivision(int index) {
             return std::make_pair(true, index);     // Return true if Division Op.
         } else return std::make_pair(false, index);
     }
+    return std::make_pair(false, index);
 }
 
 // Print the vector stored as a private variable within the class 'fileAsArray'
