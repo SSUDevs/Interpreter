@@ -66,7 +66,7 @@ void fileAsArray::File_w_no_comments() {
                     }
                 } else if (file[i] == '*') { // Error if not started with slash
                     //////// Report error if '*' found not proceeded by '/' without having to continue parsing ///////
-                    throw std::runtime_error("ERROR: Program contains C-style, unterminated comment on line " +
+                    throw std::runtime_error("ERROR: Program contains C-style, Block comment not started " +
                                              std::to_string(lineNumber));
                 }
                 break;
@@ -81,7 +81,7 @@ void fileAsArray::File_w_no_comments() {
                     file[i] = ' ';         // Replace the first '/' with whitespace
                 } else {
                     //////// Report error if '/' found not proceeded by another '/' ///////
-                    throw std::runtime_error("ERROR: Program contains C-style, unterminated comment on line " +
+                    throw std::runtime_error("ERROR: Program contains C-style, incomplete line comment on line " +
                                              std::to_string(errorLineNumber));
                 }
                 break;
@@ -122,7 +122,7 @@ void fileAsArray::File_w_no_comments() {
                     state = START; // Move back to the START state after finding end quote
                 } else if (file[i] == '\n') {
                     //////// Report error if single quote found but not ended ///////
-                    throw std::runtime_error("ERROR: Program contains C-style, unterminated comment on line " +
+                    throw std::runtime_error("ERROR: Program contains C-style, incomplete single quote comment on line " +
                                              std::to_string(errorLineNumber));
                 }
                 break;
@@ -133,7 +133,7 @@ void fileAsArray::File_w_no_comments() {
                     state = START; // Move back to the START state after finding end quote
                 } else if (file[i] == '\n') {
                     //////// Report error if single quote found but not ended by end-line///////
-                    throw std::runtime_error("ERROR: Program contains C-style, unterminated comment on line " +
+                    throw std::runtime_error("ERROR: Program contains C-style, incomplete double quote on line " +
                                              std::to_string(errorLineNumber));
                 }
                 break;
@@ -142,7 +142,7 @@ void fileAsArray::File_w_no_comments() {
     // Checks Ending state to ensure its accepted
     if (state != START) {
         //////// Should report error if ending state is not accepting i.e. START ///////
-        throw std::runtime_error("ERROR: Program contains C-style, unterminated comment on line " +
+        throw std::runtime_error("ERROR: Program contains C-style, incomplete block comment on line " +
                                  std::to_string(errorLineNumber));
     }
 }
