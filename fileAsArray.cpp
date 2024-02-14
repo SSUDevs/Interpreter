@@ -111,7 +111,7 @@ void fileAsArray::File_w_no_comments() {
                 if (file[i] == '/') {
                     state = START; // Move to the START state after finding a slash during ENDING_BLOCK_COMMENT
                     file[i] = ' ';  // Replace characters within the comment with whitespace
-                } else {
+                } else if (file[i] != '\n'){
                     file[i] = ' ';  // Replace characters within the comment with whitespace
                 }
                 break;
