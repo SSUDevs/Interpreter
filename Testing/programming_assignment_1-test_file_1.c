@@ -3,11 +3,11 @@
 // ***************************************************
 procedure main (void)
 {
-  int counter;
+    int counter;
 
-  counter = 2;
-/* 
+    counter = 2;
+/*
   counter = 100;
 */
-  printf ("counter = %d\n", counter);
+    printf ("counter = %d\n", counter);
 }
