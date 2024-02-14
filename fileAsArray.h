@@ -4,6 +4,7 @@
 
 #ifndef ASSIGNMENT1_460_FILEASARRAY_H
 #define ASSIGNMENT1_460_FILEASARRAY_H
+
 #include <string>
 #include<fstream>
 #include<vector>
@@ -21,21 +22,24 @@ public:
         LINE_COMMENT,         // State after finding '//'
         BLOCK_COMMENT,        // State after finding '/*'
         ENDING_BLOCK_COMMENT, // State after finding '*/'
-        DIVISION,             // State after finding '/' and making sure it's not Division Op.
-        QUOTE,                // Ensures whats in quotes remains untouched
+        SINGLE_QUOTE,         // Ensures whats in quotes remains untouched
+        DOUBLE_QUOTE,         // Ensures whats in quotes remains untouched
     };
 
     fileAsArray(std::string fileName);
+
     void readFile();
 
     void File_w_no_comments(); // Parses the vector of chars to remove comments
 
     // Returns the index following the Division Op. and if it was div.
     std::pair<bool, int> isDivision(int index);
+
     void printVector();
 
 private:
     std::vector<char> file;
+    int errorLineNumber; // Keeps track of line number during parsing when error found
     std::ifstream inputStream;
     std::string inputFileName;
 };

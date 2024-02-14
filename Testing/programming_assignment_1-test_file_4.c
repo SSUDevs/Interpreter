@@ -3,7 +3,7 @@
 // ***************************************************
 procedure main (void)//)
 {
-/**/int counter; 
+/**/int counter;
 
 /**/counter = 100 / 2;
 /**/printf ("counter = %d\n", counter);
