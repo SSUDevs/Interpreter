@@ -1,7 +1,3 @@
-//
-// Created by Luis carmona on 2/7/24.
-//
-
 #ifndef ASSIGNMENT1_460_TOKEN_H
 #define ASSIGNMENT1_460_TOKEN_H
 #include <iostream>
@@ -11,95 +7,106 @@ class Token
 {
 
 public:
-    Token();
+     Token();
 
-    // Grouping and Structure Tokens
-    bool &isLParen();          
-    bool &isRParen();             
-    bool &isOpenCurlyBrace();    
-    bool &isCloseCurlyBrace();    
-    bool &isOpenSquareBracket(); 
-    bool &isCloseSquareBracket(); 
-    bool &isLBrace();           
-    bool &isRBrace();            
-    
-    // Quotation Tokens
-    bool &isDoubleQuote();
-    bool &isSingleQuote();
-    bool &isComma(); 
-    bool &isColon();
-    bool &isSemicolon();
+     // Return the name of the tokens type
+     std::string tokenType() { return _tokenType; }
 
-    // Numeric and Operational Tokens
-    bool &isHexDigit(); // Hex Digit, possibly used with escape characters as a string
-    bool &isDigit();
-    bool &isAssignmentOperator();
-    bool &isPlus();   // Plus, with consideration for its use with integers for addition
-    bool &isMinus();  // Minus, also with integer consideration for negative
-    bool &isSlash();  // Slash, not necessarily a division operator
-    bool &isDivide(); // Explicit Division Operator
-    bool &isAsterisk();
-    bool &isModulo();
-    bool &isCaret();
+     // Return the identifier used in a declaration of a function or variable
+     std::string identifier() { return _identifier; }
 
-    // Boolean Expression Tokens
-    bool &isLt();
-    bool &isGt();
-    bool &isLtEqual();
-    bool &isGtEqual();
-    bool &isBooleanAnd();
-    bool &isBooleanOr();
-    bool &isBooleanNot();
-    bool &isBooleanEqual();
-    bool &isBooleanNotEqual();
+     // Grouping and Structure Tokens
+     bool &isLParen();
+     bool &isRParen();
+     bool &isLBracket();
+     bool &isRBracket();
+     bool &isLBrace();
+     bool &isRBrace();
 
-    // Special Token
-    bool &isEscape(); // Used for escape characters
-    bool &endOfFile();
-   
-    // Complex Token Types
+     // Quotation Tokens
+     bool &isDoubleQuote();
+     bool &isSingleQuote();
+     bool &isComma();
+     bool &isColon();
+     bool &isSemicolon();
 
-    /* <STRING> ::= <CHARACTER | <ESCAPED_CHARACTER> | <CHARACTER> <STRING> | <ESCAPED_CHARACTER> <STRING> */
-    bool &isString();
+     // Numeric and Operational Tokens
+     bool &isHexDigit(); // Hex Digit, possibly used with escape characters as a string
+     bool &isDigit();
+     bool &isAssignmentOperator();
+     bool &isPlus();   // Plus, with consideration for its use with integers for addition
+     bool &isMinus();  // Minus, also with integer consideration for negative
+     bool &isSlash();  // Slash, not necessarily a division operator
+     bool &isDivide(); // Explicit Division Operator
+     bool &isAsterisk();
+     bool &isModulo();
+     bool &isCaret();
 
-    /* <SINGLE_QUOTED_STRING> ::= <SINGLE_QUOTE> <STRING> <SINGLE_QUOTE> */
-    bool &isSingleQuotedString();
+     // Boolean Expression Tokens
+     bool &isLt();
+     bool &isGt();
+     bool &isLtEqual();
+     bool &isGtEqual();
+     bool &isBooleanAnd();
+     bool &isBooleanOr();
+     bool &isBooleanNot();
+     bool &isBooleanEqual();
+     bool &isBooleanNotEqual();
 
-    /* <DOUBLE_QUOTED_STRING> ::= <DOUBLE_QUOTE> <STRING> <DOUBLE_QUOTE> */
-    bool &isDoubleQuotedString();
+     // Special Token
+     bool &isEscape(); // Used for escape characters
 
-    /* <WHOLE_NUMBER> ::= <DIGIT> | <DIGIT> <WHOLE_NUMBER> */
-    bool &isWholeNumber();
+     // Complex Token Types
+     bool &isIdentifier(); 
 
-    /* <INTEGER> ::= <WHOLE_NUMBER> | <PLUS> <WHOLE_NUMBER> | <MINUS> <WHOLE_NUMBER> */
-    bool &isInteger();
+     /* <STRING> ::= <CHARACTER | <ESCAPED_CHARACTER> | <CHARACTER> <STRING> | <ESCAPED_CHARACTER> <STRING> */
+     bool &isString();
 
-    void print();
+     /* <SINGLE_QUOTED_STRING> ::= <SINGLE_QUOTE> <STRING> <SINGLE_QUOTE> */
+     bool &isSingleQuotedString();
+
+     /* <DOUBLE_QUOTED_STRING> ::= <DOUBLE_QUOTE> <STRING> <DOUBLE_QUOTE> */
+     bool &isDoubleQuotedString();
+
+     /* <WHOLE_NUMBER> ::= <DIGIT> | <DIGIT> <WHOLE_NUMBER> */
+     bool &isWholeNumber();
+
+     /* <INTEGER> ::= <WHOLE_NUMBER> | <PLUS> <WHOLE_NUMBER> | <MINUS> <WHOLE_NUMBER> */
+     bool &isInteger();
+
+     void print();
 
 private:
-    // Grouping and Structure Tokens
-    bool _isLParen, _isRParen, _isOpenCurlyBrace, _isCloseCurlyBrace,
-         _isOpenSquareBracket, _isCloseSquareBracket, _isLBrace, _isRBrace;
-    
-    // Quotation and Delimiter Tokens
-    bool _isDoubleQuote, _isSingleQuote, _isComma, _isColon, _isSemicolon;
+     // Identifies the token (Either just a name and thus refered to as 'IDENTIFIER' or could be 'INTEGER', 'SEMICOLON' ect...)
+     std::string _tokenType;
 
-    // Numeric and Operational Tokens
-    bool _isHexDigit, _isDigit, _isAssignmentOperator, _isPlus, _isMinus,
+     // Stores the string that acts as the identifier of a variable, function ect... (NOT A STRING LITERAL)
+     std::string _identifier;
+
+     // Stores the string the string literal if applicable like printf ("Fizz") where Fizz is the string
+     std::string _name;
+
+     // Grouping and Structure Tokens
+     bool _isLParen, _isRParen, _isOpenCurlyBrace, _isCloseCurlyBrace,
+         _isLBracket, _isRBracket, _isLBrace, _isRBrace;
+
+     // Quotation and Delimiter Tokens
+     bool _isDoubleQuote, _isSingleQuote, _isComma, _isColon, _isSemicolon;
+
+     // Numeric and Operational Tokens
+     bool _isWholeNumber, _isHexDigit, _isDigit, _isAssignmentOperator, _isPlus, _isMinus,
          _isSlash, _isDivide, _isAsterisk, _isModulo, _isCaret;
 
-    // Boolean Expression Tokens
-    bool _isLt, _isGt, _isLtEqual, _isGtEqual,
+     // Boolean Expression Tokens
+     bool _isLt, _isGt, _isLtEqual, _isGtEqual,
          _isBooleanAnd, _isBooleanOr, _isBooleanNot,
          _isBooleanEqual, _isBooleanNotEqual;
 
-    // Special Token
-    bool _isEscape, _endOfFile;
+     // Special Token
+     bool _isEscape, _isInteger, _isString, _isIdentifier;
 
-    // Complex Token Types
-    bool _isString, _isSingleQuotedString, _isDoubleQuotedString,
-         _isWholeNumber, _isInteger;
+     // Complex Token Types
+     bool _isSingleQuotedString, _isDoubleQuotedString;
 };
 
 #endif // ASSIGNMENT1_460_TOKEN_H
-int state = 0;

@@ -1,7 +1,3 @@
-//
-// Created by Luis carmona on 2/8/24.
-//
-
 #include "fileAsArray.h"
 
 
