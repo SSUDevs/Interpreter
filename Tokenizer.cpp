@@ -30,8 +30,6 @@ bool Tokenizer::charOfInterest(char c)
 
 Token Tokenizer::getToken()
 {
-    char c; // Used to hold each char read from vector
-
     if (_file.empty())
     {
         std::cout << "Tokenizer::getToken() called with a empty vector." << std::endl;
@@ -65,9 +63,8 @@ Token Tokenizer::getToken()
 
     else
     {
-        // This should'nt never be executed
+        // This should never be executed
         std::cout << "There is a logic error in function Tokenizer::getToken.\n";
-        std::cout << "The function doesn't know how to process this character: ->" << c << "<-\n";
         exit(1);
     }
 
