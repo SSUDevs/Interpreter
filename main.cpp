@@ -30,8 +30,8 @@ int main(int argc, char *argv[]) {
     // Print the modified content without comments
     // fileArray.printVector();
 
+	// Tokenization Process
 
-	// 
 
     return 0;
 }
