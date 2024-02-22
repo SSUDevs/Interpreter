@@ -15,6 +15,9 @@ public:
      // Return the identifier used in a declaration of a function or variable
      std::string identifier() { return _identifier; }
 
+     // Return the string literal found as a token
+     std::string name() { return _name; }
+
      // Grouping and Structure Tokens
      bool &isLParen();
      bool &isRParen();
@@ -57,10 +60,10 @@ public:
      bool &isEscape(); // Used for escape characters
 
      // Complex Token Types
-     bool &isIdentifier(); 
+     bool &isIdentifier(); // Used as variable and function declarations
 
      /* <STRING> ::= <CHARACTER | <ESCAPED_CHARACTER> | <CHARACTER> <STRING> | <ESCAPED_CHARACTER> <STRING> */
-     bool &isString();
+     bool &isString(); // Used for string literals
 
      /* <SINGLE_QUOTED_STRING> ::= <SINGLE_QUOTE> <STRING> <SINGLE_QUOTE> */
      bool &isSingleQuotedString();

@@ -7,8 +7,8 @@ Token::Token()
       _isSlash(false), _isDivide(false), _isAsterisk(false), _isModulo(false), _isCaret(false),
       _isLt(false), _isGt(false), _isLtEqual(false), _isGtEqual(false), _isBooleanAnd(false),
       _isBooleanOr(false), _isBooleanNot(false), _isBooleanEqual(false), _isBooleanNotEqual(false),
-      _isEscape(false), _isString(false), _isSingleQuotedString(false), _isDoubleQuotedString(false),
-      _isWholeNumber(false), _isInteger(false), _tokenType("") // Default for all token types is an empty string
+      _isEscape(false), _isString(false), _isIdentifier(false), _isSingleQuotedString(false), _isDoubleQuotedString(false),
+      _isWholeNumber(false), _isInteger(false), _tokenType(""), _identifier(""), _name("")
 {
 }
 
@@ -29,7 +29,8 @@ bool &Token::isColon() { return _isColon; }
 bool &Token::isSemicolon() { return _isSemicolon; }
 
 // Numeric and Operational Tokens
-bool &Token::isHexDigit() { return _isHexDigit; }
+bool &Token::isDigit() { return _isDigit; } 
+bool &Token::isInteger() { return _isInteger; } // Can be Pos. or Neg. !
 bool &Token::isWholeNumber() { return _isWholeNumber; }
 bool &Token::isAssignmentOperator() { return _isAssignmentOperator; }
 bool &Token::isPlus() { return _isPlus; }
@@ -52,10 +53,11 @@ bool &Token::isBooleanEqual() { return _isBooleanEqual; }
 bool &Token::isBooleanNotEqual() { return _isBooleanNotEqual; }
 
 // Special Tokens
-bool &Token::isEscape() { return _isEscape; }  
+bool &Token::isIdentifier() { return _isIdentifier; } // The identifier used in a declaration of a function or variable
 
-bool &Token::isInteger() { return _isInteger; }
-/* 
+bool &Token::isEscape() { return _isEscape; } // Escape Characters
+
+/*
     If Input is:
     counter = -2;
 
@@ -63,9 +65,11 @@ bool &Token::isInteger() { return _isInteger; }
     Token type: INTEGER
     Token:      -2
 */
-bool &Token::isString() { return _isString; } // This will be known as an IDENTIFIER for the _tokenType
-bool &Token::isDigit() { return _isDigit; } // I place this here becuase they inflict upon eachother in this case
-/* 
+
+bool &Token::isString() { return _isString; } // This will be the string literal found
+
+ // I place these here becuase they inflict upon the string in some cases, see below
+/*
     If Input is:
     1counter = 2;
 
@@ -73,11 +77,12 @@ bool &Token::isDigit() { return _isDigit; } // I place this here becuase they in
     Syntax error on line #: invalid integer
 */
 
-// NOTE: 
+// NOTE:
 // The types below aren't really needful of implementation as of yet
 // for we are only printing single tokens which can be rep. by the above
 
-// Complex Token Types 
+// Complex Token Types
+bool &Token::isHexDigit() { return _isHexDigit; }
 bool &Token::isSingleQuotedString() { return _isSingleQuotedString; }
 bool &Token::isDoubleQuotedString() { return _isDoubleQuotedString; }
 
@@ -86,47 +91,56 @@ void Token::print()
     if (isLParen())
     {
         cout << "Token type: " << tokenType() << endl;
-        cout << "Token:      " << "(" << endl;
+        cout << "Token:      "
+             << "(" << endl;
     }
     if (isRParen())
     {
         cout << "Token type: " << tokenType() << endl;
-        cout << "Token:      " << ")" << endl;
+        cout << "Token:      "
+             << ")" << endl;
     }
     if (isLBracket())
     {
         cout << "Token type: " << tokenType() << endl;
-        cout << "Token:      " << "{" << endl;
+        cout << "Token:      "
+             << "{" << endl;
     }
     if (isRBracket())
     {
         cout << "Token type: " << tokenType() << endl;
-        cout << "Token:      " << "}" << endl;
+        cout << "Token:      "
+             << "}" << endl;
     }
     if (isLBrace())
     {
         cout << "Token type: " << tokenType() << endl;
-        cout << "Token:      " << "[" << endl;
+        cout << "Token:      "
+             << "[" << endl;
     }
     if (isRBrace())
     {
         cout << "Token type: " << tokenType() << endl;
-        cout << "Token:      " << "]" << endl; 
+        cout << "Token:      "
+             << "]" << endl;
     }
     if (isDoubleQuote())
     {
         cout << "Token type: " << tokenType() << endl;
-        cout << "Token:      " << "\"" << endl;
+        cout << "Token:      "
+             << "\"" << endl;
     }
     if (isSingleQuote())
     {
         cout << "Token type: " << tokenType() << endl;
-        cout << "Token:      " << "\"" << endl;
+        cout << "Token:      "
+             << "\"" << endl;
     }
     if (isComma())
     {
         cout << "Token type: " << tokenType() << endl;
-        cout << "Token:      " << "," << endl;
+        cout << "Token:      "
+             << "," << endl;
     }
     if (isColon())
     {
@@ -136,92 +150,108 @@ void Token::print()
     if (isSemicolon())
     {
         cout << "Token type: " << tokenType() << endl;
-        cout << "Token:      " << ";" << endl;
+        cout << "Token:      "
+             << ";" << endl;
     }
     if (isPlus())
     {
         cout << "Token type: " << tokenType() << endl;
-        cout << "Token:      " << "+" << endl;
+        cout << "Token:      "
+             << "+" << endl;
     }
     if (isMinus())
     {
         cout << "Token type: " << tokenType() << endl;
-        cout << "Token:      " << "-" << endl;
+        cout << "Token:      "
+             << "-" << endl;
     }
     if (isDivide() || isSlash())
     {
         cout << "Token type: " << tokenType() << endl;
-        cout << "Token:      " << "/" << endl;
+        cout << "Token:      "
+             << "/" << endl;
     }
     if (isAsterisk())
     {
         cout << "Token type: " << tokenType() << endl;
-        cout << "Token:      " << "*" << endl;
+        cout << "Token:      "
+             << "*" << endl;
     }
     if (isModulo())
     {
         cout << "Token type: " << tokenType() << endl;
-        cout << "Token:      " << "%" << endl;
+        cout << "Token:      "
+             << "%" << endl;
     }
     if (isCaret())
     {
         cout << "Token type: " << tokenType() << endl;
-        cout << "Token:      " << "^" << endl;
+        cout << "Token:      "
+             << "^" << endl;
     }
     if (isLt())
     {
         cout << "Token type: " << tokenType() << endl;
-        cout << "Token:      " << "<" << endl;
+        cout << "Token:      "
+             << "<" << endl;
     }
     if (isGt())
     {
         cout << "Token type: " << tokenType() << endl;
-        cout << "Token:      " << ">" << endl;
+        cout << "Token:      "
+             << ">" << endl;
     }
     if (isLtEqual())
     {
         cout << "Token type: " << tokenType() << endl;
-        cout << "Token:      " << "<=" << endl;
+        cout << "Token:      "
+             << "<=" << endl;
     }
     if (isGtEqual())
     {
         cout << "Token type: " << tokenType() << endl;
-        cout << "Token:      " << ">=" << endl;
+        cout << "Token:      "
+             << ">=" << endl;
     }
     if (isBooleanAnd())
     {
         cout << "Token type: " << tokenType() << endl;
-        cout << "Token:      " << "&&" << endl;
+        cout << "Token:      "
+             << "&&" << endl;
     }
     if (isBooleanOr())
     {
         cout << "Token type: " << tokenType() << endl;
-        cout << "Token:      " << "||" << endl;
+        cout << "Token:      "
+             << "||" << endl;
     }
     if (isBooleanNot())
     {
         cout << "Token type: " << tokenType() << endl;
-        cout << "Token:      " << "!" << endl;
+        cout << "Token:      "
+             << "!" << endl;
     }
     if (isBooleanEqual())
     {
         cout << "Token type: " << tokenType() << endl;
-        cout << "Token:      " << "==" << endl;
+        cout << "Token:      "
+             << "==" << endl;
     }
     if (isBooleanNotEqual())
     {
         cout << "Token type: " << tokenType() << endl;
-        cout << "Token:      " << "!=" << endl;
+        cout << "Token:      "
+             << "!=" << endl;
     }
     if (isString())
     {
-        cout << "Token type: " << tokenType() << endl; 
+        cout << "Token type: " << tokenType() << endl;
         cout << "Token:      " << identifier() << endl;
     }
     if (isIdentifier())
     {
         cout << "Token type: " << tokenType() << endl; // Could be hardcoded to 'IDENTIFIER' but whateves lol (I hate harcoding)
-        cout << "Token:      " << identifier() << endl;
+        cout << "Token:      " << name() << endl;
     }
     // Escape requires slighty more logic that will be added upon implementation
     // if (isEscape())
@@ -230,5 +260,5 @@ void Token::print()
     // }
 
     // These types also need a slightly different approach that needs to be implemented later (For now we are just outputing the single tokens)
-    //  isString, isSingleQuotedString, isDoubleQuotedString, isWholeNumber, isInteger,
+    // isSingleQuotedString, isDoubleQuotedString
 }
