@@ -1,7 +1,3 @@
-//
-// Created by Luis carmona on 2/8/24.
-//
-
 #ifndef ASSIGNMENT1_460_FILEASARRAY_H
 #define ASSIGNMENT1_460_FILEASARRAY_H
 
