@@ -1,0 +1,619 @@
+
+Token list:
+
+Token type: IDENTIFIER
+Token:      procedure
+
+Token type: IDENTIFIER
+Token:      main
+
+Token type: LEFT_PARENTHESIS
+Token:      (
+
+Token type: IDENTIFIER
+Token:      void
+
+Token type: RIGHT_PARENTHESIS
+Token:      )
+
+Token type: LEFT_BRACE
+Token:      {
+
+Token type: IDENTIFIER
+Token:      char
+
+Token type: IDENTIFIER
+Token:      buffer
+
+Token type: LEFT_BRACKET
+Token:      [
+
+Token type: INTEGER
+Token:      256
+
+Token type: RIGHT_BRACKET
+Token:      ]
+
+Token type: SEMICOLON
+Token:      ;
+
+Token type: IDENTIFIER
+Token:      bool
+
+Token type: IDENTIFIER
+Token:      is_palindrome
+
+Token type: SEMICOLON
+Token:      ;
+
+Token type: IDENTIFIER
+Token:      int
+
+Token type: IDENTIFIER
+Token:      i
+
+Token type: COMMA
+Token:      ,
+
+Token type: IDENTIFIER
+Token:      num_bytes_read
+
+Token type: COMMA
+Token:      ,
+
+Token type: IDENTIFIER
+Token:      half_num_bytes_read
+
+Token type: SEMICOLON
+Token:      ;
+
+Token type: IDENTIFIER
+Token:      buffer
+
+Token type: LEFT_BRACKET
+Token:      [
+
+Token type: INTEGER
+Token:      255
+
+Token type: RIGHT_BRACKET
+Token:      ]
+
+Token type: ASSIGNMENT
+Token:      =
+
+Token type: SINGLE_QUOTE
+Token:      '
+
+Token type: STRING
+Token:      \0
+
+Token type: SINGLE_QUOTE
+Token:      '
+
+Token type: SEMICOLON
+Token:      ;
+
+Token type: IDENTIFIER
+Token:      num_bytes_read
+
+Token type: ASSIGNMENT
+Token:      =
+
+Token type: IDENTIFIER
+Token:      read
+
+Token type: LEFT_PARENTHESIS
+Token:      (
+
+Token type: IDENTIFIER
+Token:      buffer
+
+Token type: COMMA
+Token:      ,
+
+Token type: IDENTIFIER
+Token:      sizeof
+
+Token type: LEFT_PARENTHESIS
+Token:      (
+
+Token type: IDENTIFIER
+Token:      buffer
+
+Token type: RIGHT_PARENTHESIS
+Token:      )
+
+Token type: MINUS
+Token:      -
+
+Token type: INTEGER
+Token:      2
+
+Token type: RIGHT_PARENTHESIS
+Token:      )
+
+Token type: SEMICOLON
+Token:      ;
+
+Token type: IDENTIFIER
+Token:      for
+
+Token type: LEFT_PARENTHESIS
+Token:      (
+
+Token type: IDENTIFIER
+Token:      i
+
+Token type: ASSIGNMENT
+Token:      =
+
+Token type: INTEGER
+Token:      0
+
+Token type: SEMICOLON
+Token:      ;
+
+Token type: IDENTIFIER
+Token:      i
+
+Token type: LESS_THAN
+Token:      <
+
+Token type: IDENTIFIER
+Token:      num_bytes_read
+
+Token type: SEMICOLON
+Token:      ;
+
+Token type: IDENTIFIER
+Token:      i
+
+Token type: PLUS
+Token:      +
+
+Token type: PLUS
+Token:      +
+
+Token type: RIGHT_PARENTHESIS
+Token:      )
+
+Token type: LEFT_BRACE
+Token:      {
+
+Token type: IDENTIFIER
+Token:      if
+
+Token type: LEFT_PARENTHESIS
+Token:      (
+
+Token type: IDENTIFIER
+Token:      buffer
+
+Token type: LEFT_BRACKET
+Token:      [
+
+Token type: IDENTIFIER
+Token:      i
+
+Token type: RIGHT_BRACKET
+Token:      ]
+
+Token type: EQUAL
+Token:      ==
+
+Token type: SINGLE_QUOTE
+Token:      '
+
+Token type: STRING
+Token:      \n
+
+Token type: SINGLE_QUOTE
+Token:      '
+
+Token type: RIGHT_PARENTHESIS
+Token:      )
+
+Token type: LEFT_BRACE
+Token:      {
+
+Token type: IDENTIFIER
+Token:      buffer
+
+Token type: LEFT_BRACKET
+Token:      [
+
+Token type: IDENTIFIER
+Token:      i
+
+Token type: RIGHT_BRACKET
+Token:      ]
+
+Token type: ASSIGNMENT
+Token:      =
+
+Token type: SINGLE_QUOTE
+Token:      '
+
+Token type: STRING
+Token:      \0
+
+Token type: SINGLE_QUOTE
+Token:      '
+
+Token type: SEMICOLON
+Token:      ;
+
+Token type: IDENTIFIER
+Token:      if
+
+Token type: LEFT_PARENTHESIS
+Token:      (
+
+Token type: IDENTIFIER
+Token:      i
+
+Token type: GREATER_THAN
+Token:      >
+
+Token type: INTEGER
+Token:      0
+
+Token type: RIGHT_PARENTHESIS
+Token:      )
+
+Token type: LEFT_BRACE
+Token:      {
+
+Token type: IDENTIFIER
+Token:      num_bytes_read
+
+Token type: ASSIGNMENT
+Token:      =
+
+Token type: IDENTIFIER
+Token:      i
+
+Token type: SEMICOLON
+Token:      ;
+
+Token type: RIGHT_BRACE
+Token:      }
+
+Token type: IDENTIFIER
+Token:      else
+
+Token type: LEFT_BRACE
+Token:      {
+
+Token type: IDENTIFIER
+Token:      num_bytes_read
+
+Token type: ASSIGNMENT
+Token:      =
+
+Token type: INTEGER
+Token:      0
+
+Token type: SEMICOLON
+Token:      ;
+
+Token type: RIGHT_BRACE
+Token:      }
+
+Token type: RIGHT_BRACE
+Token:      }
+
+Token type: RIGHT_BRACE
+Token:      }
+
+Token type: IDENTIFIER
+Token:      if
+
+Token type: LEFT_PARENTHESIS
+Token:      (
+
+Token type: IDENTIFIER
+Token:      num_bytes_read
+
+Token type: GREATER_THAN_OR_EQUAL
+Token:      >=
+
+Token type: INTEGER
+Token:      2
+
+Token type: RIGHT_PARENTHESIS
+Token:      )
+
+Token type: LEFT_BRACE
+Token:      {
+
+Token type: IDENTIFIER
+Token:      half_num_bytes_read
+
+Token type: ASSIGNMENT
+Token:      =
+
+Token type: LEFT_PARENTHESIS
+Token:      (
+
+Token type: IDENTIFIER
+Token:      num_bytes_read
+
+Token type: MINUS
+Token:      -
+
+Token type: INTEGER
+Token:      1
+
+Token type: RIGHT_PARENTHESIS
+Token:      )
+
+Token type: DIVIDE
+Token:      /
+
+Token type: INTEGER
+Token:      2
+
+Token type: SEMICOLON
+Token:      ;
+
+Token type: IDENTIFIER
+Token:      i
+
+Token type: ASSIGNMENT
+Token:      =
+
+Token type: INTEGER
+Token:      0
+
+Token type: SEMICOLON
+Token:      ;
+
+Token type: IDENTIFIER
+Token:      is_palindrome
+
+Token type: ASSIGNMENT
+Token:      =
+
+Token type: IDENTIFIER
+Token:      TRUE
+
+Token type: SEMICOLON
+Token:      ;
+
+Token type: IDENTIFIER
+Token:      while
+
+Token type: LEFT_PARENTHESIS
+Token:      (
+
+Token type: LEFT_PARENTHESIS
+Token:      (
+
+Token type: IDENTIFIER
+Token:      i
+
+Token type: LESS_THAN_OR_EQUAL
+Token:      <=
+
+Token type: IDENTIFIER
+Token:      half_num_bytes_read
+
+Token type: RIGHT_PARENTHESIS
+Token:      )
+
+Token type: BOOLEAN_AND
+Token:      &&
+
+Token type: IDENTIFIER
+Token:      is_palindrome
+
+Token type: RIGHT_PARENTHESIS
+Token:      )
+
+Token type: LEFT_BRACE
+Token:      {
+
+Token type: IDENTIFIER
+Token:      is_palindrome
+
+Token type: ASSIGNMENT
+Token:      =
+
+Token type: IDENTIFIER
+Token:      buffer
+
+Token type: LEFT_BRACKET
+Token:      [
+
+Token type: IDENTIFIER
+Token:      i
+
+Token type: RIGHT_BRACKET
+Token:      ]
+
+Token type: EQUAL
+Token:      ==
+
+Token type: IDENTIFIER
+Token:      buffer
+
+Token type: LEFT_BRACKET
+Token:      [
+
+Token type: IDENTIFIER
+Token:      num_bytes_read
+
+Token type: MINUS
+Token:      -
+
+Token type: INTEGER
+Token:      1
+
+Token type: MINUS
+Token:      -
+
+Token type: IDENTIFIER
+Token:      i
+
+Token type: RIGHT_BRACKET
+Token:      ]
+
+Token type: SEMICOLON
+Token:      ;
+
+Token type: IDENTIFIER
+Token:      i
+
+Token type: ASSIGNMENT
+Token:      =
+
+Token type: IDENTIFIER
+Token:      i
+
+Token type: PLUS
+Token:      +
+
+Token type: INTEGER
+Token:      1
+
+Token type: SEMICOLON
+Token:      ;
+
+Token type: RIGHT_BRACE
+Token:      }
+
+Token type: RIGHT_BRACE
+Token:      }
+
+Token type: IDENTIFIER
+Token:      else
+
+Token type: LEFT_BRACE
+Token:      {
+
+Token type: IDENTIFIER
+Token:      is_palindrome
+
+Token type: ASSIGNMENT
+Token:      =
+
+Token type: IDENTIFIER
+Token:      FALSE
+
+Token type: SEMICOLON
+Token:      ;
+
+Token type: RIGHT_BRACE
+Token:      }
+
+Token type: IDENTIFIER
+Token:      if
+
+Token type: LEFT_PARENTHESIS
+Token:      (
+
+Token type: IDENTIFIER
+Token:      num_bytes_read
+
+Token type: GREATER_THAN
+Token:      >
+
+Token type: INTEGER
+Token:      0
+
+Token type: RIGHT_PARENTHESIS
+Token:      )
+
+Token type: LEFT_BRACE
+Token:      {
+
+Token type: IDENTIFIER
+Token:      if
+
+Token type: LEFT_PARENTHESIS
+Token:      (
+
+Token type: IDENTIFIER
+Token:      is_palindrome
+
+Token type: RIGHT_PARENTHESIS
+Token:      )
+
+Token type: LEFT_BRACE
+Token:      {
+
+Token type: IDENTIFIER
+Token:      printf
+
+Token type: LEFT_PARENTHESIS
+Token:      (
+
+Token type: DOUBLE_QUOTE
+Token:      "
+
+Token type: STRING
+Token:      %s is a palindrome\n
+
+Token type: DOUBLE_QUOTE
+Token:      "
+
+Token type: COMMA
+Token:      ,
+
+Token type: IDENTIFIER
+Token:      buffer
+
+Token type: RIGHT_PARENTHESIS
+Token:      )
+
+Token type: SEMICOLON
+Token:      ;
+
+Token type: RIGHT_BRACE
+Token:      }
+
+Token type: IDENTIFIER
+Token:      else
+
+Token type: LEFT_BRACE
+Token:      {
+
+Token type: IDENTIFIER
+Token:      printf
+
+Token type: LEFT_PARENTHESIS
+Token:      (
+
+Token type: DOUBLE_QUOTE
+Token:      "
+
+Token type: STRING
+Token:      %s is not a palindrome.\n
+
+Token type: DOUBLE_QUOTE
+Token:      "
+
+Token type: COMMA
+Token:      ,
+
+Token type: IDENTIFIER
+Token:      buffer
+
+Token type: RIGHT_PARENTHESIS
+Token:      )
+
+Token type: SEMICOLON
+Token:      ;
+
+Token type: RIGHT_BRACE
+Token:      }
+
+Token type: RIGHT_BRACE
+Token:      }
+
+Token type: RIGHT_BRACE
+Token:      }
+
+

@@ -1,0 +1,520 @@
+
+Token list:
+
+Token type: IDENTIFIER
+Token:      procedure
+
+Token type: IDENTIFIER
+Token:      fizzbuzz
+
+Token type: LEFT_PARENTHESIS
+Token:      (
+
+Token type: IDENTIFIER
+Token:      int
+
+Token type: IDENTIFIER
+Token:      counter
+
+Token type: RIGHT_PARENTHESIS
+Token:      )
+
+Token type: LEFT_BRACE
+Token:      {
+
+Token type: IDENTIFIER
+Token:      int
+
+Token type: IDENTIFIER
+Token:      state
+
+Token type: SEMICOLON
+Token:      ;
+
+Token type: IDENTIFIER
+Token:      state
+
+Token type: ASSIGNMENT
+Token:      =
+
+Token type: INTEGER
+Token:      0
+
+Token type: SEMICOLON
+Token:      ;
+
+Token type: IDENTIFIER
+Token:      if
+
+Token type: LEFT_PARENTHESIS
+Token:      (
+
+Token type: LEFT_PARENTHESIS
+Token:      (
+
+Token type: IDENTIFIER
+Token:      counter
+
+Token type: MODULO
+Token:      %
+
+Token type: INTEGER
+Token:      3
+
+Token type: RIGHT_PARENTHESIS
+Token:      )
+
+Token type: EQUAL
+Token:      ==
+
+Token type: INTEGER
+Token:      0
+
+Token type: RIGHT_PARENTHESIS
+Token:      )
+
+Token type: LEFT_BRACE
+Token:      {
+
+Token type: IDENTIFIER
+Token:      state
+
+Token type: ASSIGNMENT
+Token:      =
+
+Token type: INTEGER
+Token:      1
+
+Token type: SEMICOLON
+Token:      ;
+
+Token type: RIGHT_BRACE
+Token:      }
+
+Token type: IDENTIFIER
+Token:      if
+
+Token type: LEFT_PARENTHESIS
+Token:      (
+
+Token type: LEFT_PARENTHESIS
+Token:      (
+
+Token type: IDENTIFIER
+Token:      counter
+
+Token type: MODULO
+Token:      %
+
+Token type: INTEGER
+Token:      5
+
+Token type: RIGHT_PARENTHESIS
+Token:      )
+
+Token type: EQUAL
+Token:      ==
+
+Token type: INTEGER
+Token:      0
+
+Token type: RIGHT_PARENTHESIS
+Token:      )
+
+Token type: LEFT_BRACE
+Token:      {
+
+Token type: IDENTIFIER
+Token:      state
+
+Token type: ASSIGNMENT
+Token:      =
+
+Token type: IDENTIFIER
+Token:      state
+
+Token type: ASTERISK
+Token:      *
+
+Token type: INTEGER
+Token:      2
+
+Token type: PLUS
+Token:      +
+
+Token type: INTEGER
+Token:      2
+
+Token type: SEMICOLON
+Token:      ;
+
+Token type: RIGHT_BRACE
+Token:      }
+
+Token type: IDENTIFIER
+Token:      if
+
+Token type: LEFT_PARENTHESIS
+Token:      (
+
+Token type: IDENTIFIER
+Token:      state
+
+Token type: EQUAL
+Token:      ==
+
+Token type: INTEGER
+Token:      1
+
+Token type: RIGHT_PARENTHESIS
+Token:      )
+
+Token type: LEFT_BRACE
+Token:      {
+
+Token type: IDENTIFIER
+Token:      printf
+
+Token type: LEFT_PARENTHESIS
+Token:      (
+
+Token type: DOUBLE_QUOTE
+Token:      "
+
+Token type: STRING
+Token:      Fizz
+
+Token type: DOUBLE_QUOTE
+Token:      "
+
+Token type: RIGHT_PARENTHESIS
+Token:      )
+
+Token type: SEMICOLON
+Token:      ;
+
+Token type: RIGHT_BRACE
+Token:      }
+
+Token type: IDENTIFIER
+Token:      else
+
+Token type: LEFT_BRACE
+Token:      {
+
+Token type: IDENTIFIER
+Token:      if
+
+Token type: LEFT_PARENTHESIS
+Token:      (
+
+Token type: IDENTIFIER
+Token:      state
+
+Token type: EQUAL
+Token:      ==
+
+Token type: INTEGER
+Token:      2
+
+Token type: RIGHT_PARENTHESIS
+Token:      )
+
+Token type: LEFT_BRACE
+Token:      {
+
+Token type: IDENTIFIER
+Token:      printf
+
+Token type: LEFT_PARENTHESIS
+Token:      (
+
+Token type: DOUBLE_QUOTE
+Token:      "
+
+Token type: STRING
+Token:      Buzz
+
+Token type: DOUBLE_QUOTE
+Token:      "
+
+Token type: RIGHT_PARENTHESIS
+Token:      )
+
+Token type: SEMICOLON
+Token:      ;
+
+Token type: RIGHT_BRACE
+Token:      }
+
+Token type: IDENTIFIER
+Token:      else
+
+Token type: LEFT_BRACE
+Token:      {
+
+Token type: IDENTIFIER
+Token:      if
+
+Token type: LEFT_PARENTHESIS
+Token:      (
+
+Token type: IDENTIFIER
+Token:      state
+
+Token type: EQUAL
+Token:      ==
+
+Token type: INTEGER
+Token:      4
+
+Token type: RIGHT_PARENTHESIS
+Token:      )
+
+Token type: LEFT_BRACE
+Token:      {
+
+Token type: IDENTIFIER
+Token:      printf
+
+Token type: LEFT_PARENTHESIS
+Token:      (
+
+Token type: DOUBLE_QUOTE
+Token:      "
+
+Token type: STRING
+Token:      Fizzbuzz
+
+Token type: DOUBLE_QUOTE
+Token:      "
+
+Token type: RIGHT_PARENTHESIS
+Token:      )
+
+Token type: SEMICOLON
+Token:      ;
+
+Token type: RIGHT_BRACE
+Token:      }
+
+Token type: IDENTIFIER
+Token:      else
+
+Token type: LEFT_BRACE
+Token:      {
+
+Token type: IDENTIFIER
+Token:      printf
+
+Token type: LEFT_PARENTHESIS
+Token:      (
+
+Token type: DOUBLE_QUOTE
+Token:      "
+
+Token type: STRING
+Token:      %d
+
+Token type: DOUBLE_QUOTE
+Token:      "
+
+Token type: COMMA
+Token:      ,
+
+Token type: IDENTIFIER
+Token:      counter
+
+Token type: RIGHT_PARENTHESIS
+Token:      )
+
+Token type: SEMICOLON
+Token:      ;
+
+Token type: RIGHT_BRACE
+Token:      }
+
+Token type: RIGHT_BRACE
+Token:      }
+
+Token type: RIGHT_BRACE
+Token:      }
+
+Token type: RIGHT_BRACE
+Token:      }
+
+Token type: IDENTIFIER
+Token:      procedure
+
+Token type: IDENTIFIER
+Token:      main
+
+Token type: LEFT_PARENTHESIS
+Token:      (
+
+Token type: IDENTIFIER
+Token:      void
+
+Token type: RIGHT_PARENTHESIS
+Token:      )
+
+Token type: LEFT_BRACE
+Token:      {
+
+Token type: IDENTIFIER
+Token:      int
+
+Token type: IDENTIFIER
+Token:      counter
+
+Token type: SEMICOLON
+Token:      ;
+
+Token type: IDENTIFIER
+Token:      counter
+
+Token type: ASSIGNMENT
+Token:      =
+
+Token type: INTEGER
+Token:      1
+
+Token type: SEMICOLON
+Token:      ;
+
+Token type: IDENTIFIER
+Token:      while
+
+Token type: LEFT_PARENTHESIS
+Token:      (
+
+Token type: IDENTIFIER
+Token:      counter
+
+Token type: LESS_THAN_OR_EQUAL
+Token:      <=
+
+Token type: INTEGER
+Token:      100
+
+Token type: RIGHT_PARENTHESIS
+Token:      )
+
+Token type: LEFT_BRACE
+Token:      {
+
+Token type: IDENTIFIER
+Token:      fizzbuzz
+
+Token type: LEFT_PARENTHESIS
+Token:      (
+
+Token type: IDENTIFIER
+Token:      counter
+
+Token type: RIGHT_PARENTHESIS
+Token:      )
+
+Token type: SEMICOLON
+Token:      ;
+
+Token type: IDENTIFIER
+Token:      counter
+
+Token type: ASSIGNMENT
+Token:      =
+
+Token type: IDENTIFIER
+Token:      counter
+
+Token type: PLUS
+Token:      +
+
+Token type: INTEGER
+Token:      1
+
+Token type: SEMICOLON
+Token:      ;
+
+Token type: IDENTIFIER
+Token:      if
+
+Token type: LEFT_PARENTHESIS
+Token:      (
+
+Token type: IDENTIFIER
+Token:      counter
+
+Token type: LESS_THAN_OR_EQUAL
+Token:      <=
+
+Token type: INTEGER
+Token:      100
+
+Token type: RIGHT_PARENTHESIS
+Token:      )
+
+Token type: LEFT_BRACE
+Token:      {
+
+Token type: IDENTIFIER
+Token:      printf
+
+Token type: LEFT_PARENTHESIS
+Token:      (
+
+Token type: DOUBLE_QUOTE
+Token:      "
+
+Token type: STRING
+Token:      , 
+
+Token type: DOUBLE_QUOTE
+Token:      "
+
+Token type: RIGHT_PARENTHESIS
+Token:      )
+
+Token type: SEMICOLON
+Token:      ;
+
+Token type: RIGHT_BRACE
+Token:      }
+
+Token type: IDENTIFIER
+Token:      else
+
+Token type: LEFT_BRACE
+Token:      {
+
+Token type: IDENTIFIER
+Token:      printf
+
+Token type: LEFT_PARENTHESIS
+Token:      (
+
+Token type: DOUBLE_QUOTE
+Token:      "
+
+Token type: STRING
+Token:      \n
+
+Token type: DOUBLE_QUOTE
+Token:      "
+
+Token type: RIGHT_PARENTHESIS
+Token:      )
+
+Token type: SEMICOLON
+Token:      ;
+
+Token type: RIGHT_BRACE
+Token:      }
+
+Token type: RIGHT_BRACE
+Token:      }
+
+Token type: RIGHT_BRACE
+Token:      }
+
+
