@@ -1,5 +1,5 @@
-#ifndef ASSIGNMENT1_460_FILEASARRAY_H
-#define ASSIGNMENT1_460_FILEASARRAY_H
+#ifndef INTERPRETER_FILEASARRAY_H
+#define INTERPRETER_FILEASARRAY_H
 
 #include <string>
 #include<fstream>
@@ -41,4 +41,4 @@ private:
 };
 
 
-#endif //ASSIGNMENT1_460_FILEASARRAY_H
+#endif //INTERPRETER_FILEASARRAY_H

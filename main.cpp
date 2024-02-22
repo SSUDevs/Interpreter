@@ -10,6 +10,8 @@
 #include <string>
 #include <fstream>
 #include "fileAsArray.h"
+#include "Tokenizer.h"
+
 using namespace std;
 
 int main(int argc, char *argv[]) {

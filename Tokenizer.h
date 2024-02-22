@@ -1,5 +1,5 @@
-#ifndef ASSIGNMENT1_460_TOKENIZER_H
-#define ASSIGNMENT1_460_TOKENIZER_H
+#ifndef INTERPRETER_TOKENIZER_H
+#define INTERPRETER_TOKENIZER_H
 #include "Token.h"
 
 class Tokenizer
@@ -17,4 +17,4 @@ private:
     int _errorLineNumber; // Keeps track of line number during parsing when error found
 };
 
-#endif // ASSIGNMENT1_460_TOKENIZER_H
+#endif // INTERPRETER_TOKENIZER_H

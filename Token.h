@@ -1,5 +1,5 @@
-#ifndef ASSIGNMENT1_460_TOKEN_H
-#define ASSIGNMENT1_460_TOKEN_H
+#ifndef INTERPRETER_TOKEN_H
+#define INTERPRETER_TOKEN_H
 #include <iostream>
 
 using namespace std;
@@ -112,4 +112,4 @@ private:
      bool _isSingleQuotedString, _isDoubleQuotedString;
 };
 
-#endif // ASSIGNMENT1_460_TOKEN_H
+#endif // INTERPRETER_TOKEN_H
