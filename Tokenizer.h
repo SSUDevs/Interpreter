@@ -1,27 +1,31 @@
-//
-// Created by Luis carmona on 2/7/24.
-//
+// Tokenizer.h corrections
+#ifndef INTERPRETER_TOKENIZER_H
+#define INTERPRETER_TOKENIZER_H
 
-#ifndef ASSIGNMENT1_460_TOKENIZER_H
-#define ASSIGNMENT1_460_TOKENIZER_H
-#include <iostream>
-#include <fstream>
-
-using namespace std;
+#include "Token.h"
+#include <vector>
+#include <cctype> // For isspace, isalpha, etc..
 
 class Tokenizer {
 public:
-    Tokenizer();
+    enum State {
+        START, IDENTIFIER, NUMBER 
+        //STRING not yet implemented
+    };
 
-    void TokenizeFile();
+    explicit Tokenizer(const std::vector<char>& file); // Pass by const ref
+
+    void tokenizeVector();
+    std::vector<Token> getTokens() const;
 
 private:
+    std::vector<char> _file;
+    std::vector<Token> _tokens;
+    size_t _currentPos = 0; // index as we tokenize
+    size_t _size; // To store the size of vector passed in
+    State _currentState = START;
 
-   string inputFileName;
-    ifstream inputStream;
-
-
+    Token getToken();
 };
 
-
-#endif //ASSIGNMENT1_460_TOKENIZER_H
+#endif // INTERPRETER_TOKENIZER_H

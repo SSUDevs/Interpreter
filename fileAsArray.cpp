@@ -1,7 +1,3 @@
-//
-// Created by Luis carmona on 2/8/24.
-//
-
 #include "fileAsArray.h"
 
 
@@ -22,12 +18,12 @@ void fileAsArray::readFile() {
     char c;
 
     while (inputStream.get(c) && !inputStream.eof()) {
-        std::cout << c;
+        // std::cout << c;
         file.push_back(c);
     }
 
     inputStream.close();
-    std::cout << "Done reading File" << std::endl;
+    // std::cout << "Done reading File" << std::endl;
 }
 
 /*

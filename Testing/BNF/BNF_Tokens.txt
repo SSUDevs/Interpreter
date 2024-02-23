@@ -1,0 +1,54 @@
+<CHARACTER> ::= ? | @ | A | B | C | D | E | F | G | H | I | J | K | L | M |
+N | O | P | Q | R | S | T | U | V | W | X | Y | Z | [ | ] | ^ |
+_ | ` | a | b | c | d | e | f | g | h | i | j | k | l | m | n |
+o | p | q | r | s | t | u | v | w | x | y | z  | | |  ̃
+
+<ESCAPED_CHARACTER> ::= \a | \b | \f | \n | \r | \t | \v | \\ | \? | \' | \" | \x<HEX_DIGIT> | \x<HEX_DIGIT><HEX_DIGIT>
+
+<HEX_DIGIT> ::= 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | A | B | C | D | E | F | a | b | c | d | e | f
+
+<L_PAREN> ::= (
+<R_PAREN> ::= )
+<L_BRACKET> ::= [
+<R_BRACKET> ::= ]
+<L_BRACE> ::= {
+<R_BRACE> ::= }
+
+<DOUBLE_QUOTE> ::= "
+<SINGLE_QUOTE> ::= '
+<SEMICOLON> ::= ;
+<COMMA> ::= ,
+<ASSIGNMENT_OPERATOR> ::= =
+<PLUS> ::= +
+<MINUS> ::= -
+<ASTERISK> ::= *
+<DIVIDE> ::= /
+<MODULO> ::= %
+<CARET> ::= ^
+
+<LT> ::= <
+<GT> ::= >
+<LT_EQUAL> ::= <=
+<GT_EQUAL> ::= >=
+<BOOLEAN_AND> ::= &&
+<BOOLEAN_OR> ::= ||
+<BOOLEAN_NOT> ::= !
+<BOOLEAN_EQUAL> ::= ==
+<BOOLEAN_NOT_EQUAL> ::= !=
+
+<DIGIT> ::= 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
+
+<STRING> ::= <CHARACTER | <ESCAPED_CHARACTER> | <CHARACTER> <STRING> | <ESCAPED_CHARACTER> <STRING>
+
+<SINGLE_QUOTED_STRING> ::= <SINGLE_QUOTE> <STRING> <SINGLE_QUOTE>
+
+<DOUBLE_QUOTED_STRING> ::= <DOUBLE_QUOTE> <STRING> <DOUBLE_QUOTE>
+
+<WHOLE_NUMBER> ::= <DIGIT> | <DIGIT> <WHOLE_NUMBER>
+
+<INTEGER> ::= <WHOLE_NUMBER> | <PLUS> <WHOLE_NUMBER> | <MINUS> <WHOLE_NUMBER>
+
+
+
+
+

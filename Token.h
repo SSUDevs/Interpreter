@@ -1,29 +1,40 @@
-//
-// Created by Luis carmona on 2/7/24.
-//
+#ifndef INTERPRETER_TOKEN_H
+#define INTERPRETER_TOKEN_H
 
-#ifndef ASSIGNMENT1_460_TOKEN_H
-#define ASSIGNMENT1_460_TOKEN_H
 #include <iostream>
+#include <string>
 
-using namespace std;
 class Token {
-
 public:
-    Token();
-    bool &isSlash();
-    bool &isAsterisk();
-    void print();
-
-
+    // Define an enum class for token types
+    enum class Type {
+        LParen, RParen, LBracket, RBracket, LBrace, RBrace,
+        DoubleQuote, SingleQuote, Comma, Colon, Semicolon,
+        HexDigit, Digit, AssignmentOperator, Plus, Minus,
+        Slash, Asterisk, Modulo, Caret,
+        Lt, Gt, LtEqual, GtEqual,
+        BooleanAnd, BooleanOr, BooleanNot,
+        BooleanEqual, BooleanNotEqual,
+        Escape, Identifier, String,
+        SingleQuotedString, DoubleQuotedString,
+        WholeNumber, Integer,
+        Unknown // For unrecognized tokens
+    };
 
 private:
-    bool _isSlash,_isAsterisk;
+    Type _type;
+    std::string _value;
 
+public:
+    Token(Type type, const std::string& value) : _type(type), _value(value) {}
+
+    // Accessors functions
+    Type type() const { return _type; }
+
+    // Function to convert Type to a readable string
+    static std::string typeToString(Type type);
+
+    void print() const;
 };
 
-
-#endif //ASSIGNMENT1_460_TOKEN_H
-int state =0;
-
-
+#endif // INTERPRETER_TOKEN_H

@@ -4,7 +4,7 @@ CC = g++
 CFLAGS = 
 
 # define any directories containing header files other than /usr/include
-INCLUDES = fileAsArray.h
+INCLUDES = 
 
 # define library paths in addition to /usr/lib
 #   if I wanted to include libraries not in /usr/lib I'd specify
@@ -17,7 +17,7 @@ LFLAGS =
 LIBS = 
 
 # define the C source files
-SRCS = main.cpp fileAsArray.cpp
+SRCS = main.cpp fileAsArray.cpp Tokenizer.cpp Token.cpp
 
 # define the C object files 
 #

@@ -1,0 +1,73 @@
+
+Token list:
+
+Token type: IDENTIFIER
+Token:      procedure
+
+Token type: IDENTIFIER
+Token:      main
+
+Token type: LEFT_PARENTHESIS
+Token:      (
+
+Token type: IDENTIFIER
+Token:      void
+
+Token type: RIGHT_PARENTHESIS
+Token:      )
+
+Token type: LEFT_BRACE
+Token:      {
+
+Token type: IDENTIFIER
+Token:      int
+
+Token type: IDENTIFIER
+Token:      counter
+
+Token type: SEMICOLON
+Token:      ;
+
+Token type: IDENTIFIER
+Token:      counter
+
+Token type: ASSIGNMENT
+Token:      =
+
+Token type: INTEGER
+Token:      -2
+
+Token type: SEMICOLON
+Token:      ;
+
+Token type: IDENTIFIER
+Token:      printf
+
+Token type: LEFT_PARENTHESIS
+Token:      (
+
+Token type: DOUBLE_QUOTE
+Token:      "
+
+Token type: STRING
+Token:      counter = %d\n
+
+Token type: DOUBLE_QUOTE
+Token:      "
+
+Token type: COMMA
+Token:      ,
+
+Token type: IDENTIFIER
+Token:      counter
+
+Token type: RIGHT_PARENTHESIS
+Token:      )
+
+Token type: SEMICOLON
+Token:      ;
+
+Token type: RIGHT_BRACE
+Token:      }
+
+
