@@ -1,264 +1,92 @@
 #include "Token.h"
 
-Token::Token()
-    : _isLParen(false), _isRParen(false), _isLBracket(false), _isRBracket(false), _isLBrace(false), _isRBrace(false),
-      _isDoubleQuote(false), _isSingleQuote(false), _isComma(false), _isColon(false), _isSemicolon(false),
-      _isHexDigit(false), _isDigit(false), _isAssignmentOperator(false), _isPlus(false), _isMinus(false),
-      _isSlash(false), _isDivide(false), _isAsterisk(false), _isModulo(false), _isCaret(false),
-      _isLt(false), _isGt(false), _isLtEqual(false), _isGtEqual(false), _isBooleanAnd(false),
-      _isBooleanOr(false), _isBooleanNot(false), _isBooleanEqual(false), _isBooleanNotEqual(false),
-      _isEscape(false), _isString(false), _isIdentifier(false), _isSingleQuotedString(false), _isDoubleQuotedString(false),
-      _isWholeNumber(false), _isInteger(false), _tokenType(""), _identifier(""), _name("")
+std::string Token::typeToString(Type type)
 {
+    switch (type)
+    {
+    case Type::LParen:
+        return "LEFT_PARENTHESIS";
+    case Type::RParen:
+        return "RIGHT_PARENTHESIS";
+    case Type::LBracket:
+        return "LEFT_BRACKET";
+    case Type::RBracket:
+        return "RIGHT_BRACKET";
+    case Type::LBrace:
+        return "LEFT_BRACE";
+    case Type::RBrace:
+        return "RIGHT_BRACE";
+    case Type::DoubleQuote:
+        return "DOUBLE_QUOTE";
+    case Type::SingleQuote:
+        return "SINGLE_QUOTE";
+    case Type::Comma:
+        return "COMMA";
+    case Type::Colon:
+        return "COLON";
+    case Type::Semicolon:
+        return "SEMICOLON";
+    case Type::HexDigit:
+        return "HEX_DIGIT";
+    case Type::Digit:
+        return "DIGIT";
+    case Type::AssignmentOperator:
+        return "ASSIGNMENT";
+    case Type::Plus:
+        return "PLUS";
+    case Type::Minus:
+        return "MINUS";
+    case Type::Slash:
+        return "SLASH";
+    case Type::Asterisk:
+        return "ASTERISK";
+    case Type::Modulo:
+        return "MODULO";
+    case Type::Caret:
+        return "CARET";
+    case Type::Lt:
+        return "LESS_THAN";
+    case Type::Gt:
+        return "GREATER_THAN";
+    case Type::LtEqual:
+        return "LESS_THAN_OR_EQUAL";
+    case Type::GtEqual:
+        return "GREATER_THAN_OR_EQUAL";
+    case Type::BooleanAnd:
+        return "BOOLEAN_AND";
+    case Type::BooleanOr:
+        return "BOOLEAN_OR";
+    case Type::BooleanNot:
+        return "BOOLEAN_NOT";
+    case Type::BooleanEqual:
+        return "BOOLEAN_EQUAL";
+    case Type::BooleanNotEqual:
+        return "BOOLEAN_NOT_EQUAL";
+    case Type::Escape:
+        return "ESCAPE";
+    case Type::Identifier:
+        return "IDENTIFIER";
+    case Type::String:
+        return "STRING";
+    case Type::SingleQuotedString:
+        return "SINGLE_QUOTED_STRING";
+    case Type::DoubleQuotedString:
+        return "DOUBLE_QUOTED_STRING";
+    case Type::WholeNumber:
+        return "WHOLE_NUMBER";
+    case Type::Integer:
+        return "INTEGER";
+    case Type::Unknown:
+        return "UNKNOWN";
+    default:
+        return "INVALID_TYPE"; // In case a new type is added and not handled
+    }
 }
 
-// Getter Functions
-// Grouping and Structure Tokens
-bool &Token::isLParen() { return _isLParen; }
-bool &Token::isRParen() { return _isRParen; }
-bool &Token::isLBracket() { return _isLBracket; }
-bool &Token::isRBracket() { return _isRBracket; }
-bool &Token::isLBrace() { return _isLBrace; }
-bool &Token::isRBrace() { return _isRBrace; }
-
-// Quotation Tokens
-bool &Token::isDoubleQuote() { return _isDoubleQuote; }
-bool &Token::isSingleQuote() { return _isSingleQuote; }
-bool &Token::isComma() { return _isComma; }
-bool &Token::isColon() { return _isColon; }
-bool &Token::isSemicolon() { return _isSemicolon; }
-
-// Numeric and Operational Tokens
-bool &Token::isDigit() { return _isDigit; } 
-bool &Token::isInteger() { return _isInteger; } // Can be Pos. or Neg. !
-bool &Token::isWholeNumber() { return _isWholeNumber; }
-bool &Token::isAssignmentOperator() { return _isAssignmentOperator; }
-bool &Token::isPlus() { return _isPlus; }
-bool &Token::isMinus() { return _isMinus; }
-bool &Token::isSlash() { return _isSlash; }
-bool &Token::isDivide() { return _isDivide; }
-bool &Token::isAsterisk() { return _isAsterisk; }
-bool &Token::isModulo() { return _isModulo; }
-bool &Token::isCaret() { return _isCaret; }
-
-// Boolean Expression Tokens
-bool &Token::isLt() { return _isLt; }
-bool &Token::isGt() { return _isGt; }
-bool &Token::isLtEqual() { return _isLtEqual; }
-bool &Token::isGtEqual() { return _isGtEqual; }
-bool &Token::isBooleanAnd() { return _isBooleanAnd; }
-bool &Token::isBooleanOr() { return _isBooleanOr; }
-bool &Token::isBooleanNot() { return _isBooleanNot; }
-bool &Token::isBooleanEqual() { return _isBooleanEqual; }
-bool &Token::isBooleanNotEqual() { return _isBooleanNotEqual; }
-
-// Special Tokens
-bool &Token::isIdentifier() { return _isIdentifier; } // The identifier used in a declaration of a function or variable
-
-bool &Token::isEscape() { return _isEscape; } // Escape Characters
-
-/*
-    If Input is:
-    counter = -2;
-
-    Expected Ouput would be:
-    Token type: INTEGER
-    Token:      -2
-*/
-
-bool &Token::isString() { return _isString; } // This will be the string literal found
-
- // I place these here becuase they inflict upon the string in some cases, see below
-/*
-    If Input is:
-    1counter = 2;
-
-    Expected Ouput would be:
-    Syntax error on line #: invalid integer
-*/
-
-// NOTE:
-// The types below aren't really needful of implementation as of yet
-// for we are only printing single tokens which can be rep. by the above
-
-// Complex Token Types
-bool &Token::isHexDigit() { return _isHexDigit; }
-bool &Token::isSingleQuotedString() { return _isSingleQuotedString; }
-bool &Token::isDoubleQuotedString() { return _isDoubleQuotedString; }
-
-void Token::print()
+// Print the token type and value in the specified format
+void Token::print() const
 {
-    if (isLParen())
-    {
-        cout << "Token type: " << tokenType() << endl;
-        cout << "Token:      "
-             << "(" << endl;
-    }
-    if (isRParen())
-    {
-        cout << "Token type: " << tokenType() << endl;
-        cout << "Token:      "
-             << ")" << endl;
-    }
-    if (isLBracket())
-    {
-        cout << "Token type: " << tokenType() << endl;
-        cout << "Token:      "
-             << "{" << endl;
-    }
-    if (isRBracket())
-    {
-        cout << "Token type: " << tokenType() << endl;
-        cout << "Token:      "
-             << "}" << endl;
-    }
-    if (isLBrace())
-    {
-        cout << "Token type: " << tokenType() << endl;
-        cout << "Token:      "
-             << "[" << endl;
-    }
-    if (isRBrace())
-    {
-        cout << "Token type: " << tokenType() << endl;
-        cout << "Token:      "
-             << "]" << endl;
-    }
-    if (isDoubleQuote())
-    {
-        cout << "Token type: " << tokenType() << endl;
-        cout << "Token:      "
-             << "\"" << endl;
-    }
-    if (isSingleQuote())
-    {
-        cout << "Token type: " << tokenType() << endl;
-        cout << "Token:      "
-             << "\"" << endl;
-    }
-    if (isComma())
-    {
-        cout << "Token type: " << tokenType() << endl;
-        cout << "Token:      "
-             << "," << endl;
-    }
-    if (isColon())
-    {
-        cout << "Token type: " << tokenType() << endl;
-        cout << ":" << endl;
-    }
-    if (isSemicolon())
-    {
-        cout << "Token type: " << tokenType() << endl;
-        cout << "Token:      "
-             << ";" << endl;
-    }
-    if (isPlus())
-    {
-        cout << "Token type: " << tokenType() << endl;
-        cout << "Token:      "
-             << "+" << endl;
-    }
-    if (isMinus())
-    {
-        cout << "Token type: " << tokenType() << endl;
-        cout << "Token:      "
-             << "-" << endl;
-    }
-    if (isDivide() || isSlash())
-    {
-        cout << "Token type: " << tokenType() << endl;
-        cout << "Token:      "
-             << "/" << endl;
-    }
-    if (isAsterisk())
-    {
-        cout << "Token type: " << tokenType() << endl;
-        cout << "Token:      "
-             << "*" << endl;
-    }
-    if (isModulo())
-    {
-        cout << "Token type: " << tokenType() << endl;
-        cout << "Token:      "
-             << "%" << endl;
-    }
-    if (isCaret())
-    {
-        cout << "Token type: " << tokenType() << endl;
-        cout << "Token:      "
-             << "^" << endl;
-    }
-    if (isLt())
-    {
-        cout << "Token type: " << tokenType() << endl;
-        cout << "Token:      "
-             << "<" << endl;
-    }
-    if (isGt())
-    {
-        cout << "Token type: " << tokenType() << endl;
-        cout << "Token:      "
-             << ">" << endl;
-    }
-    if (isLtEqual())
-    {
-        cout << "Token type: " << tokenType() << endl;
-        cout << "Token:      "
-             << "<=" << endl;
-    }
-    if (isGtEqual())
-    {
-        cout << "Token type: " << tokenType() << endl;
-        cout << "Token:      "
-             << ">=" << endl;
-    }
-    if (isBooleanAnd())
-    {
-        cout << "Token type: " << tokenType() << endl;
-        cout << "Token:      "
-             << "&&" << endl;
-    }
-    if (isBooleanOr())
-    {
-        cout << "Token type: " << tokenType() << endl;
-        cout << "Token:      "
-             << "||" << endl;
-    }
-    if (isBooleanNot())
-    {
-        cout << "Token type: " << tokenType() << endl;
-        cout << "Token:      "
-             << "!" << endl;
-    }
-    if (isBooleanEqual())
-    {
-        cout << "Token type: " << tokenType() << endl;
-        cout << "Token:      "
-             << "==" << endl;
-    }
-    if (isBooleanNotEqual())
-    {
-        cout << "Token type: " << tokenType() << endl;
-        cout << "Token:      "
-             << "!=" << endl;
-    }
-    if (isString())
-    {
-        cout << "Token type: " << tokenType() << endl;
-        cout << "Token:      " << identifier() << endl;
-    }
-    if (isIdentifier())
-    {
-        cout << "Token type: " << tokenType() << endl; // Could be hardcoded to 'IDENTIFIER' but whateves lol (I hate harcoding)
-        cout << "Token:      " << name() << endl;
-    }
-    // Escape requires slighty more logic that will be added upon implementation
-    // if (isEscape())
-    // {
-    //     cout << '\\' << endl; // Assuming backslash is used for escape but many other chars can be present
-    // }
-
-    // These types also need a slightly different approach that needs to be implemented later (For now we are just outputing the single tokens)
-    // isSingleQuotedString, isDoubleQuotedString
+    std::cout << "Token type: " << typeToString(_type) << std::endl;
+    std::cout << "Token:      " << _value << std::endl
+              << std::endl; // Added a line break for spacing
 }

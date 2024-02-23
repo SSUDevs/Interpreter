@@ -1,20 +1,31 @@
+// Tokenizer.h corrections
 #ifndef INTERPRETER_TOKENIZER_H
 #define INTERPRETER_TOKENIZER_H
+
 #include "Token.h"
+#include <vector>
+#include <cctype> // For isspace, isalpha, etc..
 
-class Tokenizer
-{
+class Tokenizer {
 public:
-    // Pass vector created from fileAsArray that has removed comments
-    Tokenizer(std::vector<char>); 
+    enum State {
+        START, IDENTIFIER, NUMBER 
+        //STRING not yet implemented
+    };
 
-    Token getToken(); // Gets the next token from the vector
+    explicit Tokenizer(const std::vector<char>& file); // Pass by const ref
+
+    void tokenizeVector();
+    std::vector<Token> getTokens() const;
 
 private:
-    std::vector<char> _file; 
-    bool charOfInterest(char c); // Defines all tokens in language
-    size_t currentPos = 0; // Tracks the current position in the vector as its being tokenized
-    int _errorLineNumber; // Keeps track of line number during parsing when error found
+    std::vector<char> _file;
+    std::vector<Token> _tokens;
+    size_t _currentPos = 0; // index as we tokenize
+    size_t _size; // To store the size of vector passed in
+    State _currentState = START;
+
+    Token getToken();
 };
 
 #endif // INTERPRETER_TOKENIZER_H

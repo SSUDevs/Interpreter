@@ -15,24 +15,32 @@
 using namespace std;
 
 int main(int argc, char *argv[]) {
+    if (argc < 2) {
+        cerr << "Usage: " << argv[0] << " <filename>" << endl;
+        return 1;
+    }
 
     fileAsArray fileArray(argv[1]);
     fileArray.readFile();
 
-    // Try-catch for parsing out comments
     try {
         fileArray.File_w_no_comments();
     } catch (const std::exception& error) {
-        // Catch and handle the exception
-        std::cerr << "Exception caught: " << error.what() << std::endl;
+        cerr << "Exception caught: " << error.what() << endl;
+        return 1; // Exit if there's an error
     }
 
-    // Print the modified content without comments
-    // fileArray.printVector();
+    // Create a Tokenizer instance with the processed file content
+    Tokenizer tokenizer(fileArray.getFileContent());
 
-	// Tokenization Process
+    // Tokenize the vector
+    tokenizer.tokenizeVector();
 
+    // Retrieve and print tokens (assuming you have methods to access and print token details)
+    vector<Token> tokens = tokenizer.getTokens();
+    for (const auto& token : tokens) {
+        token.print();
+    }
 
     return 0;
 }
- 

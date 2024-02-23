@@ -6,11 +6,10 @@
 #include<vector>
 #include <iostream>
 
-
+/// Preliminary for removing comments and storing into vector of chars
 class fileAsArray {
 public:
-    /// May be moved to Tokenizer, However since we are just using this as a preliminary
-    /// for removing comments it's probably fine ///
+
     // Using an Enum to represent the states of the finite state automaton
     enum State {
         START,                // Initial state (Also accepting state)
@@ -30,6 +29,11 @@ public:
 
     // Returns the index following the Division Op. and if it was div.
     std::pair<bool, int> isDivision(int index);
+
+    // Method to get a reference to the vector in the main
+    const std::vector<char>& getFileContent() const {
+        return file;
+    }
 
     void printVector();
 

@@ -1,115 +1,40 @@
 #ifndef INTERPRETER_TOKEN_H
 #define INTERPRETER_TOKEN_H
+
 #include <iostream>
+#include <string>
 
-using namespace std;
-class Token
-{
-
+class Token {
 public:
-     Token();
-
-     // Return the name of the tokens type
-     std::string tokenType() { return _tokenType; }
-
-     // Return the identifier used in a declaration of a function or variable
-     std::string identifier() { return _identifier; }
-
-     // Return the string literal found as a token
-     std::string name() { return _name; }
-
-     // Grouping and Structure Tokens
-     bool &isLParen();
-     bool &isRParen();
-     bool &isLBracket();
-     bool &isRBracket();
-     bool &isLBrace();
-     bool &isRBrace();
-
-     // Quotation Tokens
-     bool &isDoubleQuote();
-     bool &isSingleQuote();
-     bool &isComma();
-     bool &isColon();
-     bool &isSemicolon();
-
-     // Numeric and Operational Tokens
-     bool &isHexDigit(); // Hex Digit, possibly used with escape characters as a string
-     bool &isDigit();
-     bool &isAssignmentOperator();
-     bool &isPlus();   // Plus, with consideration for its use with integers for addition
-     bool &isMinus();  // Minus, also with integer consideration for negative
-     bool &isSlash();  // Slash, not necessarily a division operator
-     bool &isDivide(); // Explicit Division Operator
-     bool &isAsterisk();
-     bool &isModulo();
-     bool &isCaret();
-
-     // Boolean Expression Tokens
-     bool &isLt();
-     bool &isGt();
-     bool &isLtEqual();
-     bool &isGtEqual();
-     bool &isBooleanAnd();
-     bool &isBooleanOr();
-     bool &isBooleanNot();
-     bool &isBooleanEqual();
-     bool &isBooleanNotEqual();
-
-     // Special Token
-     bool &isEscape(); // Used for escape characters
-
-     // Complex Token Types
-     bool &isIdentifier(); // Used as variable and function declarations
-
-     /* <STRING> ::= <CHARACTER | <ESCAPED_CHARACTER> | <CHARACTER> <STRING> | <ESCAPED_CHARACTER> <STRING> */
-     bool &isString(); // Used for string literals
-
-     /* <SINGLE_QUOTED_STRING> ::= <SINGLE_QUOTE> <STRING> <SINGLE_QUOTE> */
-     bool &isSingleQuotedString();
-
-     /* <DOUBLE_QUOTED_STRING> ::= <DOUBLE_QUOTE> <STRING> <DOUBLE_QUOTE> */
-     bool &isDoubleQuotedString();
-
-     /* <WHOLE_NUMBER> ::= <DIGIT> | <DIGIT> <WHOLE_NUMBER> */
-     bool &isWholeNumber();
-
-     /* <INTEGER> ::= <WHOLE_NUMBER> | <PLUS> <WHOLE_NUMBER> | <MINUS> <WHOLE_NUMBER> */
-     bool &isInteger();
-
-     void print();
+    // Define an enum class for token types
+    enum class Type {
+        LParen, RParen, LBracket, RBracket, LBrace, RBrace,
+        DoubleQuote, SingleQuote, Comma, Colon, Semicolon,
+        HexDigit, Digit, AssignmentOperator, Plus, Minus,
+        Slash, Asterisk, Modulo, Caret,
+        Lt, Gt, LtEqual, GtEqual,
+        BooleanAnd, BooleanOr, BooleanNot,
+        BooleanEqual, BooleanNotEqual,
+        Escape, Identifier, String,
+        SingleQuotedString, DoubleQuotedString,
+        WholeNumber, Integer,
+        Unknown // For unrecognized tokens
+    };
 
 private:
-     // Identifies the token (Either just a name and thus refered to as 'IDENTIFIER' or could be 'INTEGER', 'SEMICOLON' ect...)
-     std::string _tokenType;
+    Type _type;
+    std::string _value;
 
-     // Stores the string that acts as the identifier of a variable, function ect... (NOT A STRING LITERAL)
-     std::string _identifier;
+public:
+    Token(Type type, const std::string& value) : _type(type), _value(value) {}
 
-     // Stores the string the string literal if applicable like printf ("Fizz") where Fizz is the string
-     std::string _name;
+    // Accessors functions
+    Type type() const { return _type; }
 
-     // Grouping and Structure Tokens
-     bool _isLParen, _isRParen, _isOpenCurlyBrace, _isCloseCurlyBrace,
-         _isLBracket, _isRBracket, _isLBrace, _isRBrace;
+    // Function to convert Type to a readable string
+    static std::string typeToString(Type type);
 
-     // Quotation and Delimiter Tokens
-     bool _isDoubleQuote, _isSingleQuote, _isComma, _isColon, _isSemicolon;
-
-     // Numeric and Operational Tokens
-     bool _isWholeNumber, _isHexDigit, _isDigit, _isAssignmentOperator, _isPlus, _isMinus,
-         _isSlash, _isDivide, _isAsterisk, _isModulo, _isCaret;
-
-     // Boolean Expression Tokens
-     bool _isLt, _isGt, _isLtEqual, _isGtEqual,
-         _isBooleanAnd, _isBooleanOr, _isBooleanNot,
-         _isBooleanEqual, _isBooleanNotEqual;
-
-     // Special Token
-     bool _isEscape, _isInteger, _isString, _isIdentifier;
-
-     // Complex Token Types
-     bool _isSingleQuotedString, _isDoubleQuotedString;
+    void print() const;
 };
 
 #endif // INTERPRETER_TOKEN_H
