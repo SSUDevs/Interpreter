@@ -34,83 +34,112 @@ Token Tokenizer::getToken() {
 
     while (_currentPos < _size && !tokenFound) {
         char currentChar = _file[_currentPos];
-        switch (currentChar) {
-        case '(':
-            tokenType = Token::Type::LParen;
-            tokenValue = currentChar;
-            tokenFound = true;
-            break;
-        case ')':
-            tokenType = Token::Type::RParen;
-            tokenValue = currentChar;
-            tokenFound = true;
-            break;
-        case '[':
-            tokenType = Token::Type::LBracket;
-            tokenValue = currentChar;
-            tokenFound = true;
-            break;
-        case ']':
-            tokenType = Token::Type::RBracket;
-            tokenValue = currentChar;
-            tokenFound = true;
-            break;
-        case '{':
-            tokenType = Token::Type::LBrace;
-            tokenValue = currentChar;
-            tokenFound = true;
-            break;
-        case '}':
-            tokenType = Token::Type::RBrace;
-            tokenValue = currentChar;
-            tokenFound = true;
-            break;
-        case '"':
-            tokenType = Token::Type::DoubleQuote;
-            tokenValue = currentChar;
-            tokenFound = true;
-            break;
-        case '\'':
-            tokenType = Token::Type::SingleQuote;
-            tokenValue = currentChar;
-            tokenFound = true;
-            break;
-        case ';':
-            tokenType = Token::Type::Semicolon;
-            tokenValue = currentChar;
-            tokenFound = true;
-            break;
-        case ',':
-            tokenType = Token::Type::Comma;
-            tokenValue = currentChar;
-            tokenFound = true;
-            break;
-        case '=':
-            tokenType = Token::Type::AssignmentOperator;
-            tokenValue = currentChar;
-            tokenFound = true;
-            break;
-        case '*':
-            tokenType = Token::Type::Asterisk;
-            tokenValue = currentChar;
-            tokenFound = true;
-            break;
-        case '/':
-            tokenType = Token::Type::Slash;
-            tokenValue = currentChar;
-            tokenFound = true;
-            break;
-        case '%':
-            tokenType = Token::Type::Modulo;
-            tokenValue = currentChar;
-            tokenFound = true;
-            break;
-        case '^':
-            tokenType = Token::Type::Caret;
-            tokenValue = currentChar;
-            tokenFound = true;
-            break;
+        switch (_currentState) {
+        case START:
+            if (currentChar == '\n') {
+                _lineNum++;
+            } else if (std::isspace(currentChar)) {
+                // Ignore whitespace
+            } else if (std::isalpha(currentChar)) {
+                tokenType = Token::Type::Identifier;
+                _currentState = IDENTIFIER;
+                tokenValue += currentChar;
+            } else if (std::isdigit(currentChar)) {
+                tokenType = Token::Type::Integer; // I think needs to be updated
+                                                  // cause a sign could come
+                                                  // before (so for ints)
+                _currentState = INTEGER;
+                tokenValue += currentChar;
+            } else {
+                // Handling for single char tokens (ops, punctuation, ect...)
+                switch (currentChar) {
+                case '(':
+                    tokenType = Token::Type::LParen;
+                    tokenValue = currentChar;
+                    tokenFound = true;
+                    break;
+                case ')':
+                    tokenType = Token::Type::RParen;
+                    tokenValue = currentChar;
+                    tokenFound = true;
+                    break;
+                case '[':
+                    tokenType = Token::Type::LBracket;
+                    tokenValue = currentChar;
+                    tokenFound = true;
+                    break;
+                case ']':
+                    tokenType = Token::Type::RBracket;
+                    tokenValue = currentChar;
+                    tokenFound = true;
+                    break;
+                case '{':
+                    tokenType = Token::Type::LBrace;
+                    tokenValue = currentChar;
+                    tokenFound = true;
+                    break;
+                case '}':
+                    tokenType = Token::Type::RBrace;
+                    tokenValue = currentChar;
+                    tokenFound = true;
+                    break;
+                case '"':
+                    tokenType = Token::Type::DoubleQuote;
+                    tokenValue = currentChar;
+                    tokenFound = true;
+                    _currentState = DQ_STRING;
+                    break;
+                case '\'':
+                    tokenType = Token::Type::SingleQuote;
+                    tokenValue = currentChar;
+                    tokenFound = true;
+                    _currentState = SQ_STRING;
+                    break;
+                case ';':
+                    tokenType = Token::Type::Semicolon;
+                    tokenValue = currentChar;
+                    tokenFound = true;
+                    break;
+                case ',':
+                    tokenType = Token::Type::Comma;
+                    tokenValue = currentChar;
+                    tokenFound = true;
+                    break;
+                case '=':
+                    tokenType = Token::Type::AssignmentOperator;
+                    tokenValue = currentChar;
+                    tokenFound = true;
+                    break;
+                case '*':
+                    tokenType = Token::Type::Asterisk;
+                    tokenValue = currentChar;
+                    tokenFound = true;
+                    break;
+                case '/':
+                    tokenType = Token::Type::Slash;
+                    tokenValue = currentChar;
+                    tokenFound = true;
+                    break;
+                case '%':
+                    tokenType = Token::Type::Modulo;
+                    tokenValue = currentChar;
+                    tokenFound = true;
+                    break;
+                case '^':
+                    tokenType = Token::Type::Caret;
+                    tokenValue = currentChar;
+                    tokenFound = true;
+                    break;
 
+                // Add cases for other single-character tokens here
+                default:
+                    tokenType = Token::Type::Unknown;
+                    tokenValue = currentChar;
+                    tokenFound = true;
+                    break;
+                }
+            }
+            break;
         case IDENTIFIER:
             if (std::isalnum(currentChar) || currentChar == '_') {
                 tokenValue += currentChar;
@@ -121,7 +150,6 @@ Token Tokenizer::getToken() {
                 --_currentPos; // Re-evaluate the character in the next state
             }
             break;
-
         case INTEGER:
             if (std::isdigit(
                     currentChar)) { // Keep appending as long as its a number
@@ -188,15 +216,7 @@ Token Tokenizer::getToken() {
             tokenValue = currentChar;
             tokenFound = true;
             break;
-
-            // Add cases for other single-character tokens here
-        default:
-            tokenType = Token::Type::Unknown;
-            tokenValue = currentChar;
-            tokenFound = true;
-            break;
         }
-
         ++_currentPos;
     }
 

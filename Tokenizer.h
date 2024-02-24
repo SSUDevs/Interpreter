@@ -10,7 +10,6 @@ class Tokenizer {
     enum State {
         START,
         IDENTIFIER,
-        NUMBER,
         INTEGER,
         DQ_STRING,
         DQ_END,
