@@ -130,6 +130,32 @@ Token Tokenizer::getToken() {
                     tokenValue = currentChar;
                     tokenFound = true;
                     break;
+                case '+':
+                    // check if last token was an op
+                    if (isOperator(_tokens.back()) || _tokens.back().value() == "(") {
+                        // make char part of int
+                        tokenType = Token::Type::Integer;
+                        tokenValue += currentChar;
+                    }
+                    else {
+                        tokenType = Token::Type::Plus;
+                        tokenValue = currentChar;
+                        tokenFound = true;
+                    }
+                    break;
+                case '-':
+                    // check if last token was an op
+                    if (isOperator(_tokens.back()) || _tokens.back().value() == "(") {
+                        // make char part of int
+                        tokenType = Token::Type::Integer;
+                        tokenValue += currentChar;
+                    }
+                    else {
+                        tokenType = Token::Type::Minus;
+                        tokenValue = currentChar;
+                        tokenFound = true;
+                    }
+                    break;
 
                 // Add cases for other single-character tokens here
                 default:
