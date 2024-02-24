@@ -29,6 +29,9 @@ class fileAsArray {
     // Returns the index following the Division Op. and if it was div.
     std::pair<bool, int> isDivision(int index);
 
+    // Returns the index following the Division Op. and if it was div.
+    std::pair<bool, int> isMultiplication(int index);
+
     // Method to get a reference to the vector in the main
     const std::vector<char> &getFileContent() const { return file; }
 
