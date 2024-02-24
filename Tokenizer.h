@@ -1,4 +1,3 @@
-// Tokenizer.h corrections
 #ifndef INTERPRETER_TOKENIZER_H
 #define INTERPRETER_TOKENIZER_H
 
@@ -29,5 +28,3 @@ class Tokenizer {
 
         Token getToken();
 };
-
-#endif // INTERPRETER_TOKENIZER_H
