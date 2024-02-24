@@ -2,17 +2,16 @@
 #include <iostream>
 #include <sstream>
 
-Tokenizer::Tokenizer(const std::vector<char>& file) : _file(file), _size(file.size()) 
-{
-}
-
+Tokenizer::Tokenizer(const std::vector<char> &file)
+    : _file(file), _size(file.size()) {}
 
 void Tokenizer::tokenizeVector() {
     _currentPos = 0;
-    _currentState = START; 
+    _currentState = START;
     while (_currentPos < _size) {
         Token token = getToken(); // Gonna get the next token
-        if (token.type() != Token::Type::Unknown) { // Skiping unknown tokens for now
+        if (token.type() !=
+            Token::Type::Unknown) { // Skiping unknown tokens for now
             _tokens.push_back(token);
         }
     }
@@ -125,24 +124,26 @@ Token Tokenizer::getToken() {
                     }
                 }
                 break;
-            case IDENTIFIER:
-                if (std::isalnum(currentChar) || currentChar == '_') {
-                    tokenValue += currentChar;
-                } else {
-                    _currentState = START; // End of identifier (Which is just a string realle)
-                    tokenFound = true;
-                    --_currentPos; // Re-evaluate the character in the next state
-                }
-                break;
-            case NUMBER:
-                if (std::isdigit(currentChar)) { // Keep appending as long as its a number
-                    tokenValue += currentChar;
-                } else {
-                    _currentState = START; // Ending number
-                    tokenFound = true;
-                    --_currentPos; // Re-evaluate this character in the next state
-                }
-                break;
+        case IDENTIFIER:
+            if (std::isalnum(currentChar) || currentChar == '_') {
+                tokenValue += currentChar;
+            } else {
+                _currentState =
+                    START; // End of identifier (Which is just a string realle)
+                tokenFound = true;
+                --_currentPos; // Re-evaluate the character in the next state
+            }
+            break;
+        case NUMBER:
+            if (std::isdigit(
+                    currentChar)) { // Keep appending as long as its a number
+                tokenValue += currentChar;
+            } else {
+                _currentState = START; // Ending number
+                tokenFound = true;
+                --_currentPos; // Re-evaluate this character in the next state
+            }
+            break;
 
             // Handle STRING state as well as others
         }
@@ -157,6 +158,4 @@ Token Tokenizer::getToken() {
 }
 
 // Method to return the tokens vector
-std::vector<Token> Tokenizer::getTokens() const {
-    return _tokens;
-}
+std::vector<Token> Tokenizer::getTokens() const { return _tokens; }
