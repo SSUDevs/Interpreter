@@ -88,5 +88,5 @@ void Token::print() const
 {
     std::cout << "Token type: " << typeToString(_type) << std::endl;
     std::cout << "Token:      " << _value << std::endl
-              << std::endl; // Added a line break for spacing
+        << std::endl; // Added a line break for spacing
 }

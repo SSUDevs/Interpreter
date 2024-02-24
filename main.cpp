@@ -1,9 +1,9 @@
-/* 
+/*
  * Assignment: CS460 Interpreter
  * Authors: Evan Walters, Luis carmona, Ben Harris, Hanpei Zhang
  * Date: 2/8/24
  * Description:
- * 
+ *
  */
 
 #include <iostream>
@@ -14,7 +14,7 @@
 
 using namespace std;
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
     if (argc < 2) {
         cerr << "Usage: " << argv[0] << " <filename>" << endl;
         return 1;
@@ -25,7 +25,8 @@ int main(int argc, char *argv[]) {
 
     try {
         fileArray.File_w_no_comments();
-    } catch (const std::exception& error) {
+    }
+    catch (const std::exception& error) {
         cerr << "Exception caught: " << error.what() << endl;
         return 1; // Exit if there's an error
     }
