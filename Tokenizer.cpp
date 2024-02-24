@@ -50,6 +50,72 @@ Token Tokenizer::getToken() {
                             tokenValue = currentChar;
                             tokenFound = true;
                             break;
+                        case '[':
+                            tokenType = Token::Type::LBracket;
+                            tokenValue = currentChar;
+                            tokenFound =true;
+                            break;
+                        case ']':
+                            tokenType = Token::Type::RBracket;
+                            tokenValue = currentChar;
+                            tokenFound =true;
+                            break;
+                        case '{':
+                            tokenType = Token::Type::LBrace;
+                            tokenValue = currentChar;
+                            tokenFound =true;
+                            break;
+                        case '}':
+                            tokenType = Token::Type::RBrace;
+                            tokenValue = currentChar;
+                            tokenFound =true;
+                            break;
+                        case '"':
+                            tokenType = Token::Type::DoubleQuote;
+                            tokenValue = currentChar;
+                            tokenFound =true;
+                            break;
+                        case '\'':
+                            tokenType = Token::Type::SingleQuote;
+                            tokenValue = currentChar;
+                            tokenFound =true;
+                            break;
+                        case ';':
+                            tokenType = Token::Type::Semicolon;
+                            tokenValue = currentChar;
+                            tokenFound =true;
+                            break;
+                        case ',':
+                            tokenType = Token::Type::Comma;
+                            tokenValue = currentChar;
+                            tokenFound =true;
+                            break;
+                        case '=':
+                            tokenType = Token::Type::AssignmentOperator;
+                            tokenValue = currentChar;
+                            tokenFound =true;
+                            break;
+                        case '*':
+                            tokenType = Token::Type::Asterisk;
+                            tokenValue = currentChar;
+                            tokenFound =true;
+                            break;
+                        case '/':
+                            tokenType = Token::Type::Slash;
+                            tokenValue = currentChar;
+                            tokenFound =true;
+                            break;
+                        case '%':
+                            tokenType = Token::Type::Modulo;
+                            tokenValue = currentChar;
+                            tokenFound =true;
+                            break;
+                        case '^':
+                            tokenType = Token::Type::Caret;
+                            tokenValue = currentChar;
+                            tokenFound =true;
+                            break;
+
                         // Add cases for other single-character tokens here
                         default:
                             tokenType = Token::Type::Unknown;
