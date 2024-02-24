@@ -10,7 +10,7 @@ bool Tokenizer::isOperator(Token t) {
     std::string value = t.value();
 
     if (value == "+" || value == "-" || value == "*" || value == "/" ||
-        value == "%" || value == "^")
+        value == "%" || value == "^"  || value == "=")
         return true;
     return false;
 }
@@ -131,27 +131,19 @@ Token Tokenizer::getToken() {
                     tokenFound = true;
                     break;
                 case '+':
-                    // check if last token was an op
-                    if (isOperator(_tokens.back()) || _tokens.back().value() == "(") {
-                        // make char part of int
-                        tokenType = Token::Type::Integer;
-                        tokenValue += currentChar;
-                    }
-                    else {
-                        tokenType = Token::Type::Plus;
-                        tokenValue = currentChar;
-                        tokenFound = true;
-                    }
-                    break;
                 case '-':
                     // check if last token was an op
-                    if (isOperator(_tokens.back()) || _tokens.back().value() == "(") {
-                        // make char part of int
+                    if (isOperator(_tokens.back()) ||
+                        _tokens.back().value() == "(") {
+                        // Treat as part of an integer if appropriate
                         tokenType = Token::Type::Integer;
                         tokenValue += currentChar;
-                    }
-                    else {
-                        tokenType = Token::Type::Minus;
+                        _currentState = INTEGER; // Continue to INTEGER state to
+                                                 // allow for digits to follow
+                    } else {
+                        // Use ternary op to choose sign
+                        tokenType = (currentChar == '+') ? Token::Type::Plus
+                                                         : Token::Type::Minus;
                         tokenValue = currentChar;
                         tokenFound = true;
                     }
