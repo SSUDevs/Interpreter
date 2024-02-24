@@ -6,15 +6,15 @@
  *
  */
 
+#include "Tokenizer.h"
+#include "fileAsArray.h"
+#include <fstream>
 #include <iostream>
 #include <string>
-#include <fstream>
-#include "fileAsArray.h"
-#include "Tokenizer.h"
 
 using namespace std;
 
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[]) {
     if (argc < 2) {
         cerr << "Usage: " << argv[0] << " <filename>" << endl;
         return 1;
@@ -25,8 +25,7 @@ int main(int argc, char* argv[]) {
 
     try {
         fileArray.File_w_no_comments();
-    }
-    catch (const std::exception& error) {
+    } catch (const std::exception &error) {
         cerr << "Exception caught: " << error.what() << endl;
         return 1; // Exit if there's an error
     }
@@ -37,9 +36,10 @@ int main(int argc, char* argv[]) {
     // Tokenize the vector
     tokenizer.tokenizeVector();
 
-    // Retrieve and print tokens (assuming you have methods to access and print token details)
+    // Retrieve and print tokens (assuming you have methods to access and print
+    // token details)
     vector<Token> tokens = tokenizer.getTokens();
-    for (const auto& token : tokens) {
+    for (const auto &token : tokens) {
         token.print();
     }
 

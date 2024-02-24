@@ -1,9 +1,7 @@
 #include "Token.h"
 
-std::string Token::typeToString(Type type)
-{
-    switch (type)
-    {
+std::string Token::typeToString(Type type) {
+    switch (type) {
     case Type::LParen:
         return "LEFT_PARENTHESIS";
     case Type::RParen:
@@ -84,9 +82,8 @@ std::string Token::typeToString(Type type)
 }
 
 // Print the token type and value in the specified format
-void Token::print() const
-{
+void Token::print() const {
     std::cout << "Token type: " << typeToString(_type) << std::endl;
     std::cout << "Token:      " << _value << std::endl
-        << std::endl; // Added a line break for spacing
+              << std::endl; // Added a line break for spacing
 }
