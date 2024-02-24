@@ -1,14 +1,15 @@
 #ifndef INTERPRETER_FILEASARRAY_H
 #define INTERPRETER_FILEASARRAY_H
 
-#include <fstream>
-#include <iostream>
 #include <string>
-#include <vector>
+#include<fstream>
+#include<vector>
+#include <iostream>
 
 /// Preliminary for removing comments and storing into vector of chars
 class fileAsArray {
-  public:
+public:
+
     // Using an Enum to represent the states of the finite state automaton
     enum State {
         START,                // Initial state (Also accepting state)
@@ -30,16 +31,18 @@ class fileAsArray {
     std::pair<bool, int> isDivision(int index);
 
     // Method to get a reference to the vector in the main
-    const std::vector<char> &getFileContent() const { return file; }
+    const std::vector<char>& getFileContent() const {
+        return file;
+    }
 
     void printVector();
 
-  private:
+private:
     std::vector<char> file;
-    int errorLineNumber; // Keeps track of line number during parsing when error
-                         // found
+    int errorLineNumber; // Keeps track of line number during parsing when error found
     std::ifstream inputStream;
     std::string inputFileName;
 };
 
-#endif // INTERPRETER_FILEASARRAY_H
+
+#endif //INTERPRETER_FILEASARRAY_H
