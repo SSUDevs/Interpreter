@@ -10,7 +10,7 @@ bool Tokenizer::isOperator(Token t) {
     std::string value = t.value();
 
     if (value == "+" || value == "-" || value == "*" || value == "/" ||
-        value == "%" || value == "^"  || value == "=")
+        value == "%" || value == "^" || value == "=")
         return true;
     return false;
 }
@@ -129,6 +129,64 @@ Token Tokenizer::getToken() {
                     tokenType = Token::Type::Caret;
                     tokenValue = currentChar;
                     tokenFound = true;
+                    break;
+                case '<':
+                    if (_currentPos + 1 < _size &&
+                        _file[_currentPos + 1] == '=') {
+                        tokenType = Token::Type::LtEqual;
+                        tokenValue = "<=";
+                        tokenFound = true;
+                        ++_currentPos;
+                    } else {
+                        tokenType = Token::Type::Lt;
+                        tokenValue = "<";
+                        tokenFound = true;
+                    }
+                    break;
+                case '>':
+                    if (_currentPos + 1 < _size &&
+                        _file[_currentPos + 1] == '=') {
+                        tokenType = Token::Type::GtEqual;
+                        tokenValue = ">=";
+                        tokenFound = true;
+                        ++_currentPos;
+                    } else {
+                        tokenType = Token::Type::Gt;
+                        tokenValue = ">";
+                        tokenFound = true;
+                    }
+                    break;
+                case '&':
+                    if (_currentPos + 1 < _size &&
+                        _file[_currentPos + 1] == '&') {
+                        tokenType = Token::Type::BooleanAnd;
+                        tokenValue = "&&";
+                        tokenFound = true;
+                        ++_currentPos;
+                    }
+                    break;
+
+                case '|':
+                    if (_currentPos + 1 < _size &&
+                        _file[_currentPos + 1] == '|') {
+                        tokenType = Token::Type::BooleanOr;
+                        tokenValue = "||";
+                        tokenFound = true;
+                        ++_currentPos;
+                    }
+                    break;
+                case '!':
+                    if (_currentPos + 1 < _size &&
+                        _file[_currentPos + 1] == '=') {
+                        tokenType = Token::Type::BooleanNotEqual;
+                        tokenValue = "!=";
+                        tokenFound = true;
+                        ++_currentPos;
+                    } else {
+                        tokenType = Token::Type::BooleanNot;
+                        tokenValue = "!";
+                        tokenFound = true;
+                    }
                     break;
                 case '+':
                 case '-':
