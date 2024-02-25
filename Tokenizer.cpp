@@ -105,11 +105,6 @@ Token Tokenizer::getToken() {
                     tokenValue = currentChar;
                     tokenFound = true;
                     break;
-                case '=':
-                    tokenType = Token::Type::AssignmentOperator;
-                    tokenValue = currentChar;
-                    tokenFound = true;
-                    break;
                 case '*':
                     tokenType = Token::Type::Asterisk;
                     tokenValue = currentChar;
@@ -185,6 +180,19 @@ Token Tokenizer::getToken() {
                     } else {
                         tokenType = Token::Type::BooleanNot;
                         tokenValue = "!";
+                        tokenFound = true;
+                    }
+                    break;
+                case '=':
+                    if (_currentPos + 1 < _size && 
+                        _file[_currentPos + 1] == '=') {
+                        tokenType = Token::Type::BooleanEqual
+                        tokenValue = "==";
+                        tokenFound = true;
+                        ++_currentPos;
+                    } else {
+                        tokenType = Token::Type::AssignmentOperator;
+                        tokenValue = "=";
                         tokenFound = true;
                     }
                     break;
