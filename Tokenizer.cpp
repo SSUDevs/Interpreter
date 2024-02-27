@@ -284,7 +284,7 @@ Token Tokenizer::getToken() {
                 tokenValue += currentChar;
             } else {
                 _currentState =
-                    DQ_END; // so next token can be read as end of string.
+                    SQ_END; // so next token can be read as end of string.
                 tokenType =
                     Token::Type::String; // can combine to token:
                                          // 'SINGLE_QUOTED_STRING' but
@@ -299,6 +299,7 @@ Token Tokenizer::getToken() {
             if (currentChar != '\'') {
                 std::cerr << "Syntax error on line " << _lineNum
                           << ": incomplete quote\n";
+                std::cout << "here: " << currentChar << std::endl;
                 exit(1);
             }
 
