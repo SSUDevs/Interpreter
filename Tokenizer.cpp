@@ -186,7 +186,7 @@ Token Tokenizer::getToken() {
                 case '=':
                     if (_currentPos + 1 < _size && 
                         _file[_currentPos + 1] == '=') {
-                        tokenType = Token::Type::BooleanEqual
+                        tokenType = Token::Type::BooleanEqual;
                         tokenValue = "==";
                         tokenFound = true;
                         ++_currentPos;
@@ -235,8 +235,15 @@ Token Tokenizer::getToken() {
             }
             break;
         case INTEGER:
-            if (std::isdigit(
-                    currentChar)) { // Keep appending as long as its a number
+
+            // in case integer starts signed (pos/neg) and the current char is not a digit
+            if ((tokenValue.back() == '+' || tokenValue.back() == '-') && !isdigit(currentChar)) {
+                std::cerr << "Syntax error on line " << _lineNum
+                    << ": invalid signed integer\n";
+                exit(1);
+            }
+
+            if (std::isdigit(currentChar)) { // Keep appending as long as its a number
                 tokenValue += currentChar;
             } else {
                 _currentState = START; // Ending number
