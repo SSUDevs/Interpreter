@@ -15,6 +15,14 @@ bool Tokenizer::isOperator(Token t) {
     return false;
 }
 
+bool Tokenizer::isOperator(char value) {
+
+    if (value == '+' || value == '-' || value == '*' || value == '/' ||
+        value == '%' || value == '^' || value == '=')
+        return true;
+    return false;
+}
+
 void Tokenizer::tokenizeVector() {
     _currentPos = 0;
     _currentState = START;
@@ -184,7 +192,7 @@ Token Tokenizer::getToken() {
                     }
                     break;
                 case '=':
-                    if (_currentPos + 1 < _size && 
+                    if (_currentPos + 1 < _size &&
                         _file[_currentPos + 1] == '=') {
                         tokenType = Token::Type::BooleanEqual;
                         tokenValue = "==";
@@ -236,16 +244,24 @@ Token Tokenizer::getToken() {
             break;
         case INTEGER:
 
-            // in case integer starts signed (pos/neg) and the current char is not a digit
-            if ((tokenValue.back() == '+' || tokenValue.back() == '-') && !isdigit(currentChar)) {
+            // in case integer starts signed (pos/neg) and the current char is
+            // not a digit
+            if ((tokenValue.back() == '+' || tokenValue.back() == '-') &&
+                !isdigit(currentChar)) {
                 std::cerr << "Syntax error on line " << _lineNum
-                    << ": invalid signed integer\n";
+                          << ": invalid signed integer\n";
                 exit(1);
             }
 
-            if (std::isdigit(currentChar)) { // Keep appending as long as its a number
+            if (std::isdigit(
+                    currentChar)) { // Keep appending as long as its a number
                 tokenValue += currentChar;
-            } else {
+            } else if (!(isOperator(currentChar) || isspace(currentChar)) || isalpha(currentChar)) {
+                std::cerr << "Syntax error on line " << _lineNum
+                          << ": invalid Integer\n";
+                exit(1);
+            }
+            else {
                 _currentState = START; // Ending number
                 tokenFound = true;
                 --_currentPos; // Re-evaluate this character in the next state

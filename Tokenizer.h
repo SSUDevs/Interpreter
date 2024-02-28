@@ -20,6 +20,8 @@ class Tokenizer {
     explicit Tokenizer(const std::vector<char> &file); // Pass by const ref
 
     bool isOperator(Token t);
+    bool isOperator(char t);
+
     void tokenizeVector();
     std::vector<Token> getTokens() const;
 
