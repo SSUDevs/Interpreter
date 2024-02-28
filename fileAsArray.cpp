@@ -173,13 +173,7 @@ void fileAsArray::File_w_no_comments() {
             if (file[i] == '"') {
                 state = START; // Move back to the START state after finding end
                                // quote
-            } else if (file[i] == '\n') {
-                //////// Report error if single quote found but not ended by
-                /// end-line///////
-                throw std::runtime_error("ERROR: Program contains C-style, "
-                                         "incomplete double quote on line " +
-                                         std::to_string(errorLineNumber));
-            }
+            } 
             break;
         }
     }

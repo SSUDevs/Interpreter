@@ -41,6 +41,7 @@ Token Tokenizer::getToken() {
     bool tokenFound = false;
 
     while (_currentPos < _size && !tokenFound) {
+
         char currentChar = _file[_currentPos];
         switch (_currentState) {
         case START:
@@ -256,7 +257,7 @@ Token Tokenizer::getToken() {
             if (std::isdigit(
                     currentChar)) { // Keep appending as long as its a number
                 tokenValue += currentChar;
-            } else if (!(isOperator(currentChar) || isspace(currentChar)) || isalpha(currentChar)) {
+            } else if (!(isOperator(currentChar) || isspace(currentChar) || currentChar == ';') || isalpha(currentChar)) {
                 std::cerr << "Syntax error on line " << _lineNum
                           << ": invalid Integer\n";
                 exit(1);
