@@ -1,0 +1,1 @@
+Syntax error on line 6: array declaration size must be a positive integer.

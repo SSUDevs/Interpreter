@@ -1,0 +1,1 @@
+Syntax error on line 6: reserved word "void" cannot be used for the name of a variable.
