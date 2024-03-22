@@ -16,11 +16,13 @@ public:
     NodePtr leftChild;             
     NodePtr rightChild;          
 
+
     // Constructor
     Node(const std::string& val);
 
     // Used to add a child to node
     void addChild(const NodePtr& child);
 };
+
 
 #endif // NODE_H
