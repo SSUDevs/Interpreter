@@ -1,4 +1,3 @@
-// Tokenizer.h corrections
 #ifndef INTERPRETER_TOKENIZER_H
 #define INTERPRETER_TOKENIZER_H
 
@@ -11,11 +10,17 @@ class Tokenizer {
     enum State {
         START,
         IDENTIFIER,
-        NUMBER
-        // STRING not yet implemented
+        INTEGER,
+        DQ_STRING,
+        DQ_END,
+        SQ_STRING,
+        SQ_END
     };
 
     explicit Tokenizer(const std::vector<char> &file); // Pass by const ref
+
+    bool isOperator(Token t);
+    bool isOperator(char t);
 
     void tokenizeVector();
     std::vector<Token> getTokens() const;
@@ -25,6 +30,7 @@ class Tokenizer {
     std::vector<Token> _tokens;
     size_t _currentPos = 0; // index as we tokenize
     size_t _size;           // To store the size of vector passed in
+    size_t _lineNum = 1;    // for error output
     State _currentState = START;
 
     Token getToken();

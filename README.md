@@ -32,13 +32,13 @@ This initial step aims to prepare the source code for further processing by remo
 - `main.cpp`: Initiates the comment removal process.
 - `fileAsArray.h` and `fileAsArray.cpp`: Implements the `fileAsArray` class for reading and processing the file according to DFA rules.
 
-### 🚧 Tokenizing (In Progress)
+### ✅ Tokenizing 
 
 The tokenizing stage is designed to convert the cleaned source code into a series of tokens. These tokens are used by the parser to understand the code's structure and semantics.
 
 - **Current Status**: Implementation underway. This step involves using a DFA to identify tokens accurately.
 
-### 🔲 Recursive Decent Parser
+### 🚧 Recursive Decent Parser (In Progress)
 
 *Not yet implemented.*
 

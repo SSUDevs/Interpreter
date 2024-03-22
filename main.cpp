@@ -6,6 +6,7 @@
  *
  */
 
+#include "Parser.h" 
 #include "Tokenizer.h"
 #include "fileAsArray.h"
 #include <fstream>
@@ -36,10 +37,18 @@ int main(int argc, char *argv[]) {
     // Tokenize the vector
     tokenizer.tokenizeVector();
 
+    // Retrieve and print tokens 
     vector<Token> tokens = tokenizer.getTokens();
     for (const auto &token : tokens) {
         token.print();
     }
+
+    // Use the Parser to parse the tokenized input
+    Parser parser(tokens);
+    auto cstRoot = parser.parse(); // Root of the Concrete Syntax Tree
+
+    // Still need a method to print or inspect CST
+    // printCST(cstRoot);
 
     return 0;
 }

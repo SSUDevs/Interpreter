@@ -13,8 +13,9 @@ using NodePtr = std::shared_ptr<Node>; // shared_ptr used to help with automatic
 class Node {
 public:
     std::string value;             // Value of the node (could be a token or a non-terminal)
-    NodePtr leftChild;
-    NodePtr rightChild;
+    NodePtr leftChild;             
+    NodePtr rightChild;          
+
 
     // Constructor
     Node(const std::string& val);
@@ -22,5 +23,6 @@ public:
     // Used to add a child to node
     void addChild(const NodePtr& child);
 };
+
 
 #endif // NODE_H

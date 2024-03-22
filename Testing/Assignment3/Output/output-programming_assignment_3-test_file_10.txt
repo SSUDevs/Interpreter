@@ -1,0 +1,1 @@
+Syntax error on line 12: reserved word "printf" cannot be used for the name of a function.

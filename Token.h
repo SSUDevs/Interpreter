@@ -56,6 +56,7 @@ class Token {
 
     // Accessors functions
     Type type() const { return _type; }
+    std::string value() const { return _value; }
 
     // Function to convert Type to a readable string
     static std::string typeToString(Type type);

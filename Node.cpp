@@ -15,4 +15,4 @@ void Node::addChild(const NodePtr& child) {
         }
         current->rightChild = child; // Add the new child as the rightmost sibling
     }
-}
+
