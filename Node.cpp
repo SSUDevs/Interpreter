@@ -1,33 +1,18 @@
-//
-// Created by Luis carmona on 3/19/24.
-//
-
 #include "Node.h"
+#include <iostream>
 
-#include <utility>
+// Constructor 
+Node::Node(const std::string& val) : value(val), leftChild(nullptr), rightChild(nullptr) {}
 
-Node::Node(Token  token):_token(std::move(token)) {
-
-    _left= nullptr;
-    _right = nullptr;
-
+// Function to add a child node in the Left-Child Right-Sibling Tree
+void Node::addChild(const NodePtr& child) {
+    if (!leftChild) {
+        leftChild = child; // If there's no child then make this node the left child
+    } else {
+        NodePtr current = leftChild;
+        while (current->rightChild) { // Find the rightmost sibling
+            current = current->rightChild;
+        }
+        current->rightChild = child; // Add the new child as the rightmost sibling
+    }
 }
-
-Token &Node::AToken() {
-    return _token;
-}
-
-Node &Node::Right() {
-    return *_right;
-}
-
-Node &Node::left() {
-    return *_left;
-}
-
-Node::~Node() {
-
-delete _left;
-delete _right;
-}
-

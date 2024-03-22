@@ -10,9 +10,10 @@ add_executable(Interpreter main.cpp
         Tokenizer.h
         fileAsArray.h
         fileAsArray.cpp
-        OutputGenerator.cpp
-        OutputGenerator.h
         Node.cpp
         Node.h
         ConcreteSyntaxTree.cpp
-        ConcreteSyntaxTree.h)
+        ConcreteSyntaxTree.h
+        OutPutGenerator.cpp
+        OutPutGenerator.h
+        OutPutGenerator.cpp)

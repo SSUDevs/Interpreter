@@ -1,26 +1,26 @@
-//
-// Created by Luis carmona on 3/19/24.
-//
+#ifndef NODE_H
+#define NODE_H
 
-#ifndef ASSIGNMENT1_460_NODE_H
-#define ASSIGNMENT1_460_NODE_H
-#include "Token.h"
+#include <memory> // Used for shared_ptr
+#include <string>
 
-using namespace std;
+// Forward declaration to resolve circular references
+class Node;
+
+// Alias for shared_ptr to Node for convenience
+using NodePtr = std::shared_ptr<Node>; // shared_ptr used to help with automatic memory cleanup 
+
 class Node {
 public:
+    std::string value;             // Value of the node (could be a token or a non-terminal)
+    NodePtr leftChild;
+    NodePtr rightChild;
 
-Node(Token );
-~Node();
-Token &AToken();
-Node &Right();
-Node &left();
+    // Constructor
+    Node(const std::string& val);
 
-private:
-    Token _token;
-    Node *_left;
-    Node *_right;
+    // Used to add a child to node
+    void addChild(const NodePtr& child);
 };
 
-
-#endif //ASSIGNMENT1_460_NODE_H
+#endif // NODE_H
