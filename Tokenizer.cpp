@@ -2,7 +2,7 @@
 #include <iostream>
 #include <sstream>
 
-Tokenizer::Tokenizer(const std::vector<char> &file)
+Tokenizer::Tokenizer(const std::vector<char>& file)
     : _file(file), _size(file.size()) {}
 
 bool Tokenizer::isOperator(Token t) {
@@ -38,6 +38,7 @@ void Tokenizer::tokenizeVector() {
 Token Tokenizer::getToken() {
     std::string tokenValue;
     Token::Type tokenType = Token::Type::Unknown;
+    size_t tokenLineNum = _lineNum;
     bool tokenFound = false;
 
     while (_currentPos < _size && !tokenFound) {
@@ -46,20 +47,24 @@ Token Tokenizer::getToken() {
         switch (_currentState) {
         case START:
             if (currentChar == '\n') {
-                _lineNum++;
-            } else if (std::isspace(currentChar)) {
+                tokenLineNum++;
+            }
+            else if (std::isspace(currentChar)) {
                 // Ignore whitespace
-            } else if (std::isalpha(currentChar)) {
+            }
+            else if (std::isalpha(currentChar)) {
                 tokenType = Token::Type::Identifier;
                 _currentState = IDENTIFIER;
                 tokenValue += currentChar;
-            } else if (std::isdigit(currentChar)) {
+            }
+            else if (std::isdigit(currentChar)) {
                 tokenType = Token::Type::Integer; // I think needs to be updated
-                                                  // cause a sign could come
-                                                  // before (so for ints)
+                // cause a sign could come
+                // before (so for ints)
                 _currentState = INTEGER;
                 tokenValue += currentChar;
-            } else {
+            }
+            else {
                 // Handling for single char tokens (ops, punctuation, ect...)
                 switch (currentChar) {
                 case '(':
@@ -141,7 +146,8 @@ Token Tokenizer::getToken() {
                         tokenValue = "<=";
                         tokenFound = true;
                         ++_currentPos;
-                    } else {
+                    }
+                    else {
                         tokenType = Token::Type::Lt;
                         tokenValue = "<";
                         tokenFound = true;
@@ -154,7 +160,8 @@ Token Tokenizer::getToken() {
                         tokenValue = ">=";
                         tokenFound = true;
                         ++_currentPos;
-                    } else {
+                    }
+                    else {
                         tokenType = Token::Type::Gt;
                         tokenValue = ">";
                         tokenFound = true;
@@ -186,7 +193,8 @@ Token Tokenizer::getToken() {
                         tokenValue = "!=";
                         tokenFound = true;
                         ++_currentPos;
-                    } else {
+                    }
+                    else {
                         tokenType = Token::Type::BooleanNot;
                         tokenValue = "!";
                         tokenFound = true;
@@ -199,7 +207,8 @@ Token Tokenizer::getToken() {
                         tokenValue = "==";
                         tokenFound = true;
                         ++_currentPos;
-                    } else {
+                    }
+                    else {
                         tokenType = Token::Type::AssignmentOperator;
                         tokenValue = "=";
                         tokenFound = true;
@@ -214,17 +223,18 @@ Token Tokenizer::getToken() {
                         tokenType = Token::Type::Integer;
                         tokenValue += currentChar;
                         _currentState = INTEGER; // Continue to INTEGER state to
-                                                 // allow for digits to follow
-                    } else {
+                        // allow for digits to follow
+                    }
+                    else {
                         // Use ternary op to choose sign
                         tokenType = (currentChar == '+') ? Token::Type::Plus
-                                                         : Token::Type::Minus;
+                            : Token::Type::Minus;
                         tokenValue = currentChar;
                         tokenFound = true;
                     }
                     break;
 
-                // Add cases for other single-character tokens here
+                    // Add cases for other single-character tokens here
                 default:
                     tokenType = Token::Type::Unknown;
                     tokenValue = currentChar;
@@ -236,7 +246,8 @@ Token Tokenizer::getToken() {
         case IDENTIFIER:
             if (std::isalnum(currentChar) || currentChar == '_') {
                 tokenValue += currentChar;
-            } else {
+            }
+            else {
                 _currentState =
                     START; // End of identifier (Which is just a string realle)
                 tokenFound = true;
@@ -250,16 +261,17 @@ Token Tokenizer::getToken() {
             if ((tokenValue.back() == '+' || tokenValue.back() == '-') &&
                 !isdigit(currentChar)) {
                 std::cerr << "Syntax error on line " << _lineNum
-                          << ": invalid signed integer\n";
+                    << ": invalid signed integer\n";
                 exit(1);
             }
 
             if (std::isdigit(
-                    currentChar)) { // Keep appending as long as its a number
+                currentChar)) { // Keep appending as long as its a number
                 tokenValue += currentChar;
-            } else if (!(isOperator(currentChar) || isspace(currentChar) || currentChar == ';') || isalpha(currentChar)) {
+            }
+            else if (!(isOperator(currentChar) || isspace(currentChar) || currentChar == ';' || currentChar == ')') || isalpha(currentChar)) {
                 std::cerr << "Syntax error on line " << _lineNum
-                          << ": invalid Integer\n";
+                    << ": invalid Integer\n";
                 exit(1);
             }
             else {
@@ -271,13 +283,14 @@ Token Tokenizer::getToken() {
         case DQ_STRING:
             if (currentChar != '"') {
                 tokenValue += currentChar;
-            } else {
+            }
+            else {
                 _currentState =
                     DQ_END; // so next token can be read as end of string.
                 tokenType =
                     Token::Type::String; // can combine to token:
-                                         // 'DOUBLE_QUOTED_STRING' but
-                                         // assignment just labels strings
+                // 'DOUBLE_QUOTED_STRING' but
+                // assignment just labels strings
                 tokenFound = true;
                 --_currentPos; // Re-evaluate this character in the next state
             }
@@ -286,7 +299,7 @@ Token Tokenizer::getToken() {
             // Error for not finishing quote
             if (currentChar != '"') {
                 std::cerr << "Syntax error on line " << _lineNum
-                          << ": incomplete quote\n";
+                    << ": incomplete quote\n";
                 exit(1);
             }
 
@@ -299,13 +312,14 @@ Token Tokenizer::getToken() {
         case SQ_STRING:
             if (currentChar != '\'') {
                 tokenValue += currentChar;
-            } else {
+            }
+            else {
                 _currentState =
                     SQ_END; // so next token can be read as end of string.
                 tokenType =
                     Token::Type::String; // can combine to token:
-                                         // 'SINGLE_QUOTED_STRING' but
-                                         // assignment just labels strings
+                // 'SINGLE_QUOTED_STRING' but
+                // assignment just labels strings
                 tokenFound = true;
                 --_currentPos; // Re-evaluate this character in the next state
             }
@@ -315,7 +329,7 @@ Token Tokenizer::getToken() {
             // Error for not finishing quote
             if (currentChar != '\'') {
                 std::cerr << "Syntax error on line " << _lineNum
-                          << ": incomplete quote\n";
+                    << ": incomplete quote\n";
                 std::cout << "here: " << currentChar << std::endl;
                 exit(1);
             }
@@ -330,10 +344,11 @@ Token Tokenizer::getToken() {
     }
 
     if (tokenFound || !tokenValue.empty()) {
-        return Token(tokenType, tokenValue);
+        _lineNum = tokenLineNum;
+        return Token(tokenType, tokenValue, tokenLineNum);
     }
 
-    return Token(Token::Type::Unknown, "");
+    return Token(Token::Type::Unknown, "", -1);
 }
 
 // Method to return the tokens vector

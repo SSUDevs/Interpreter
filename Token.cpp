@@ -84,6 +84,7 @@ std::string Token::typeToString(Type type) {
 // Print the token type and value in the specified format
 void Token::print() const {
     std::cout << "Token type: " << typeToString(_type) << std::endl;
-    std::cout << "Token:      " << _value << std::endl
+    std::cout << "Token:      " << _value << std::endl;
+    std::cout << "Line: " << _lineNum << std::endl
               << std::endl; // Added a line break for spacing
 }
