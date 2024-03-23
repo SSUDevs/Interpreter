@@ -85,7 +85,7 @@ void fileAsArray::File_w_no_comments() {
                 } else {
                     // Handle as previously, including potential error reporting
                     throw std::runtime_error("ERROR: Program contains C-style, "
-                                             "Block comment not started " +
+                                             "Block comment not started on line " +
                                              std::to_string(lineNumber));
                 }
             } 
@@ -184,10 +184,10 @@ void fileAsArray::File_w_no_comments() {
 std::pair<bool, int> fileAsArray::isMultiplication(int index) {
     size_t length = file.size();
     index++;                                         // Move past the asterisk
-    while (index < length && isspace(file[index])) { // Skip the whitespac
+    while (index < length && isspace(file[index])) { // Skip the whitespace
         index++;
     }
-    if (index < length && isdigit(file[index])) { // If next is digit
+    if (index < length && (isdigit(file[index]) || isalpha(file[index]) || file[index] == '(')) { // If next is digit or opening parenth
         return std::make_pair(true, index + 1); // Return true, and must be mult
     }
     return std::make_pair(false, index); // Not a mult thus error
@@ -204,7 +204,7 @@ std::pair<bool, int> fileAsArray::isDivision(int index) {
         if (isspace(file[index])) {
             continue;
         }
-        if (isdigit(file[index])) {             // check if next is a number
+        if (isdigit(file[index]) || file[index] == '(' || isalpha(file[index])) {             // check if next is a number or open parenthesis
             return std::make_pair(true, index); // Return true if Division Op.
         } else
             return std::make_pair(false, index);
