@@ -9,17 +9,23 @@ Parser::Parser(const std::vector<Token>& tokens) : tokens(tokens) {}
 NodePtr Parser::parse() {
 
     while (current < tokens.size()) {
-        if (tokens[current].type() == Token::Type::Identifier) {
-            string tokenValue = tokens[current].value();
 
-            if (isDataType(tokenValue))
-                addToCST(parseDeclaration(), LeftChild);
-            else if (tokenValue == "procedure")
-                addToCST(parseProcedure(), LeftChild);
-            else if (tokenValue == "function")
-                addToCST(pasrseFunction(), LeftChild);
+        Token t = getToken();
+
+        if (t.type() == Token::Type::Identifier) {
+            string tokenValue = t.value();
+
+            if (isDataType(tokenValue)) {
+                parseDeclaration();
+            }   
+            else if (tokenValue == "procedure") {
+                parseProcedure();
+            }  
+            else if (tokenValue == "function") {
+                pasrseFunction();
+            }
             else { // error, global scope can only contain global variable declarations, procedures, and functions
-                cerr << "Invalid syntax in global scope at line " << tokens[current].lineNum() << endl;
+                cerr << "Invalid syntax in global scope at line " << t.lineNum() << endl;
                 exit(1);
             }
         }
@@ -49,46 +55,82 @@ void Parser::addToCST(NodePtr node, InsertionMode mode) {
     lastNode = node;
 }
 
-bool Parser::match(Token::Type type) {
-    if (current < tokens.size() && tokens[current].type() == type) {
-        ++current;
+NodePtr Parser::createNodePtr(const Token& token) {
+    // Create a Node object with the provided Token
+    NodePtr nodePtr = std::make_shared<Node>(token);
+    return nodePtr;
+}
+
+bool Parser::match(Token::Type type, Token t) {
+    if (t.type() == type) {
         return true;
     }
     return false;
 }
 
-NodePtr Parser::parseDeclaration() {
-    return nullptr;
+void Parser::parseDeclaration() {
+
+    Token currToken = tokens[current];
+
+    if (match(Token::Type::Identifier, currToken)) {
+        addToCST(createNodePtr(currToken), LeftChild);  // add data type id to CST
+
+        currToken = getToken();
+        if (isReserved(currToken.value())) {    // ERROR reserved name
+            cerr << "Syntax error on line " << currToken.lineNum() << ": reserved word \""
+                << currToken.value() << "\" cannot be used for a variable name." << endl;
+            exit(1);
+        }
+        addToCST(createNodePtr(currToken), RightSibling);   // add name id to CST
+
+        currToken = getToken();
+        if (!match(Token::Type::Semicolon, currToken)) {    // ERROR no semicolon
+            cerr << "Syntax error on line " << currToken.lineNum() << ": missing ';'." << endl;
+            exit(1);
+        }
+        addToCST(createNodePtr(currToken), RightSibling);   // add ; to CST
+    }
+    else {  // ERROR invalid declaration type
+        cerr << "Syntax error on line " << currToken.lineNum() << ": not a vlaid type" << endl;
+        exit(1);
+    }
+
 }
 
-NodePtr Parser::parseProcedure() {
+void Parser::parseProcedure() {
 
-    return nullptr;
 }
 
-NodePtr Parser::pasrseFunction() {
+void Parser::pasrseFunction() {
 
-    return nullptr;
 }
 
-NodePtr Parser::parseExpression() { return nullptr; }
+void Parser::parseExpression() { }
 
-NodePtr Parser::parseSelectionStatement() {
+void Parser::parseSelectionStatement() {
     // Used for parsing selection statements (if-else)
-    return std::make_shared<Node>("SelectionStatement");
 }
 
-NodePtr Parser::parseNumericalExpression() {
-    return std::make_shared<Node>("NumericalExpression");
+void Parser::parseNumericalExpression() {
 }
 
-NodePtr Parser::parseBooleanExpression() {
-    return std::make_shared<Node>("BooleanExpression");
+void Parser::parseBooleanExpression() {
 }
 
 
 bool isDataType(string id) {
     if (id == "char" || id == "int" || id == " bool")
+        return true;
+    return false;
+}
+
+
+bool isReserved(string id) {
+    if (id == "char" || id == "int" || id == "bool" 
+        || id == "void" || id =="function" || id == "procedure" || id == "main"
+        || id == "return" || id == "printf" || id == "getchar" 
+        || id == "if" || id == "else" || id == "for" || id == "while"
+        || id == "TRUE" || id == "FALSE")
         return true;
     return false;
 }
