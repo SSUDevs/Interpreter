@@ -1,12 +1,31 @@
 #include "Parser.h"
 #include <iostream>
+using namespace std;
 // Use make_shared to dynamically allocate Node instances. 
 // When a new node is created, it's managed by a shared_ptr.
 
 Parser::Parser(const std::vector<Token>& tokens) : tokens(tokens) {}
 
 NodePtr Parser::parse() {
-    // Parsing logic...
+
+    while (current < tokens.size()) {
+        if (tokens[current].type() == Token::Type::Identifier) {
+            string tokenValue = tokens[current].value();
+
+            if (isDataType(tokenValue))
+                addToCST(parseDeclaration(), LeftChild);
+            else if (tokenValue == "procedure")
+                addToCST(parseProcedure(), LeftChild);
+            else if (tokenValue == "function")
+                addToCST(pasrseFunction(), LeftChild);
+            else { // error, global scope can only contain global variable declarations, procedures, and functions
+                cerr << "Invalid syntax in global scope at line " << tokens[current].lineNum() << endl;
+                exit(1);
+            }
+        }
+    }
+       
+    return root;
 }
 
 Token Parser::getToken() {
@@ -17,6 +36,19 @@ Token Parser::getToken() {
     }
 }
 
+void Parser::addToCST(NodePtr node, InsertionMode mode) {
+    if (!root) {
+        root = node;
+    }
+    else {
+        if (mode == LeftChild)
+            lastNode->leftChild = node;
+        else
+            lastNode->rightSibling = node;
+    }
+    lastNode = node;
+}
+
 bool Parser::match(Token::Type type) {
     if (current < tokens.size() && tokens[current].type() == type) {
         ++current;
@@ -25,7 +57,21 @@ bool Parser::match(Token::Type type) {
     return false;
 }
 
-NodePtr Parser::parseExpression() {}
+NodePtr Parser::parseDeclaration() {
+    return nullptr;
+}
+
+NodePtr Parser::parseProcedure() {
+
+    return nullptr;
+}
+
+NodePtr Parser::pasrseFunction() {
+
+    return nullptr;
+}
+
+NodePtr Parser::parseExpression() { return nullptr; }
 
 NodePtr Parser::parseSelectionStatement() {
     // Used for parsing selection statements (if-else)
@@ -41,3 +87,8 @@ NodePtr Parser::parseBooleanExpression() {
 }
 
 
+bool isDataType(string id) {
+    if (id == "char" || id == "int" || id == " bool")
+        return true;
+    return false;
+}
