@@ -14,8 +14,10 @@ public:
     void CreateTree(vector<Token>);
     void insert(Token);
 
+    NodePtr Left();
+    NodePtr Right();
 private:
-    Node *root;
+    NodePtr root;
 
 };
 

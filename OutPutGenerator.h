@@ -6,8 +6,9 @@
 #define ASSIGNMENT1_460_OUTPUTGENERATOR_H
 #include "ConcreteSyntaxTree.h"
 
+using namespace std;
 class OutPutGenerator {
-    void Conc_Syn_Tree_Output(ConcreteSyntaxTree *root);
+    void Conc_Syn_Tree_Output(NodePtr &);
 
 
 };

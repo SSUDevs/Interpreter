@@ -17,6 +17,10 @@ public:
     NodePtr rightChild;          
 
 
+    NodePtr Left();
+    NodePtr Right();
+    std::string Value();
+
     // Constructor
     Node(const std::string& val);
 

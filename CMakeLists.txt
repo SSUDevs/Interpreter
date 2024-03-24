@@ -16,4 +16,5 @@ add_executable(Interpreter main.cpp
         ConcreteSyntaxTree.h
         OutPutGenerator.cpp
         OutPutGenerator.h
+        OutPutGenerator.cpp
         OutPutGenerator.cpp)
