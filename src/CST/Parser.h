@@ -27,10 +27,11 @@ private:
     bool match(Token::Type type, Token t); // Checks if the current token matches the given token type
     void addToCST(NodePtr node, InsertionMode mode);
     NodePtr createNodePtr(const Token& token);
+    void expectToken(Token::Type expectedType, const std::string &errorMessage);
 
     void parseProcedure();
     void pasrseFunction();
-    void parseParameterList(); // To parse the parameter list for both functions and procedures
+    NodePtr parseParameterList(); // To parse the parameter list for both functions and procedures
 
     void parseDeclaration();
 

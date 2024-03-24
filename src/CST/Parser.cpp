@@ -121,17 +121,20 @@ void Parser::parseProcedure() {
     expectToken(Token::Type::LParen, "Expected '(' after procedure name.");
 
     // Check for 'void' or parse the parameter list
-    Token next = peekToken();
+    Token next = getToken();
 
+    NodePtr parameterListNode;
     if (next.value() == "void") {
-        // No parameters to parse, if 'void'
-        getToken(); // take out the 'void'
+        // If 'void', create a void node for the parameter list
+        parameterListNode = std::make_shared<Node>(Token(Token::Type::Void, "void"));
     } else {
-        // Parse the parameter list if it's not 'void'
-        NodePtr parameterListNode = parseParameterList();
-        procedureNode->addLeftChild(
-            parameterListNode); // Attach parameter list to procedureNode
+        // If the next token is not 'void', put it back to process in parseParameterList
+        current--; 
+        // Parse the parameter list 
+        parameterListNode = parseParameterList();
     }
+    // Attach the returned parameter list node to the procedure node
+    procedureNode->addLeftChild(parameterListNode);
 
     // Expect a right parenthesis ')' ending the parameter list
     expectToken(Token::Type::RParen, "Expected ')' after parameter list.");
@@ -161,23 +164,21 @@ void Parser::expectToken(Token::Type expectedType, const string &errorMessage) {
     }
 }
 
-void Parser::parseParameterList() {
+NodePtr Parser::parseParameterList() {
     // Create a node to represent the parameter list in the CST
     NodePtr parameterListNode = std::make_shared<Node>(
         Token(Token::Type::ParameterList, "ParameterList"));
 
     // Peek at the next token to check if it's 'void', which means no parameters
-    if (peekToken().value() == "void") {
-        getToken(); // Consume the 'void' token
-        // If the parameter list is just 'void', we may still create a parameter
-        // node to reflect this in the CST
+        Token returnType = getToken();
+    if (returnType.value() == "void") {
         NodePtr voidNode = createNodePtr(Token(Token::Type::Void, "void"));
         parameterListNode->addLeftChild(voidNode);
     } else {
         // Parse the parameter list which is not 'void'
         // Loop until a ')' token is encountered which indicates the end of the
         // parameter list
-        while (peekToken().type() != Token::Type::RParen) {
+        while (getToken().type() != Token::Type::RParen) {
             Token dataType = getToken();
             if (!isDataType(dataType.value())) {
                 cerr << "Expected a data type in parameter list, found '"
@@ -216,8 +217,9 @@ void Parser::parseParameterList() {
 
             // If the next token is a comma, consume it and move on to the next
             // parameter
-            if (peekToken().type() == Token::Type::Comma) {
-                getToken(); // Consume the comma token
+                Token t = getToken();
+            if (t.type() == Token::Type::Comma) {
+                getToken(); // Get rid of the comma token
             }
         }
     }
