@@ -72,29 +72,113 @@ void Parser::parseDeclaration() {
 
     Token currToken = tokens[current];
 
-    if (match(Token::Type::Identifier, currToken)) {
-        addToCST(createNodePtr(currToken), LeftChild);  // add data type id to CST
 
+
+    if (match(Token::Type::Identifier, currToken) && isDataType(currToken.value())) {
+        addToCST(createNodePtr(currToken),
+                 LeftChild); // add data type id to CST
+
+        parseIDENTIFIER_AND_IDENTIFIER_ARRAY_LIST(); // add list of identifiers
+
+        // semicolon check and add
         currToken = getToken();
-        if (isReserved(currToken.value())) {    // ERROR reserved name
+        if (!match(Token::Type::Semicolon, currToken)) { // ERROR reserved name
+            cerr << "Syntax error on line " << currToken.lineNum()
+                 << ": missing ';'" << endl;
+            exit(1);
+        }
+        addToCST(createNodePtr(currToken), RightSibling); // add name id to CST
+    }
+}
+
+void Parser::parseIDENTIFIER_AND_IDENTIFIER_ARRAY_LIST() {
+
+    while (!match(Token::Type::Semicolon, tokens[current])){
+        parseIDENTIFIER_ARRAY_LIST();
+        parseIDENTIFIER_LIST();
+    }
+}
+
+void Parser::parseIDENTIFIER_ARRAY_LIST() {
+    Token currToken = getToken();
+    Token nextToken = getToken();
+    bool foundEnd = false;
+
+    while (match(Token::Type::Identifier, currToken) && !foundEnd) {
+        if (isReserved(currToken.value())) {    // check reserved
             cerr << "Syntax error on line " << currToken.lineNum() << ": reserved word \""
-                << currToken.value() << "\" cannot be used for a variable name." << endl;
+                 << currToken.value() << "\" cannot be used for a variable name." << endl;
             exit(1);
         }
-        addToCST(createNodePtr(currToken), RightSibling);   // add name id to CST
 
-        currToken = getToken();
-        if (!match(Token::Type::Semicolon, currToken)) {    // ERROR no semicolon
-            cerr << "Syntax error on line " << currToken.lineNum() << ": missing ';'." << endl;
+        if (match(Token::Type::LBracket, nextToken)){
+            addToCST(createNodePtr((currToken)), RightSibling); // add array name
+            addToCST(createNodePtr((nextToken)), RightSibling); // add left bracket
+
+            Token num = getToken();
+            if (isReserved(num.value())) {    // check reserved
+                cerr << "Syntax error on line " << num.lineNum() << ": reserved word \""
+                     << num.value() << "\" cannot be used for a variable name." << endl;
+                exit(1);
+            }
+            if (stoi(num.value()) <= 0 && !match(Token::Type::Identifier, num)) {     // ERROR negative array size
+                cerr << "Syntax error on line " << num.lineNum() << ": array declaration size must be a positive integer." << endl;
+                exit(1);
+            }
+            addToCST(createNodePtr((num)), RightSibling); // add num/variable name
+
+            nextToken = getToken(); // get right bracket
+            if (!match(Token::Type::RBracket, nextToken)) {     // ERROR negative array size
+                cerr << "Syntax error on line " << nextToken.lineNum() << ": Incomplete bracket." << endl;
+                exit(1);
+            }
+            addToCST(createNodePtr((nextToken)), RightSibling); // add right bracket
+
+            nextToken = getToken();
+            if (match(Token::Type::Comma, nextToken)) {
+                addToCST(createNodePtr((nextToken)), RightSibling); // add comma
+                currToken = getToken();
+                nextToken = getToken();
+            } else {
+                foundEnd = true;
+                current--;
+            }
+        }
+        else
+            current-=2;
+    }
+
+
+}
+
+void Parser::parseIDENTIFIER_LIST() {
+    Token currToken = getToken();
+    Token nextToken = getToken();
+
+    bool foundEnd = false;
+
+    while (match(Token::Type::Identifier, currToken) && !foundEnd) {
+        if (isReserved(currToken.value())) {
+            cerr << "Syntax error on line " << currToken.lineNum() << ": reserved word \""
+                 << currToken.value() << "\" cannot be used for a variable name." << endl;
             exit(1);
         }
-        addToCST(createNodePtr(currToken), RightSibling);   // add ; to CST
-    }
-    else {  // ERROR invalid declaration type
-        cerr << "Syntax error on line " << currToken.lineNum() << ": not a vlaid type" << endl;
-        exit(1);
-    }
 
+        // next token not bracket
+        if (!match(Token::Type::LBracket, nextToken)) {
+            addToCST(createNodePtr((currToken)), RightSibling); // add variable name
+            if (match(Token::Type::Comma, nextToken)) {
+                addToCST(createNodePtr((nextToken)), RightSibling); // add comma
+                currToken = getToken();
+                nextToken = getToken();
+            } else {
+                foundEnd = true;
+                current--;
+            }
+        }
+        else
+            current-=2;
+    }
 }
 
 void Parser::parseProcedure() {

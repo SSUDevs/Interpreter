@@ -30,7 +30,13 @@ private:
 
 
     void parseProcedure();
+
     void parseDeclaration();
+    void parseIDENTIFIER_AND_IDENTIFIER_ARRAY_LIST();
+    void parseIDENTIFIER_ARRAY_LIST();
+    void parseIDENTIFIER_LIST();
+
+
     void pasrseFunction();
 
     // Starting with this piece of the BNF

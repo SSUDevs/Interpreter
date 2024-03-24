@@ -9,6 +9,7 @@
 #include "./CST/Parser.h"
 #include "./Token/Tokenizer.h"
 #include "./CommentRemoval/fileAsArray.h"
+#include "./OutputCST/OutPutGenerator.h"
 #include <fstream>
 #include <iostream>
 #include <string>

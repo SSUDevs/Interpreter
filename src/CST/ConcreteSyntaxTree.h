@@ -6,6 +6,7 @@
 #define ASSIGNMENT1_460_CONCRETESYNTAXTREE_H
 #include"../Token/Token.h"
 #include "Node.h"
+#include <vector>
 using namespace std;
 class ConcreteSyntaxTree {
 public:
