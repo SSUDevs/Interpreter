@@ -14,6 +14,18 @@ void Node::addRightSibling(const NodePtr& nodePtr) {
 	rightSibling = nodePtr;
 }
 
+NodePtr Node::Left() {
+    return leftChild;
+}
+NodePtr Node::Right() {
+    return rightSibling;
+}
+
+Token Node::Value() {
+    return value;
+}
+
+
 // Function to add a child node in the Left-Child Right-Sibling Tree
 //void Node::addConnection(const NodePtr& child) {
 //    if (!leftChild) {
@@ -27,3 +39,5 @@ void Node::addRightSibling(const NodePtr& nodePtr) {
 //        current->rightSibling = child; // Add the new child as the rightmost sibling
 //    }
 //}
+
+
