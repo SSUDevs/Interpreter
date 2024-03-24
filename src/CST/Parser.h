@@ -28,10 +28,11 @@ private:
     void addToCST(NodePtr node, InsertionMode mode);
     NodePtr createNodePtr(const Token& token);
 
-
     void parseProcedure();
-    void parseDeclaration();
     void pasrseFunction();
+    void parseParameterList(); // To parse the parameter list for both functions and procedures
+
+    void parseDeclaration();
 
     // Starting with this piece of the BNF
     // <EXPRESSION> ::= <BOOLEAN_EXPRESSION> | <NUMERICAL_EXPRESSION> 
