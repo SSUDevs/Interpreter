@@ -128,9 +128,9 @@ void Parser::parseProcedure() {
         getToken(); // take out the 'void'
     } else {
         // Parse the parameter list if it's not 'void'
-        parseParameterList();
-        // The parameter list will be attached inside the parseParameterList
-        // function
+        NodePtr parameterListNode = parseParameterList();
+        procedureNode->addLeftChild(
+            parameterListNode); // Attach parameter list to procedureNode
     }
 
     // Expect a right parenthesis ')' ending the parameter list
@@ -142,13 +142,13 @@ void Parser::parseProcedure() {
     // Parse the compound statement that is the procedure body
     NodePtr compoundStatementNode = parseCompoundStatement();
     // Attach the compound statement to the procedure node
-    procedureNode->addLeftChild(compoundStatementNode);
+    procedureNode->addRightSibling(compoundStatementNode);
 
     // Finally, expect a right brace '}' to end the procedure
     expectToken(Token::Type::RBrace, "Expected '}' to end the procedure.");
 
-    // Add the procedure node to the CST containing the body as well attached to it
-    addToCST(procedureNode, LeftChild); 
+    // Add the procedure node to the CST containing the body as well attached to
+    addToCST(procedureNode, LeftChild);
 }
 
 // A helper method to consume the next token and validate its type
@@ -163,39 +163,46 @@ void Parser::expectToken(Token::Type expectedType, const string &errorMessage) {
 
 void Parser::parseParameterList() {
     // Create a node to represent the parameter list in the CST
-    NodePtr parameterListNode = std::make_shared<Node>(Token(Token::Type::ParameterList, "ParameterList"));
+    NodePtr parameterListNode = std::make_shared<Node>(
+        Token(Token::Type::ParameterList, "ParameterList"));
 
     // Peek at the next token to check if it's 'void', which means no parameters
     if (peekToken().value() == "void") {
         getToken(); // Consume the 'void' token
-        // If the parameter list is just 'void', we may still create a parameter node to reflect this in the CST
+        // If the parameter list is just 'void', we may still create a parameter
+        // node to reflect this in the CST
         NodePtr voidNode = createNodePtr(Token(Token::Type::Void, "void"));
         parameterListNode->addLeftChild(voidNode);
     } else {
         // Parse the parameter list which is not 'void'
-        // Loop until a ')' token is encountered which indicates the end of the parameter list
+        // Loop until a ')' token is encountered which indicates the end of the
+        // parameter list
         while (peekToken().type() != Token::Type::RParen) {
             Token dataType = getToken();
             if (!isDataType(dataType.value())) {
-                cerr << "Expected a data type in parameter list, found '" << dataType.value() 
-                     << "' at line " << dataType.lineNum() << "." << endl;
+                cerr << "Expected a data type in parameter list, found '"
+                     << dataType.value() << "' at line " << dataType.lineNum()
+                     << "." << endl;
                 exit(1);
             }
 
             Token paramName = getToken();
             if (paramName.type() != Token::Type::Identifier) {
-                cerr << "Expected an identifier for parameter name, found '" << paramName.value() 
-                     << "' at line " << paramName.lineNum() << "." << endl;
+                cerr << "Expected an identifier for parameter name, found '"
+                     << paramName.value() << "' at line " << paramName.lineNum()
+                     << "." << endl;
                 exit(1);
             }
 
             // Create nodes for the datatype and parameter name
             NodePtr typeNode = createNodePtr(dataType);
             NodePtr nameNode = createNodePtr(paramName);
-            typeNode->addLeftChild(nameNode); // Link the identifier as the left child of the datatype node
+            typeNode->addLeftChild(nameNode); // Link the identifier as the left
+                                              // child of the datatype node
 
-            // Link the current parameter node as a sibling of the previous parameter node
-            // If this is the first parameter, it becomes the left child of the parameter list node
+            // Link the current parameter node as a sibling of the previous
+            // parameter node If this is the first parameter, it becomes the
+            // left child of the parameter list node
             if (!parameterListNode->getLeftChild()) {
                 parameterListNode->addLeftChild(typeNode);
             } else {
@@ -207,23 +214,21 @@ void Parser::parseParameterList() {
                 lastParam->addRightSibling(typeNode);
             }
 
-            // If the next token is a comma, consume it and move on to the next parameter
+            // If the next token is a comma, consume it and move on to the next
+            // parameter
             if (peekToken().type() == Token::Type::Comma) {
                 getToken(); // Consume the comma token
             }
         }
     }
 
-    // Once all parameters are processed or if it was 'void', we need to attach the parameter list node to the function/procedure node
-    // Assuming 'lastNode' is the current function or procedure node
+    // Once all parameters are processed or if it was 'void', then need to
+    // attach the parameter list node to the function/procedure node
     lastNode->addLeftChild(parameterListNode);
 }
 
-
 // NOT YET IMPLEMENTED FOR NOW
-void Parser::parseCompoundStatement() {
-    return NodePtr nodePtr;
-}
+void Parser::parseCompoundStatement() { return NodePtr nodePtr; }
 
 void Parser::parseExpression() {}
 
