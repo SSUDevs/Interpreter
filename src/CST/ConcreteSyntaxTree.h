@@ -4,7 +4,7 @@
 
 #ifndef ASSIGNMENT1_460_CONCRETESYNTAXTREE_H
 #define ASSIGNMENT1_460_CONCRETESYNTAXTREE_H
-#include"Token.h"
+#include"../Token/Token.h"
 #include "Node.h"
 using namespace std;
 class ConcreteSyntaxTree {

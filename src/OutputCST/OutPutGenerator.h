@@ -4,7 +4,7 @@
 
 #ifndef ASSIGNMENT1_460_OUTPUTGENERATOR_H
 #define ASSIGNMENT1_460_OUTPUTGENERATOR_H
-#include "ConcreteSyntaxTree.h"
+#include "../CST/ConcreteSyntaxTree.h"
 
 class OutPutGenerator {
     void Conc_Syn_Tree_Output(ConcreteSyntaxTree *root);

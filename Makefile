@@ -1,4 +1,4 @@
-CC = g++
+CC = g++ -std=c++11
 
 # define any compile-time flags
 CFLAGS = 
@@ -17,7 +17,7 @@ LFLAGS =
 LIBS = 
 
 # define the C source files
-SRCS = main.cpp fileAsArray.cpp Tokenizer.cpp Token.cpp
+SRCS = ./src/main.cpp ./src/CommentRemoval/fileAsArray.cpp ./src/Token/Tokenizer.cpp ./src/Token/Token.cpp ./src/CST/ConcreteSyntaxTree.cpp ./src/CST/Node.cpp ./src/CST/Parser.cpp
 
 # define the C object files 
 #

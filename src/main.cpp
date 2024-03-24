@@ -6,9 +6,9 @@
  *
  */
 
-#include "Parser.h" 
-#include "Tokenizer.h"
-#include "fileAsArray.h"
+#include "./CST/Parser.h" 
+#include "./Token/Tokenizer.h"
+#include "./CommentRemoval/fileAsArray.h"
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -44,8 +44,8 @@ int main(int argc, char *argv[]) {
     }
 
     // Use the Parser to parse the tokenized input
-    Parser parser(tokens);
-    auto cstRoot = parser.parse(); // Root of the Concrete Syntax Tree
+    // Parser parser(tokens);
+    // auto cstRoot = parser.parse(); // Root of the Concrete Syntax Tree
 
     // Still need a method to print or inspect CST
     // printCST(cstRoot);
