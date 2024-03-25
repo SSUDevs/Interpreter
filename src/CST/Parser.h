@@ -76,12 +76,14 @@ private:
     // <NUMERICAL_EXPRESSION> <GT> <NUMERICAL_EXPRESSION>
     void parseBooleanExpression();
 
-};
+    void parseNumericalOperand();
 
-bool isBooleanOperator(Token::Type type);
-bool isBooleanValue(const std::string& value);
-bool isNumericalOperator(Token::Type type);
-bool isComparisonOperator(Token::Type type);
+    bool isBooleanOperator(Token::Type type);
+    bool isBooleanValue(const std::string& value);
+    bool isNumericalOperator(Token::Type type);
+    bool isComparisonOperator(Token::Type type);
+
+};
 
 bool isDataType(std::string id);
 bool isReserved(std::string id);
