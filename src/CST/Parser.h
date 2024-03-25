@@ -29,12 +29,13 @@ private:
     NodePtr createNodePtr(const Token& token);
 
     Token peekToken() const;
-    void expectToken(Token::Type expectedType, const std::string &errorMessage);
+    NodePtr expectToken(Token::Type expectedType, const std::string &errorMessage);
 
 
     void parseProcedure();
+    NodePtr parseParameterList();
+    NodePtr parseCompoundStatement();
     // void parseFunction();
-    // NodePtr parseCompoundStatement() {
 
     void parseDeclaration();
     void parseIDENTIFIER_AND_IDENTIFIER_ARRAY_LIST();
