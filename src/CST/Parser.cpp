@@ -182,149 +182,145 @@ void Parser::parseIDENTIFIER_LIST() {
     }
 }
 
-
 // NOTES:
 // <PROCEDURE_DECLARATION> ::= procedure <IDENTIFIER> <L_PAREN>
 // <PARAMETER_LIST> <R_PAREN> < L_BRACE> <COMPOUND_STATEMENT> <R_BRACE>
 // | procedure <IDENTIFIER> <L_PAREN> void <R_PAREN> < L_BRACE>
 // <COMPOUND_STATEMENT> <R_BRACE>
+
+// Parses a procedure declaration, including its name, parameter list, and body.
 void Parser::parseProcedure() {
-    // The current token must have been the 'procedure' keyword to get here
-    // Next, expect an identifier token for the procedure name
+    // Get and validate the procedure identifier token.
     Token identifier = getToken();
     if (identifier.type() != Token::Type::Identifier) {
-        cerr << "Syntax error: Expected an identifier for the procedure name, "
-                "found '"
-             << identifier.value() << "' at line " << identifier.lineNum()
-             << "." << endl;
+        cerr << "Syntax error: Expected an identifier for the procedure name, found '"
+             << identifier.value() << "' at line " << identifier.lineNum() << "." << endl;
         exit(1);
     }
-
-    // Create a new node for the procedure declaration
+    
+    // Create a procedure declaration node with the identifier and add it to the CST.
     NodePtr procedureNode = createNodePtr(identifier);
-
-    // Expect a left parenthesis '(' starting the parameter list
-    expectToken(Token::Type::LParen, "Expected '(' after procedure name.");
-
-    // Check for 'void' or parse the parameter list
-    Token next = getToken();
-
-    NodePtr parameterListNode;
-    if (next.value() == "void") {
-        // If 'void', create a void node for the parameter list
-        parameterListNode =
-            std::make_shared<Node>(Token(Token::Type::Void, "void"));
-    } else {
-        // If the next token is not 'void', put it back to process in
-        // parseParameterList
-        current--;
-        // Parse the parameter list
-        parameterListNode = parseParameterList();
-    }
-    // Attach the returned parameter list node to the procedure node
-    procedureNode->addLeftChild(parameterListNode);
-
-    // Expect a right parenthesis ')' ending the parameter list
-    expectToken(Token::Type::RParen, "Expected ')' after parameter list.");
-    // Expect a left brace '{' starting the procedure body
-    expectToken(Token::Type::LBrace,
-                "Expected '{' to start the procedure body.");
-
-
-    // NEED TO BE IMPLEMENTED
-
-    // Parse the compound statement that is the procedure body
-    // NodePtr compoundStatementNode = parseCompoundStatement();
-
-    // // Attach the compound statement to the procedure node
-    // procedureNode->addRightSibling(compoundStatementNode);
-
-    // Finally, expect a right brace '}' to end the procedure
-    expectToken(Token::Type::RBrace, "Expected '}' to end the procedure.");
-
-    // Add the procedure node to the CST containing the body as well attached to
     addToCST(procedureNode, LeftChild);
+    
+    // Expect and validate the left parenthesis '(' token.
+    NodePtr lParenNode = expectToken(Token::Type::LParen, "Expected '(' after procedure name.");
+    addToCST(lParenNode, RightSibling);
+    
+    // Peek at the next token to determine if it is 'void' or the start of a parameter list.
+    Token next = peekToken();
+    if (next.value() == "void") {
+        // If 'void', get the token, create a node, and add it to the CST.
+        Token voidToken = getToken();
+        NodePtr voidNode = createNodePtr(voidToken);
+        addToCST(voidNode, RightSibling);
+    } else {
+        // Parse the parameter list directly without creating a "ParameterList" node.
+        parseParameterList();
+    }
+    
+    // Expect and validate the right parenthesis ')' token.
+    NodePtr rParenNode = expectToken(Token::Type::RParen, "Expected ')' after parameter list.");
+    addToCST(rParenNode, RightSibling);
+    
+    // Expect and validate the left brace '{' token to start the procedure body.
+    NodePtr lBraceNode = expectToken(Token::Type::LBrace, "Expected '{' to start the procedure body.");
+    addToCST(lBraceNode, RightSibling);
+
+    // Parse the procedure body (a compound statement).
+    NodePtr compoundStatementNode = parseCompoundStatement();
+    addToCST(compoundStatementNode, RightSibling);
+
+    // Expect and validate the right brace '}' token to end the procedure.
+    NodePtr rBraceNode = expectToken(Token::Type::RBrace, "Expected '}' to end the procedure.");
+    addToCST(rBraceNode, RightSibling);
 }
 
+// Parses the list of parameters for a procedure or function.
 NodePtr Parser::parseParameterList() {
-    // Create a node to represent the parameter list in the CST
-    NodePtr parameterListNode = std::make_shared<Node>(
-        Token(Token::Type::ParameterList, "ParameterList"));
+    NodePtr firstParam = nullptr; // Will point to the first parameter node.
+    NodePtr lastParam = nullptr;  // Tracks the last parameter node added to chain the next one as its right sibling.
 
-    // Parse the parameter list which is not 'void'
-    // Loop until a ')' token is encountered which indicates the end
+    // Loop until a ')' token is encountered which indicates the end of the parameter list.
     while (true) {
-        Token nextToken = getToken();
-        if (nextToken.type() == Token::Type::RParen) {
-            current--; // Put back the ')' token for proper handling in the
-                       // calling function
+        Token dataTypeToken = getToken();
+        // If ')' is encountered, the parameter list is complete.
+        if (dataTypeToken.type() == Token::Type::RParen) {
+            current--; // Put back the ')' token for the calling function.
             break;
         }
 
-        if (!isDataType(nextToken.value())) {
-            cerr << "Expected a data type in parameter list, found '" << nextToken.value() << "' at line " << nextToken.lineNum() << "." << endl;
-            exit(1);
+        // Check that the current token is a valid data type.
+        if (!isDataType(dataTypeToken.value())) {
+            cerr << "Expected a data type in parameter list, found '" << dataTypeToken.value()
+                 << "' at line " << dataTypeToken.lineNum() << "." << endl;
+            exit(1); // Terminate on syntax error.
         }
 
-        Token paramName = getToken();
-        if (paramName.type() != Token::Type::Identifier) {
+        // Get the next token, which should be the identifier for the parameter.
+        Token paramNameToken = getToken();
+        if (paramNameToken.type() != Token::Type::Identifier) {
             cerr << "Expected an identifier for parameter name, found '"
-                 << paramName.value() << "' at line " << paramName.lineNum()
-                 << "." << endl;
-            exit(1);
+                 << paramNameToken.value() << "' at line " << paramNameToken.lineNum() << "." << endl;
+            exit(1); // Terminate on syntax error.
         }
 
-        // Create nodes for the datatype and parameter name
-        NodePtr typeNode = createNodePtr(nextToken);
-        NodePtr nameNode = createNodePtr(paramName);
-        typeNode->addLeftChild(nameNode); // Link the identifier as the left
-                                          // child of the datatype node
+        // Create a node for the data type and the parameter name.
+        NodePtr dataTypeNode = createNodePtr(dataTypeToken);
+        NodePtr paramNameNode = createNodePtr(paramNameToken);
 
-        // Link the current parameter node as a sibling of the previous
+        // Link the identifier node as the right sibling of the data type node.
+        dataTypeNode->addRightSibling(paramNameNode);
 
-        // Find the last parameter node added
-        NodePtr lastParam = parameterListNode->leftChild();
-        while (lastParam->getRightSibling()) {
-            lastParam = lastParam->getRightSibling();
+        // If this is the first parameter, set the firstParam pointer.
+        if (!firstParam) {
+            firstParam = dataTypeNode;
         }
-        lastParam->addRightSibling(typeNode);
 
-        // If the next token is a comma, consume it and move on to the next
-        // parameter
-        Token t = getToken();
-        if (t.type() == Token::Type::Comma) {
-            getToken(); // Get rid of the comma token
+        // Chain the parameters: set the last parameter's right sibling to the current data type node.
+        if (lastParam) {
+            lastParam->addRightSibling(dataTypeNode);
+        }
+        // Update the last parameter node to be the current identifier node.
+        lastParam = paramNameNode;
+
+        // If the next token is a comma, consume it to move on to the next parameter.
+        if (peekToken().type() == Token::Type::Comma) {
+            getToken(); // Consume the comma token.
         }
     }
 
-    // Once all parameters are processed or if it was 'void', then need to
-    // attach the parameter list node to the function/procedure node
-    lastNode->addLeftChild(parameterListNode);
+    // Return the head of the linked list of parameters.
+    return firstParam;
 }
 
 // A helper method to consume the next token and validate its type
-void Parser::expectToken(Token::Type expectedType, const string &errorMessage) {
+// Also add the expected token to the CST if it matches.
+NodePtr Parser::expectToken(Token::Type expectedType, const std::string &errorMessage) {
     Token t = getToken();
     if (t.type() != expectedType) {
         cerr << errorMessage << " Found '" << typeToString(t.type())
              << "' at line " << t.lineNum() << "." << endl;
         exit(1);
     }
+    NodePtr tokenNode = createNodePtr(t);
+    addToCST(tokenNode, RightSibling); 
+    return tokenNode;
 }
+
 
 // A helper method to peek at the current token without incrementing 'current'
 Token Parser::peekToken() const {
-    if (current < tokens.size()) {
-        return tokens[current]; 
-    } else {
+    if (current >= tokens.size()) {
         throw std::runtime_error("Unexpected end of input while peeking at token.");
     }
+    return tokens[current];
 }
 
 // NOT YET IMPLEMENTED FOR NOW
-// NodePtr Parser::parseCompoundStatement() {
-//     // Placeholder 
-// }
+NodePtr Parser::parseCompoundStatement() {
+    // Placeholder 
+    return nullptr;
+}
 
 void Parser::parseExpression() { }
 
