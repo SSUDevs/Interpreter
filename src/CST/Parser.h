@@ -27,13 +27,21 @@ private:
     bool match(Token::Type type, Token t); // Checks if the current token matches the given token type
     void addToCST(NodePtr node, InsertionMode mode);
     NodePtr createNodePtr(const Token& token);
+
+    Token peekToken() const;
     void expectToken(Token::Type expectedType, const std::string &errorMessage);
 
+
     void parseProcedure();
-    void pasrseFunction();
-    NodePtr parseParameterList(); // To parse the parameter list for both functions and procedures
+    // void parseFunction();
+    // NodePtr parseCompoundStatement() {
 
     void parseDeclaration();
+    void parseIDENTIFIER_AND_IDENTIFIER_ARRAY_LIST();
+    void parseIDENTIFIER_ARRAY_LIST();
+    void parseIDENTIFIER_LIST();
+
+
 
     // Starting with this piece of the BNF
     // <EXPRESSION> ::= <BOOLEAN_EXPRESSION> | <NUMERICAL_EXPRESSION> 

@@ -1,3 +1,4 @@
+
 #include "Node.h"
 #include <iostream>
 
@@ -13,6 +14,18 @@ void Node::addLeftChild(const NodePtr& nodePtr) {
 void Node::addRightSibling(const NodePtr& nodePtr) {
 	rightSibling = nodePtr;
 }
+
+NodePtr Node::Left() {
+    return leftChild;
+}
+NodePtr Node::Right() {
+    return rightSibling;
+}
+
+Token Node::Value() {
+    return value;
+}
+
 
 // Function to add a child node in the Left-Child Right-Sibling Tree
 //void Node::addConnection(const NodePtr& child) {

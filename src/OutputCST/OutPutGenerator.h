@@ -7,7 +7,7 @@
 #include "../CST/ConcreteSyntaxTree.h"
 
 class OutPutGenerator {
-    void Conc_Syn_Tree_Output(ConcreteSyntaxTree *root);
+    void Conc_Syn_Tree_Output(NodePtr &);
 
 
 };

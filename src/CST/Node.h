@@ -17,6 +17,9 @@ public:
     NodePtr leftChild;             
     NodePtr rightSibling;
 
+    NodePtr Left();
+    NodePtr Right();
+    Token Value();
 
     // Constructor
     Node(const Token& val);
