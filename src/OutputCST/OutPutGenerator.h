@@ -5,9 +5,10 @@
 #ifndef ASSIGNMENT1_460_OUTPUTGENERATOR_H
 #define ASSIGNMENT1_460_OUTPUTGENERATOR_H
 #include "../CST/ConcreteSyntaxTree.h"
-
+#include <fstream>
 class OutPutGenerator {
-    void Conc_Syn_Tree_Output(NodePtr &);
+public:
+    void PrintCST(NodePtr &);
 
 
 };

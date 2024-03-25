@@ -14,7 +14,7 @@ NodePtr Parser::parse() {
 
         if (t.type() == Token::Type::Identifier) {
             string tokenValue = t.value();
-
+            cout<<tokenValue<<endl;
             if (isDataType(tokenValue)) {
                 parseDeclaration();
             }   
@@ -22,7 +22,7 @@ NodePtr Parser::parse() {
                 parseProcedure();
             }  
             else if (tokenValue == "function") {
-                //parseFunction();
+                parseFunction();
             }
             else { // error, global scope can only contain global variable declarations, procedures, and functions
                 cerr << "Invalid syntax in global scope at line " << t.lineNum() << endl;
@@ -190,7 +190,7 @@ void Parser::parseIDENTIFIER_LIST() {
 
 // Parses a procedure declaration, including its name, parameter list,
 // and body.
-void Parser::parseProcedure() {
+void Parser::   parseProcedure() {
     // Get and validate the procedure identifier token.
     Token identifier = getToken();
     if (identifier.type() != Token::Type::Identifier) {
@@ -379,7 +379,11 @@ void Parser::parseNumericalExpression() {
 
 void Parser::parseNumericalOperand() {
     Token currToken = getToken(); 
-    if (!match(Token::Type::Identifier, currToken) && !match(Token::Type::Number, currToken)) {
+    if (!match(Token::Type::Identifier,currToken)
+        && !match(Token::Type::WholeNumber, currToken)
+        && !match(Token::Type::Integer, currToken)
+        && !match(Token::Type::Digit, currToken)
+        && !match(Token::Type::HexDigit, currToken)) {
         cerr << "Syntax error: Expected a numerical operand, found '" << currToken.value() << "' at line " << currToken.lineNum() << "." << endl;
         exit(1);
     }
@@ -389,7 +393,7 @@ void Parser::parseNumericalOperand() {
 void Parser::parseBooleanExpression() {
     Token currToken = peekToken();
 
-    if (match(Token::Type::BooleanTrue, currToken) || match(Token::Type::BooleanFalse, currToken) || match(Token::Type::Identifier, currToken)) {
+    if (/*match(Token::Type::BooleanTrue, currToken) || match(Token::Type::BooleanFalse, currToken) ||*/ match(Token::Type::Identifier, currToken)) {
         getToken(); 
         addToCST(createNodePtr(currToken), RightSibling); 
 
@@ -446,6 +450,71 @@ bool Parser::isComparisonOperator(Token::Type type) {
            type == Token::Type::GtEqual || 
            type == Token::Type::BooleanEqual || 
            type == Token::Type::BooleanNotEqual;
+}
+
+void Parser::parseFunction() {
+    Token return_type = getToken();
+    cout<<"current return type "<<return_type.value()<<endl;
+    if (!isReserved(return_type.value())) {
+        cerr << "Syntax error: Expected an return type for the "
+                "function name, found '"
+             << return_type.value() << "' at line " << return_type.lineNum()
+             << "." << endl;
+        exit(10);
+    }
+    Token identifier = getToken();
+    if (identifier.type() != Token::Type::Identifier) {
+        cerr << "Syntax error: Expected an identifier for the "
+                "function name, found '"
+             << identifier.value() << "' at line " << identifier.lineNum()
+             << "." << endl;
+        exit(20);
+    }
+
+    // Create a procedure declaration node with the identifier and add
+    // it to the CST.
+    NodePtr procedureNode = createNodePtr(identifier);
+    addToCST(procedureNode, LeftChild);
+
+    // Expect and validate the left parenthesis '(' token.
+    NodePtr lParenNode = expectToken(Token::Type::LParen, "Expected '(' after procedure name.");
+    addToCST(lParenNode, RightSibling);
+
+    // Peek at the next token to determine if it is 'void' or the start
+    // of a parameter list.
+    Token next = peekToken();
+    if (next.value() == "void") {
+        // If 'void', get the token, create a node, and add it to the
+        // CST.
+        Token voidToken = getToken();
+        NodePtr voidNode = createNodePtr(voidToken);
+        addToCST(voidNode, RightSibling);
+    } else {
+        // Parse the parameter list directly without creating a
+        // "ParameterList" node.
+        parseParameterList();
+    }
+
+    // Expect and validate the right parenthesis ')' token.
+    NodePtr rParenNode =
+            expectToken(Token::Type::RParen, "Expected ')' after parameter list.");
+    addToCST(rParenNode, RightSibling);
+
+    // Expect and validate the left brace '{' token to start the
+    // procedure body.
+    NodePtr lBraceNode = expectToken(
+            Token::Type::LBrace, "Expected '{' to start the procedure body.");
+    addToCST(lBraceNode, RightSibling);
+
+    // Parse the procedure body (a compound statement).
+    NodePtr compoundStatementNode = parseCompoundStatement();
+    addToCST(compoundStatementNode, RightSibling);
+
+    // Expect and validate the right brace '}' token to end the
+    // procedure.
+    NodePtr rBraceNode =
+            expectToken(Token::Type::RBrace, "Expected '}' to end the procedure.");
+    addToCST(rBraceNode, RightSibling);
 }
 
 

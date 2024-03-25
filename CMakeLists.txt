@@ -17,4 +17,5 @@ add_executable(Interpreter
         src/CST/ConcreteSyntaxTree.h
         src/OutputCST/OutPutGenerator.cpp
         src/OutputCST/OutPutGenerator.h
-        )
+        src/CST/Parser.cpp
+)

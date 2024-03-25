@@ -35,7 +35,7 @@ private:
     void parseProcedure();
     NodePtr parseParameterList();
     NodePtr parseCompoundStatement();
-    // void parseFunction();
+    void parseFunction();
 
     void parseDeclaration();
     void parseIDENTIFIER_AND_IDENTIFIER_ARRAY_LIST();
