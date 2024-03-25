@@ -345,15 +345,109 @@ NodePtr Parser::parseCompoundStatement() {
     return nullptr;
 }
 
-// void Parser::parseExpression() {}
+void Parser::parseExpression() {
+    Token nextToken = peekToken();
+    if (isBooleanOperator(nextToken.type()) || isBooleanValue(nextToken.value())) {
+        parseBooleanExpression();
+    } else {
+        parseNumericalExpression();
+    }
+}
 
 void Parser::parseSelectionStatement() {
     // Used for parsing selection statements (if-else)
 }
 
-void Parser::parseNumericalExpression() {}
+void Parser::parseNumericalExpression() {
+    Token currToken = peekToken();
+    if (match(Token::Type::LParen, currToken)) {
+        getToken(); // consume '('
+        parseNumericalExpression();
+        expectToken(Token::Type::RParen, "Expected ')'");
+    } else {
+        parseNumericalOperand();
 
-void Parser::parseBooleanExpression() {}
+        Token nextToken = peekToken();
+        if (isNumericalOperator(nextToken.type())) {
+            getToken(); // Consume the operator
+            addToCST(createNodePtr(nextToken), RightSibling); 
+
+            parseNumericalExpression();
+        }
+    }
+}
+
+void Parser::parseNumericalOperand() {
+    Token currToken = getToken(); 
+    if (!match(Token::Type::Identifier, currToken) && !match(Token::Type::Number, currToken)) {
+        cerr << "Syntax error: Expected a numerical operand, found '" << currToken.value() << "' at line " << currToken.lineNum() << "." << endl;
+        exit(1);
+    }
+    addToCST(createNodePtr(currToken), RightSibling); 
+}
+
+void Parser::parseBooleanExpression() {
+    Token currToken = peekToken();
+
+    if (match(Token::Type::BooleanTrue, currToken) || match(Token::Type::BooleanFalse, currToken) || match(Token::Type::Identifier, currToken)) {
+        getToken(); 
+        addToCST(createNodePtr(currToken), RightSibling); 
+
+        Token nextToken = peekToken();
+        
+        if (isBooleanOperator(nextToken.type())) {
+            getToken(); 
+            addToCST(createNodePtr(nextToken), RightSibling); 
+
+            parseBooleanExpression();
+        }
+    } else if (match(Token::Type::LParen, currToken)) {
+        getToken(); 
+        parseBooleanExpression();
+        expectToken(Token::Type::RParen, "Expected ')'");
+    } else {
+        parseNumericalExpression();
+
+        Token opToken = getToken(); 
+        if (!isComparisonOperator(opToken.type())) {
+            cerr << "Syntax error: Expected a comparison operator, found '" << opToken.value() << "' at line " << opToken.lineNum() << "." << endl;
+            exit(1);
+        }
+        addToCST(createNodePtr(opToken), RightSibling); 
+
+        parseNumericalExpression();
+    }
+}
+
+bool Parser::isBooleanOperator(Token::Type type) {
+    return type == Token::Type::BooleanAnd || 
+           type == Token::Type::BooleanOr || 
+           type == Token::Type::BooleanNot || 
+           type == Token::Type::BooleanEqual || 
+           type == Token::Type::BooleanNotEqual;
+}
+
+bool Parser::isBooleanValue(const std::string& value) {
+    return value == "true" || value == "false";
+}
+
+bool Parser::isNumericalOperator(Token::Type type) {
+    return type == Token::Type::Plus || 
+           type == Token::Type::Minus || 
+           type == Token::Type::Asterisk || 
+           type == Token::Type::Slash || 
+           type == Token::Type::Modulo;
+}
+
+bool Parser::isComparisonOperator(Token::Type type) {
+    return type == Token::Type::Lt || 
+           type == Token::Type::Gt || 
+           type == Token::Type::LtEqual || 
+           type == Token::Type::GtEqual || 
+           type == Token::Type::BooleanEqual || 
+           type == Token::Type::BooleanNotEqual;
+}
+
 
 bool isDataType(string id) {
     if (id == "char" || id == "int" || id == " bool")
