@@ -78,6 +78,11 @@ private:
 
 };
 
+bool isBooleanOperator(Token::Type type);
+bool isBooleanValue(const std::string& value);
+bool isNumericalOperator(Token::Type type);
+bool isComparisonOperator(Token::Type type);
+
 bool isDataType(std::string id);
 bool isReserved(std::string id);
 
