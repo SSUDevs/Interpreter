@@ -36,9 +36,10 @@ private:
 
 
     void parseProcedure();
-    void parseParameterList();
-
     void parseFunction();
+    void parseParameterList();
+    void parseFunctionArguments();
+    void processFunctionCall();
 
     void parseDeclaration();
     void parseIDENTIFIER_AND_IDENTIFIER_ARRAY_LIST();
@@ -50,17 +51,15 @@ private:
     void parseStatement();
     void parseAssignmentStatement();    
     void parseInLineStatement();     
-    void parseIterationStatement();     
-    void parsePrintfStatement();        
-    void parseReturnStatement();        
+    void parseIterationStatement();  
+
     void parseSelectionStatement();     
     void parseStatementOrBlock();
- 
+    void parseProcedureStatement();
     void parseExpression();
 
-    void parseProcedureStatement();
-
-
+    void parsePrintfStatement();        
+    void parseReturnStatement();       
 };
 
 bool isDataType(std::string id);

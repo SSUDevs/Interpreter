@@ -373,6 +373,55 @@ void Parser::parseParameterList() {
     }
 }
 
+void Parser::processFunctionCall() {
+    // Process Function name
+    NodePtr functionName = expectToken(Token::Type::Identifier, "Expected identifier for function call");
+    addToCST(functionName, LeftChild);
+
+    NodePtr LParenNode = expectToken(Token::Type::LParen, "Expected '(' after function call");
+    addToCST(LParenNode, RightSibling);
+
+    // Now parse the argument list
+    parseFunctionArguments();
+
+    NodePtr closingParen = expectToken(Token::Type::RParen, "Expected ')'");
+    addToCST(closingParen, RightSibling);
+}
+
+void Parser::parseFunctionArguments() {
+    // Ends the function call with the ending RParen
+    while (peekToken().type() != Token::Type::RParen) {
+        Token argToken = peekToken();
+        
+        // Check if the argument is an identifier possibly followed by an array index
+        if (argToken.type() == Token::Type::Identifier) {
+            // Add the identifier
+            addToCST(createNodePtr(getToken()), RightSibling);
+
+            // Check if the next token is array indexing
+            if (peekToken().type() == Token::Type::LBracket) {
+                // Add the '['
+                addToCST(createNodePtr(getToken()), RightSibling);
+                
+                // Parse the index expression
+                parseExpression();
+                
+                // Expect and Add ']'
+                NodePtr rBracketNode = expectToken(Token::Type::RBracket, "Expected ']'");
+                addToCST(rBracketNode, RightSibling);
+            }
+        } else {
+            cerr << "Syntax error: Expected identifier, found '" << argToken.value() << "' at line " << argToken.lineNum() << "." << endl;
+            exit(1);
+        }
+        
+        // Check if there's another argument after a comma
+        if (peekToken().type() == Token::Type::Comma) {
+            addToCST(createNodePtr(getToken()), RightSibling); // Add the comma
+        }
+    }
+}
+
 void Parser::parseCompoundStatement() {
 
     // parse statements until next token is a right brace
@@ -491,6 +540,36 @@ void Parser::parseExpression() {
 
     Token currToken = peekToken();
 
+    // Check for function call
+    if (currToken.type() == Token::Type::Identifier && peekAhead(1).type() == Token::Type::LParen) {
+        processFunctionCall();
+        return; // Exit early after processing the function call
+    }
+
+    // Handling unary minus
+    if (match(Token::Type::Minus, currToken)) {
+        // Look ahead to check if the next token is an integer
+        Token nextToken = peekAhead(1);
+        if (match(Token::Type::Integer, nextToken)) {
+            // Consume the minus token
+            getToken();
+            // Now consume the integer token and combine them
+            nextToken = getToken(); // Consuming the integer token
+            // Create a node that represents the negative of the integer
+            std::string negativeValue = "-" + nextToken.value(); // Append minus sign to the integer value
+            // Create and add the negative value node to CST
+            NodePtr negativeNode = createNodePtr(Token(Token::Type::Integer, negativeValue, nextToken.lineNum()));
+            addToCST(negativeNode, RightSibling);
+            // Handle the rest of the expression if any
+            if (isOperator(peekToken())) {
+                Token operatorToken = getToken();
+                addToCST(createNodePtr(operatorToken), RightSibling);
+                parseExpression();
+            }
+            return; // Early return as the unary operation has been handled
+        }
+    }
+
     // If the current token is '('
     if (match(Token::Type::LParen, currToken)) {
         getToken();
@@ -522,7 +601,7 @@ void Parser::parseExpression() {
                 // Otherwise, it's an expression within parentheses
                 parseExpression();
             }
-            NodePtr closingRParen = expectToken(Token::Type::RParen, "Expected ')'");
+            NodePtr closingRParen = expectToken(Token::Type::RParen, "Expected ')'"); 
             addToCST(closingRParen, RightSibling);
         }
 
@@ -625,15 +704,12 @@ void Parser::parseIterationStatement() {
         // in line statement
         parseInLineStatement();
         // )
-        addToCST(expectToken(Token::Type::LParen, "Syntax error: missing ')'"), RightSibling);
+        addToCST(expectToken(Token::Type::RParen, "Syntax error: missing ')'"), RightSibling);
 
         next = peekToken();
 
         // finish with a block statement or a single statement
-        if (match(Token::Type::LBracket, next))
-            parseBlockStatement();
-        else
-            parseStatement();
+        parseStatementOrBlock();
 
 
     }
@@ -645,15 +721,12 @@ void Parser::parseIterationStatement() {
         // expression
         parseExpression();
         // )
-        addToCST(expectToken(Token::Type::LParen, "Syntax error: missing '('."), RightSibling);
+        addToCST(expectToken(Token::Type::RParen, "Syntax error: missing ')'."), RightSibling);
 
         next = peekToken();
 
         // finish with a block statement or a single statement
-        if (match(Token::Type::LBracket, next))
-            parseBlockStatement();
-        else
-            parseStatement();
+        parseStatementOrBlock();
 
     }
     else {
@@ -688,7 +761,6 @@ void Parser::parsePrintfStatement() {
 
     // )
     addToCST( expectToken(Token::Type::RParen, "Expected ')' after printf statement"), RightSibling);
-
     // ;
     addToCST( expectToken(Token::Type::Semicolon, "Expected ';' at the end of printf statement"), RightSibling);
 }
