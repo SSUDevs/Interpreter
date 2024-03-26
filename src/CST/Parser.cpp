@@ -10,11 +10,10 @@ NodePtr Parser::parse() {
 
     while (current < tokens.size()) {
 
-        Token t = getToken();
+        Token t = peekToken();
 
         if (t.type() == Token::Type::Identifier) {
             string tokenValue = t.value();
-            cout << tokenValue << endl;
             if (isDataType(tokenValue)) {
                 parseDeclaration();
             } else if (tokenValue == "procedure") {
@@ -24,7 +23,7 @@ NodePtr Parser::parse() {
             } else { // error, global scope can only contain global variable
                      // declarations, procedures, and functions
                 cerr << "Invalid syntax in global scope at line " << t.lineNum()
-                     << endl;
+                     << " with identifier: " << tokenValue << endl;
                 exit(1);
             }
         }
@@ -68,12 +67,10 @@ bool Parser::match(Token::Type type, Token t) {
 
 void Parser::parseDeclaration() {
 
-    Token currToken = tokens[current];
+    Token currToken = peekToken();
 
-    if (match(Token::Type::Identifier, currToken) &&
-        isDataType(currToken.value())) {
-        addToCST(createNodePtr(currToken),
-                 LeftChild); // add data type id to CST
+    if (match(Token::Type::Identifier, currToken) && isDataType(currToken.value())) {
+        addToCST(createNodePtr(getToken()),LeftChild); // add data type id to CST
 
         parseIDENTIFIER_AND_IDENTIFIER_ARRAY_LIST(); // add list of identifiers
 
@@ -90,7 +87,7 @@ void Parser::parseDeclaration() {
 
 void Parser::parseIDENTIFIER_AND_IDENTIFIER_ARRAY_LIST() {
 
-    while (!match(Token::Type::Semicolon, tokens[current])) {
+    while (!match(Token::Type::Semicolon, peekToken())) {
         parseIDENTIFIER_ARRAY_LIST();
         parseIDENTIFIER_LIST();
     }
@@ -152,8 +149,10 @@ void Parser::parseIDENTIFIER_ARRAY_LIST() {
                 foundEnd = true;
                 current--;
             }
-        } else
+        } else{
             current -= 2;
+            foundEnd = true;
+        }
     }
 }
 
@@ -183,8 +182,10 @@ void Parser::parseIDENTIFIER_LIST() {
                 foundEnd = true;
                 current--;
             }
-        } else
+        } else {
             current -= 2;
+            foundEnd = true;
+        }
     }
 }
 
@@ -211,6 +212,7 @@ void Parser::parseBlockStatement() {
 }
 
 void Parser::parseProcedure() {
+    addToCST(createNodePtr(getToken()), LeftChild); // add 'procedure' identifier to CST
     Token identifier = getToken();
     if (identifier.type() != Token::Type::Identifier) {
         cerr << "Syntax error: Expected an identifier for the "
@@ -254,6 +256,8 @@ void Parser::parseProcedure() {
 
 
 void Parser::parseFunction() {
+    addToCST(createNodePtr(getToken()), LeftChild); // add 'function' identifier to CST
+
     Token return_type = getToken();
     cout << "current return type " << return_type.value() << endl;
     if (!isDataType(return_type.value())) {
@@ -400,6 +404,8 @@ Token Parser::peekAhead(int offset = 0) const {
 }
 
 
+
+
 void Parser::parseCompoundStatement() {
 
     // parse statements until next token is a right brace
@@ -524,6 +530,10 @@ void Parser::parseNumericalOperand() {
     addToCST(createNodePtr(currToken), RightSibling);
 }
 
+void Parser::parseAssignmentStatement() {}     // not done
+void Parser::parseIterationStatement() {}     // not done
+void Parser::parsePrintfStatement() {}        // not done
+
 void Parser::parseBooleanExpression() {
     Token currToken = peekToken();
 
@@ -559,6 +569,46 @@ void Parser::parseBooleanExpression() {
 
         parseNumericalExpression();
     }
+}
+
+void Parser::parseReturnStatement() {
+    NodePtr returnNode = expectToken(Token::Type::Return, "Syntax error: Expected 'return'");
+    addToCST(returnNode, LeftChild); 
+
+    // NOTE: Currenlty not worrying about returning anything otherthan an Identifier
+    // Peek at the next token to decide if an Identifier follows
+    Token nextToken = peekToken();
+    if (match(Token::Type::Identifier, nextToken)) {
+        addToCST(createNodePtr(nextToken), RightSibling); // Adjust as necessary for your tree structure
+    }
+
+    // Regardless of whether an Identifier was found, a semicolon is expected next
+    NodePtr semicolonNode = expectToken(Token::Type::Semicolon, "Syntax error: Expected ';' after return statement");
+    addToCST(semicolonNode, RightSibling); // Adjust insertion mode as needed
+}
+
+// A helper method to consume the next token and validate its type
+// Also add the expected token to the CST if it matches.
+NodePtr Parser::expectToken(Token::Type expectedType,
+                            const std::string &errorMessage) {
+    Token t = getToken();
+    if (t.type() != expectedType) {
+        cerr << errorMessage << " Found '" << Token::typeToString(t.type())
+             << "' at line " << t.lineNum() << "." << endl;
+        exit(1);
+    }
+    // Create a NodePtr from the token and return it
+    return createNodePtr(t);
+}
+
+// A helper method to peek at the current token without incrementing
+// 'current'
+Token Parser::peekToken() const {
+    if (current >= tokens.size()) {
+        throw std::runtime_error(
+            "Unexpected end of input while peeking at token.");
+    }
+    return tokens[current];
 }
 
 bool Parser::isBooleanOperator(Token::Type type) {

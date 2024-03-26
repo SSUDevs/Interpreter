@@ -46,6 +46,7 @@ class Token {
         DoubleQuotedString,
         WholeNumber,
         Integer,
+        Return,
         Unknown // For unrecognized tokens
     };
 
@@ -55,12 +56,13 @@ class Token {
     size_t _lineNum;
 
   public:
-    Token(Type type, const std::string &value, size_t lineNum) : _type(type), _value(value), _lineNum(lineNum) {}
+    Token(Type type, const std::string &value, size_t lineNum)
+        : _type(type), _value(value), _lineNum(lineNum) {}
 
     // Accessors functions
     Type type() const { return _type; }
     std::string value() const { return _value; }
-    size_t lineNum() const { return _lineNum;  }
+    size_t lineNum() const { return _lineNum; }
 
     // Function to convert Type to a readable string
     static std::string typeToString(Type type);

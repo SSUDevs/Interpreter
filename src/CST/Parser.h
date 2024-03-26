@@ -48,14 +48,11 @@ private:
     void parseAssignmentStatement();    // not done
     void parseIterationStatement();     // not done
     void parsePrintfStatement();        // not done
-    void parseReturnStatement();        // not done
+    void parseReturnStatement();        
     void parseSelectionStatement();     // For IF statements
 
  
     void parseExpression();
-
-    //a peek function that peek ahead by more than one token
-    Token peekAhead(int offset) const;
 
     void parseNumericalExpression();
     void parseNumericalOperand();
