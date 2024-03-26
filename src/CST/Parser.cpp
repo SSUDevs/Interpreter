@@ -337,7 +337,7 @@ void Parser::parseParameterList() {
 
             // Expect and consume the array size (a whole number)
             Token arraySizeToken = getToken();
-            if (arraySizeToken.type() != Token::Type::WholeNumber) {
+            if (arraySizeToken.type() != Token::Type::Integer) {
                 cerr << "Syntax error on line " << arraySizeToken.lineNum()
                      << ": expected an array size, found '" << arraySizeToken.value() << "'" << endl;
                 exit(6);
@@ -832,7 +832,7 @@ Token Parser::peekAhead(int offset) const {
 
 
 bool isDataType(string id) {
-    if (id == "char" || id == "int" || id == " bool")
+    if (id == "char" || id == "int" || id == "bool")
         return true;
     return false;
 }
