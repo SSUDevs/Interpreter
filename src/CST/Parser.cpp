@@ -211,7 +211,6 @@ void Parser::parseBlockStatement() {
 }
 
 void Parser::parseProcedure() {
-    // Get and validate the procedure identifier token.
     Token identifier = getToken();
     if (identifier.type() != Token::Type::Identifier) {
         cerr << "Syntax error: Expected an identifier for the "
@@ -220,12 +219,9 @@ void Parser::parseProcedure() {
              << "." << endl;
         exit(1);
     }
-
     // Create a procedure declaration node with identifier and add to CST
-    NodePtr procedureNode = createNodePtr(identifier);
-    addToCST(procedureNode, LeftChild);
+    addToCST(createNodePtr(identifier), LeftChild);
 
-    // Expect and validate the left parenthesis '(' token.
     NodePtr lParenNode =
         expectToken(Token::Type::LParen, "Expected '(' after procedure name.");
     addToCST(lParenNode, RightSibling);
@@ -234,10 +230,8 @@ void Parser::parseProcedure() {
     Token next = peekToken();
     if (next.value() == "void") {
         // If 'void', get the token, create a node, and add it to CST
-   
         Token voidToken = getToken();
-        NodePtr voidNode = createNodePtr(voidToken);
-        addToCST(voidNode, RightSibling);
+        addToCST(createNodePtr(voidToken), RightSibling);
     } else {
         parseParameterList();
     }
@@ -262,7 +256,7 @@ void Parser::parseProcedure() {
 void Parser::parseFunction() {
     Token return_type = getToken();
     cout << "current return type " << return_type.value() << endl;
-    if (!isReserved(return_type.value())) {
+    if (!isDataType(return_type.value())) {
         cerr << "Syntax error: Expected an return type for the "
                 "function name, found '"
              << return_type.value() << "' at line " << return_type.lineNum()
@@ -277,13 +271,8 @@ void Parser::parseFunction() {
              << "." << endl;
         exit(20);
     }
+    addToCST(createNodePtr(identifier), LeftChild);
 
-    // Create a procedure declaration node with the identifier and add
-    // it to the CST.
-    NodePtr procedureNode = createNodePtr(identifier);
-    addToCST(procedureNode, LeftChild);
-
-    // Expect and validate the left parenthesis '(' token.
     NodePtr lParenNode =
         expectToken(Token::Type::LParen, "Expected '(' after procedure name.");
     addToCST(lParenNode, RightSibling);
@@ -293,13 +282,10 @@ void Parser::parseFunction() {
     if (next.value() == "void") {
         // If 'void', get the token, create a node, and add it to CST
         Token voidToken = getToken();
-        NodePtr voidNode = createNodePtr(voidToken);
-        addToCST(voidNode, RightSibling);
+        addToCST(createNodePtr(voidToken), RightSibling);
     } else {
         parseParameterList();
     }
-
-    // Expect and validate the right parenthesis ')' token.
     NodePtr rParenNode =
         expectToken(Token::Type::RParen, "Expected ')' after parameter list.");
     addToCST(rParenNode, RightSibling);
