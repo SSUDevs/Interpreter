@@ -415,52 +415,52 @@ void Parser::parseStatement() {
 }
 
 void Parser::parseExpression() {
-    Token nextToken = peekToken();
-    if (isBooleanOperator(nextToken.type()) ||
-        isBooleanValue(nextToken.value())) {
-        parseBooleanExpression();
-    } else {
-        parseNumericalExpression();
-    }
-}
-
-void Parser::parseSelectionStatement() {
-    // Used for parsing selection statements (if-else)
-}
-
-void Parser::parseNumericalExpression() {
+    
     Token currToken = peekToken();
+    
+    // If the current token is '('
     if (match(Token::Type::LParen, currToken)) {
-        getToken(); // consume '('
-        parseNumericalExpression();
-        expectToken(Token::Type::RParen, "Expected ')'");
-    } else {
-        parseNumericalOperand();
-
+        getToken(); 
+        addToCST(createNodePtr(currToken), RightSibling); 
+        parseExpression();
+        NodePtr rParenNode = expectToken(Token::Type::RParen, "Expected ')'");
+        addToCST(rParenNode, RightSibling); 
+        parseExpression();
+    } else if (!isReserved(currToken.value())) { // If the token is an operand and it's not reserved
+        addToCST(createNodePtr(currToken), RightSibling);
+        getToken(); 
+        
         Token nextToken = peekToken();
-        if (isNumericalOperator(nextToken.type())) {
-            getToken(); // Consume the operator
-            addToCST(createNodePtr(nextToken), RightSibling);
-
-            parseNumericalExpression();
+        if (match(Token::Type::LParen, nextToken) && currToken.type() == Token::Type::Identifier) {
+            getToken(); 
+            addToCST(createNodePtr(nextToken), RightSibling); 
+            
+            if (peekAhead(1).type() == Token::Type::Comma) { 
+                // If the next token indicates a parameter list
+                parseIdentifierAndIdentifierArrayList();
+            } else {
+                // Otherwise, it's an expression within parentheses
+                parseExpression();
+            }
+            NodePtr closingRParen = expectToken(Token::Type::RParen, "Expected ')'");
+            addToCST(closingRParen, RightSibling); 
         }
-    }
-}
-
-void Parser::parseNumericalOperand() {
-    Token currToken = getToken();
-    if (!match(Token::Type::Identifier, currToken) &&
-        !match(Token::Type::WholeNumber, currToken) &&
-        !match(Token::Type::Integer, currToken) &&
-        !match(Token::Type::Digit, currToken) &&
-        !match(Token::Type::HexDigit, currToken)) {
-        cerr << "Syntax error: Expected a numerical operand, found '"
-             << currToken.value() << "' at line " << currToken.lineNum() << "."
-             << endl;
+        
+        // Check for an operator after the operand
+        if (isNumericalOperator(peekToken().type()) || isBooleanOperator(peekToken().type())) {
+            Token operatorToken = getToken(); 
+            addToCST(createNodePtr(operatorToken), RightSibling); 
+            parseExpression();
+        }
+    } else {
+        cerr << "Syntax error: Expected expression, found '" << currToken.value() << "' at line " << currToken.lineNum() << "." << endl;
         exit(1);
     }
-    addToCST(createNodePtr(currToken), RightSibling);
 }
+
+
+
+
 
 void Parser::parseAssignmentStatement() {}     // not done
 
@@ -552,42 +552,6 @@ void Parser::parseIterationStatement() {
 }
 void Parser::parsePrintfStatement() {}        // not done
 
-void Parser::parseBooleanExpression() {
-    Token currToken = peekToken();
-
-    if (/*match(Token::Type::BooleanTrue, currToken) ||
-           match(Token::Type::BooleanFalse, currToken) ||*/
-        match(Token::Type::Identifier, currToken)) {
-        getToken();
-        addToCST(createNodePtr(currToken), RightSibling);
-
-        Token nextToken = peekToken();
-
-        if (isBooleanOperator(nextToken.type())) {
-            getToken();
-            addToCST(createNodePtr(nextToken), RightSibling);
-
-            parseBooleanExpression();
-        }
-    } else if (match(Token::Type::LParen, currToken)) {
-        getToken();
-        parseBooleanExpression();
-        expectToken(Token::Type::RParen, "Expected ')'");
-    } else {
-        parseNumericalExpression();
-
-        Token opToken = getToken();
-        if (!isComparisonOperator(opToken.type())) {
-            cerr << "Syntax error: Expected a comparison operator, found '"
-                 << opToken.value() << "' at line " << opToken.lineNum() << "."
-                 << endl;
-            exit(1);
-        }
-        addToCST(createNodePtr(opToken), RightSibling);
-
-        parseNumericalExpression();
-    }
-}
 
 void Parser::parseReturnStatement() {
     NodePtr returnNode = expectToken(Token::Type::Return, "Syntax error: Expected 'return'");
@@ -629,29 +593,15 @@ Token Parser::peekToken() const {
     return tokens[current];
 }
 
-bool Parser::isBooleanOperator(Token::Type type) {
-    return type == Token::Type::BooleanAnd || type == Token::Type::BooleanOr ||
-           type == Token::Type::BooleanNot ||
-           type == Token::Type::BooleanEqual ||
-           type == Token::Type::BooleanNotEqual;
+// A helper method to peek ahead more than one token without incrementing
+// 'current'
+Token Parser::peekAhead(int offset = 0) const {
+    if (current + offset >= tokens.size()) {
+        throw std::runtime_error("Unexpected end of input while peeking at token.");
+    }
+    return tokens[current + offset];
 }
 
-bool Parser::isBooleanValue(const std::string &value) {
-    return value == "true" || value == "false";
-}
-
-bool Parser::isNumericalOperator(Token::Type type) {
-    return type == Token::Type::Plus || type == Token::Type::Minus ||
-           type == Token::Type::Asterisk || type == Token::Type::Slash ||
-           type == Token::Type::Modulo;
-}
-
-bool Parser::isComparisonOperator(Token::Type type) {
-    return type == Token::Type::Lt || type == Token::Type::Gt ||
-           type == Token::Type::LtEqual || type == Token::Type::GtEqual ||
-           type == Token::Type::BooleanEqual ||
-           type == Token::Type::BooleanNotEqual;
-}
 
 bool isDataType(string id) {
     if (id == "char" || id == "int" || id == " bool")
