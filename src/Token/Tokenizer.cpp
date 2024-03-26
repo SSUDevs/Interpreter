@@ -284,9 +284,13 @@ Token Tokenizer::getToken() {
             if (currentChar != '"') {
                 tokenValue += currentChar;
             } else {
-                _currentState = START; 
-                tokenType = Token::Type::DoubleQuotedString; 
+                 _currentState =
+                    DQ_END; // so next token can be read as end of string.
+                tokenType = Token::Type::String; // can combine to token:
+                // 'DOUBLE_QUOTED_STRING' but
+                // assignment just labels strings
                 tokenFound = true;
+                --_currentPos; // Re-evaluate this character in the next state
             }
             break;
         case DQ_END:
@@ -307,9 +311,13 @@ Token Tokenizer::getToken() {
             if (currentChar != '\'') {
                 tokenValue += currentChar;
             } else {
-                _currentState = START; 
-                tokenType = Token::Type::SingleQuotedString;
+                _currentState =
+                    SQ_END; // so next token can be read as end of string.
+                tokenType = Token::Type::String; // can combine to token:
+                // 'SINGLE_QUOTED_STRING' but
+                // assignment just labels strings
                 tokenFound = true;
+                --_currentPos; // Re-evaluate this character in the next state
             }
             break;
 
