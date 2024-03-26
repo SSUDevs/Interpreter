@@ -378,6 +378,7 @@ void Parser::parseCompoundStatement() {
 
     // parse statements until next token is a right brace
     while (!match(Token::Type::RBrace, peekToken()))
+
         parseStatement();
 }
 
@@ -459,12 +460,48 @@ void Parser::parseNumericalOperand() {
         cerr << "Syntax error: Expected a numerical operand, found '"
              << currToken.value() << "' at line " << currToken.lineNum() << "."
              << endl;
-        exit(1);
+        exit(90);
     }
     addToCST(createNodePtr(currToken), RightSibling);
 }
 
-void Parser::   parseAssignmentStatement() {}     // not done
+void Parser::   parseAssignmentStatement() {
+    Token currtoken = getToken();
+    Token next = getToken();
+
+    if(next.type() != Token::Type::AssignmentOperator){
+        cerr << "Syntax error: Expected a Assignment opertator, found '"
+             << next.value() << "' at line " << next.lineNum() << "."<<endl;
+        exit(200);
+    }else{
+        addToCST(createNodePtr(currtoken),LeftChild);
+        addToCST(createNodePtr(next),RightSibling);
+    }
+    Token token = getToken();
+
+    if(token.type() == Token::Type::SingleQuotedString ||token.type() == Token::Type::DoubleQuotedString){
+        addToCST(createNodePtr(token),RightSibling);
+    }else if(token.type()== Token::Type::Integer ||
+            token.type()== Token::Type::WholeNumber||
+            token.type()== Token::Type::HexDigit ||
+            token.type()== Token::Type::Digit){
+        addToCST(createNodePtr(token),RightSibling);
+        }
+        else{
+            parseExpression();
+        }
+
+    token = getToken();
+    if(token.type() != Token::Type::Semicolon){
+        cerr << "Syntax error: Expected a semicolon, found '"
+             << next.value() << "' at line " << next.lineNum() << "."<<endl;
+        exit(201);
+    }
+    addToCST(createNodePtr(token),RightSibling);
+
+
+
+}
 void Parser::parseIterationStatement() {}     // not done
 void Parser::parsePrintfStatement() {}        // not done
 
