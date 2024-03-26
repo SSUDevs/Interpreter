@@ -41,7 +41,7 @@ Token Parser::getToken() {
 }
 
 void Parser::addToCST(NodePtr node, InsertionMode mode) {
-    cout<<"Adding token with value "<<node->Value().value()<<" to tree with mode "<< mode <<endl;
+    //cout<<"Adding token with value "<<node->Value().value()<<" to tree with mode "<< mode <<endl;
 
     if (!root) {
         root = node;
