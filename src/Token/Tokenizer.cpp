@@ -238,9 +238,10 @@ Token Tokenizer::getToken() {
             if (std::isalnum(currentChar) || currentChar == '_') {
                 tokenValue += currentChar;
             } else {
-                // Check if the identifier matches the "if" keyword
                 if (tokenValue == "if") {
-                    tokenType = Token::Type::If; // Recognize "if" as a keyword
+                    tokenType = Token::Type::If; 
+                } else if (tokenValue == "else") {
+                    tokenType = Token::Type::Else;
                 } else if (tokenValue == "return") {
                     tokenType = Token::Type::Return;
                 } else if (tokenValue == "TRUE") {

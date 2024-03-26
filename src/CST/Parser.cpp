@@ -420,19 +420,17 @@ void Parser::parseSelectionStatement() {
     NodePtr ifNode = expectToken(Token::Type::If, "Expected 'if'");
     addToCST(ifNode, LeftChild);
 
-    // Next, we expect a left parenthesis '(' before the boolean expression.
-    expectToken(Token::Type::LParen, "Expected '(' after 'if'");
+    // Parse the boolean expression within the if statement.
+    parseExpression(); 
 
-    // Now, we parse the boolean expression within the if statement.
-    parseExpression(); // Assumes parseExpression is correctly implemented for boolean expressions.
-
-    // After the boolean expression, we expect a right parenthesis ')'.
-    expectToken(Token::Type::RParen, "Expected ')' after boolean expression");
+    // After the boolean expression, expect a right parenthesis ')'.
+    NodePtr RParenNode = expectToken(Token::Type::RParen, "Expected ')' after boolean expression");
+    addToCST(RParenNode, RightSibling);
 
     // The statement or block statement that follows.
     parseStatementOrBlock(); // A helper function that decides whether it's a simple statement or a block statement.
 
-    // Check for an optional "else" part.
+    // Check for "else" 
     Token next = peekToken();
     if (match(Token::Type::Else, next)) {
         // Consume the "else" token.
@@ -441,6 +439,18 @@ void Parser::parseSelectionStatement() {
 
         // Parse the statement or block statement following "else".
         parseStatementOrBlock(); // Reuse the helper function for the "else" part.
+    }
+}
+
+void Parser::parseStatementOrBlock() {
+    // Peek at the next token to decide between a simple statement and a block statement.
+    Token next = peekToken();
+    if (match(Token::Type::LBrace, next)) {
+        // If the next token is '{', it's a block statement.
+        parseBlockStatement();
+    } else {
+        // it's a single statement.
+        parseStatement();
     }
 }
 

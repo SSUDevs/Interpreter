@@ -44,6 +44,8 @@ std::string Token::typeToString(Type type) {
         return "CARET";
     case Type::If:
         return "IF";
+    case Type::Else:
+        return "ELSE";
     case Type::Lt:
         return "LESS_THAN";
     case Type::Gt:

@@ -29,6 +29,7 @@ class Token {
         Modulo,
         Caret,
         If,
+        Else,
         Lt,
         Gt,
         LtEqual,
