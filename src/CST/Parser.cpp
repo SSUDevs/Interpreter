@@ -41,6 +41,8 @@ Token Parser::getToken() {
 }
 
 void Parser::addToCST(NodePtr node, InsertionMode mode) {
+    cout<<"Adding token with value "<<node->Value().value()<<" to tree with mode "<< mode <<endl;
+
     if (!root) {
         root = node;
     } else {
@@ -462,7 +464,40 @@ void Parser::parseExpression() {
 
 
 
-void Parser::parseAssignmentStatement() {}     // not done
+void Parser::parseAssignmentStatement() {
+    Token currtoken = getToken();
+    Token next = getToken();
+
+    if(next.type() != Token::Type::AssignmentOperator){
+        cerr << "Syntax error: Expected a Assignment opertator, found '"
+             << next.value() << "' at line " << next.lineNum() << "."<<endl;
+        exit(200);
+    }else{
+        addToCST(createNodePtr(currtoken),LeftChild);
+        addToCST(createNodePtr(next),RightSibling);
+    }
+    Token token = getToken();
+
+    if(token.type() == Token::Type::SingleQuotedString ||token.type() == Token::Type::DoubleQuotedString){
+        addToCST(createNodePtr(token),RightSibling);
+    }else if(token.type()== Token::Type::Integer ||
+            token.type()== Token::Type::WholeNumber||
+            token.type()== Token::Type::HexDigit ||
+            token.type()== Token::Type::Digit){
+        addToCST(createNodePtr(token),RightSibling);
+        }
+        else{
+            parseExpression();
+        }
+
+    token = getToken();
+    if(token.type() != Token::Type::Semicolon){
+        cerr << "Syntax error: Expected a semicolon, found '"
+             << next.value() << "' at line " << next.lineNum() << "."<<endl;
+        exit(201);
+    }
+    addToCST(createNodePtr(token),RightSibling);
+}     // not done
 
 void Parser::parseInLineStatement() {
     Token next = peekToken();
