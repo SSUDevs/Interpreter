@@ -206,7 +206,8 @@ Token Tokenizer::getToken() {
                 case '-':
                     // check if last token was an op
                     if (isOperator(_tokens.back()) ||
-                        _tokens.back().value() == "(") {
+                        _tokens.back().value() == "("
+                        || _tokens.back().value() == "[") {
                         // Treat as part of an integer if appropriate
                         tokenType = Token::Type::Integer;
                         tokenValue += currentChar;
