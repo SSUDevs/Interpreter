@@ -516,7 +516,7 @@ void Parser::parseSelectionStatement() {
 
     // (
     NodePtr LParenNode = expectToken(Token::Type::LParen,
-                                     "Expected ')' after boolean expression");
+                                     "Expected '(' before boolean expression");
     addToCST(LParenNode, RightSibling);
 
     // Parse the boolean expression within the if statement.
@@ -568,31 +568,10 @@ void Parser::parseExpression() {
         return; // Exit early after processing the function call
     }
 
-    // Handling unary minus
-    if (match(Token::Type::Minus, currToken)) {
-        // Look ahead to check if the next token is an integer
-        Token nextToken = peekAhead(1);
-        if (match(Token::Type::Integer, nextToken)) {
-            // Consume the minus token
-            getToken();
-            // Now consume the integer token and combine them
-            nextToken = getToken(); // Consuming the integer token
-            // Create a node that represents the negative of the integer
-            std::string negativeValue =
-                "-" +
-                nextToken.value(); // Append minus sign to the integer value
-            // Create and add the negative value node to CST
-            NodePtr negativeNode = createNodePtr(Token(
-                Token::Type::Integer, negativeValue, nextToken.lineNum()));
-            addToCST(negativeNode, RightSibling);
-            // Handle the rest of the expression if any
-            if (isOperator(peekToken())) {
-                Token operatorToken = getToken();
-                addToCST(createNodePtr(operatorToken), RightSibling);
-                parseExpression();
-            }
-            return; // Early return as the unary operation has been handled
-        }
+    // Handling unary operators (minus and logical NOT)
+    if (match(Token::Type::Minus, currToken) || match(Token::Type::BooleanNot, currToken)) {
+        addToCST(createNodePtr(getToken()), RightSibling); // Add '-' or '!' to CST
+        currToken = peekToken(); // Refresh currToken after consuming the operator
     }
 
     // If the current token is '('
@@ -792,7 +771,7 @@ void Parser::parsePrintfStatement() {
     }
     // "string"
     Token stringToken = getToken();
-    addToCST(createNodePtr(stringToken), RightSibling);
+    addToCST(createNodePtr(stringToken), LeftChild);
 
     // ,
     nextToken = peekToken();
