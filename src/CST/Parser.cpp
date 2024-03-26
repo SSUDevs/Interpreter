@@ -10,11 +10,10 @@ NodePtr Parser::parse() {
 
     while (current < tokens.size()) {
 
-        Token t = getToken();
+        Token t = peekToken();
 
         if (t.type() == Token::Type::Identifier) {
             string tokenValue = t.value();
-            cout << tokenValue << endl;
             if (isDataType(tokenValue)) {
                 parseDeclaration();
             } else if (tokenValue == "procedure") {
@@ -24,7 +23,7 @@ NodePtr Parser::parse() {
             } else { // error, global scope can only contain global variable
                      // declarations, procedures, and functions
                 cerr << "Invalid syntax in global scope at line " << t.lineNum()
-                     << endl;
+                     << " with identifier: " << tokenValue << endl;
                 exit(1);
             }
         }
@@ -68,12 +67,10 @@ bool Parser::match(Token::Type type, Token t) {
 
 void Parser::parseDeclaration() {
 
-    Token currToken = tokens[current];
+    Token currToken = peekToken();
 
-    if (match(Token::Type::Identifier, currToken) &&
-        isDataType(currToken.value())) {
-        addToCST(createNodePtr(currToken),
-                 LeftChild); // add data type id to CST
+    if (match(Token::Type::Identifier, currToken) && isDataType(currToken.value())) {
+        addToCST(createNodePtr(getToken()),LeftChild); // add data type id to CST
 
         parseIDENTIFIER_AND_IDENTIFIER_ARRAY_LIST(); // add list of identifiers
 
@@ -90,7 +87,7 @@ void Parser::parseDeclaration() {
 
 void Parser::parseIDENTIFIER_AND_IDENTIFIER_ARRAY_LIST() {
 
-    while (!match(Token::Type::Semicolon, tokens[current])) {
+    while (!match(Token::Type::Semicolon, peekToken())) {
         parseIDENTIFIER_ARRAY_LIST();
         parseIDENTIFIER_LIST();
     }
@@ -152,8 +149,10 @@ void Parser::parseIDENTIFIER_ARRAY_LIST() {
                 foundEnd = true;
                 current--;
             }
-        } else
+        } else{
             current -= 2;
+            foundEnd = true;
+        }
     }
 }
 
@@ -183,8 +182,10 @@ void Parser::parseIDENTIFIER_LIST() {
                 foundEnd = true;
                 current--;
             }
-        } else
+        } else {
             current -= 2;
+            foundEnd = true;
+        }
     }
 }
 
@@ -211,6 +212,7 @@ void Parser::parseBlockStatement() {
 }
 
 void Parser::parseProcedure() {
+    addToCST(createNodePtr(getToken()), LeftChild); // add 'procedure' identifier to CST
     Token identifier = getToken();
     if (identifier.type() != Token::Type::Identifier) {
         cerr << "Syntax error: Expected an identifier for the "
@@ -254,6 +256,8 @@ void Parser::parseProcedure() {
 
 
 void Parser::parseFunction() {
+    addToCST(createNodePtr(getToken()), LeftChild); // add 'function' identifier to CST
+
     Token return_type = getToken();
     cout << "current return type " << return_type.value() << endl;
     if (!isDataType(return_type.value())) {
@@ -481,6 +485,11 @@ void Parser::parseNumericalOperand() {
     }
     addToCST(createNodePtr(currToken), RightSibling);
 }
+
+void Parser::parseAssignmentStatement() {}     // not done
+void Parser::parseIterationStatement() {}     // not done
+void Parser::parsePrintfStatement() {}        // not done
+void Parser::parseReturnStatement() {}        // not done
 
 void Parser::parseBooleanExpression() {
     Token currToken = peekToken();
