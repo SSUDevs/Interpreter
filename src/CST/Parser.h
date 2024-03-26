@@ -48,13 +48,13 @@ private:
     void parseBlockStatement();
     void parseCompoundStatement();
     void parseStatement();
-    void parseAssignmentStatement();    // not done
-    void parseInLineStatement();     // not done
-    void parseIterationStatement();     // not done
-    void parsePrintfStatement();        // not done
+    void parseAssignmentStatement();    
+    void parseInLineStatement();     
+    void parseIterationStatement();     
+    void parsePrintfStatement();        
     void parseReturnStatement();        
-    void parseSelectionStatement();     // For IF statements
-
+    void parseSelectionStatement();     
+    void parseStatementOrBlock();
  
     void parseExpression();
 
