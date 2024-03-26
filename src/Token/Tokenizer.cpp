@@ -238,13 +238,13 @@ Token Tokenizer::getToken() {
             if (std::isalnum(currentChar) || currentChar == '_') {
                 tokenValue += currentChar;
             } else {
-                if (tokenValue == "if") {
+                /*if (tokenValue == "if") {
                     tokenType = Token::Type::If; 
                 } else if (tokenValue == "else") {
                     tokenType = Token::Type::Else;
                 } else if (tokenValue == "return") {
                     tokenType = Token::Type::Return;
-                } else if (tokenValue == "TRUE") {
+                } */if (tokenValue == "TRUE") {
                     tokenType = Token::Type::BooleanTrue;
                 } else if (tokenValue == "FALSE") {
                     tokenType = Token::Type::BooleanFalse;
