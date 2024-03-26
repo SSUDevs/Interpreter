@@ -465,7 +465,6 @@ void Parser::parseNumericalOperand() {
 void Parser::parseAssignmentStatement() {}     // not done
 void Parser::parseIterationStatement() {}     // not done
 void Parser::parsePrintfStatement() {}        // not done
-void Parser::parseReturnStatement() {}        // not done
 
 void Parser::parseBooleanExpression() {
     Token currToken = peekToken();
