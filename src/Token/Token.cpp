@@ -42,10 +42,6 @@ std::string Token::typeToString(Type type) {
         return "MODULO";
     case Type::Caret:
         return "CARET";
-    case Type::If:
-        return "IF";
-    case Type::Else:
-        return "ELSE";
     case Type::Lt:
         return "LESS_THAN";
     case Type::Gt:
@@ -82,8 +78,6 @@ std::string Token::typeToString(Type type) {
         return "WHOLE_NUMBER";
     case Type::Integer:
         return "INTEGER";
-    case Type::Return:
-        return "RETURN";
     case Type::Unknown:
         return "UNKNOWN";
     default:

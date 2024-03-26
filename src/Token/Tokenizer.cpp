@@ -98,9 +98,7 @@ Token Tokenizer::getToken() {
                     _currentState = DQ_STRING;
                     break;
                 case '\'':
-                    tokenType = Token::Type::SingleQuote;
-                    tokenValue = currentChar;
-                    tokenFound = true;
+                    tokenValue += currentChar;
                     _currentState = SQ_STRING;
                     break;
                 case ';':
@@ -288,6 +286,8 @@ Token Tokenizer::getToken() {
                     tokenType = Token::Type::DoubleQuotedString;
                 }
                 tokenFound = true;
+                tokenValue += currentChar;
+                _currentState = START;
             } else {
 
                 tokenValue += currentChar;
@@ -295,33 +295,23 @@ Token Tokenizer::getToken() {
             break;
        
         case SQ_STRING:
-            if (currentChar != '\'') {
-                tokenValue += currentChar;
-            } else {
-                _currentState =
-                    SQ_END; // so next token can be read as end of string.
-                tokenType = Token::Type::String; // can combine to token:
-                // 'SINGLE_QUOTED_STRING' but
-                // assignment just labels strings
+            if (currentChar == '\'') {
+                if (tokenValue.length() == 1) {
+
+                    tokenType = Token::Type::SingleQuote;
+                } else {
+
+                    tokenType = Token::Type::SingleQuotedString;
+                }
                 tokenFound = true;
-                --_currentPos; // Re-evaluate this character in the next state
+                tokenValue += currentChar;
+                _currentState = START;
+            } else {
+
+                tokenValue += currentChar;
             }
             break;
 
-        case SQ_END:
-            // Error for not finishing quote
-            if (currentChar != '\'') {
-                std::cerr << "Syntax error on line " << _lineNum
-                          << ": incomplete quote\n";
-                std::cout << "here: " << currentChar << std::endl;
-                exit(1);
-            }
-
-            _currentState = START;
-            tokenType = Token::Type::SingleQuote;
-            tokenValue = currentChar;
-            tokenFound = true;
-            break;
         }
         ++_currentPos;
     }

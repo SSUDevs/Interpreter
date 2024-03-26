@@ -28,8 +28,6 @@ class Token {
         Asterisk,
         Modulo,
         Caret,
-        If,
-        Else,
         Lt,
         Gt,
         LtEqual,
@@ -48,7 +46,6 @@ class Token {
         DoubleQuotedString,
         WholeNumber,
         Integer,
-        Return,
         Unknown // For unrecognized tokens
     };
 

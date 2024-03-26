@@ -58,6 +58,8 @@ private:
  
     void parseExpression();
 
+    void parseProcedureStatement();
+
 
 };
 

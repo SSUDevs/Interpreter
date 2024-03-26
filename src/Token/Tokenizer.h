@@ -12,9 +12,7 @@ class Tokenizer {
         IDENTIFIER,
         INTEGER,
         DQ_STRING,
-        DQ_END,
         SQ_STRING,
-        SQ_END
     };
 
     explicit Tokenizer(const std::vector<char> &file); // Pass by const ref
