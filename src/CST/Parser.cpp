@@ -230,8 +230,7 @@ void Parser::parseProcedure() {
         expectToken(Token::Type::LParen, "Expected '(' after procedure name.");
     addToCST(lParenNode, RightSibling);
 
-    // Peek at the next token to determine if it is 'void' or the start
-    // of a parameter list.
+    // See if next token is 'void' or params
     Token next = peekToken();
     if (next.value() == "void") {
         // If 'void', get the token, create a node, and add it to CST
@@ -289,12 +288,10 @@ void Parser::parseFunction() {
         expectToken(Token::Type::LParen, "Expected '(' after procedure name.");
     addToCST(lParenNode, RightSibling);
 
-    // Peek at the next token to determine if it is 'void' or the start
-    // of a parameter list.
+    // See if next token is 'void' or params
     Token next = peekToken();
     if (next.value() == "void") {
-        // If 'void', get the token, create a node, and add it to the
-        // CST.
+        // If 'void', get the token, create a node, and add it to CST
         Token voidToken = getToken();
         NodePtr voidNode = createNodePtr(voidToken);
         addToCST(voidNode, RightSibling);
@@ -307,8 +304,6 @@ void Parser::parseFunction() {
         expectToken(Token::Type::RParen, "Expected ')' after parameter list.");
     addToCST(rParenNode, RightSibling);
 
-    // Expect and validate the left brace '{' token to start the
-    // procedure body.
     NodePtr lBraceNode = expectToken(
         Token::Type::LBrace, "Expected '{' to start the procedure body.");
     addToCST(lBraceNode, RightSibling);
@@ -316,79 +311,75 @@ void Parser::parseFunction() {
     // Parse the procedure body (a compound statement).
     parseCompoundStatement();
 
-    // Expect and validate the right brace '}' token to end the
-    // procedure.
     NodePtr rBraceNode =
         expectToken(Token::Type::RBrace, "Expected '}' to end the procedure.");
     addToCST(rBraceNode, RightSibling);
 }
 
-// Parses the list of parameters for a procedure or function.
 void Parser::parseParameterList() {
-    NodePtr firstParam = nullptr; // Will point to the first parameter node.
-    NodePtr lastParam = nullptr;  // Tracks the last parameter node added to
-                                  // chain the next one as its right sibling.
-
-    // Loop until a ')' token is encountered which indicates the end of
-    // the parameter list.
-    while (true) {
+    bool expectParameter = true;
+    while (expectParameter) {
+        // Expect a data type specifier
         Token dataTypeToken = getToken();
-        // If ')' is encountered, the parameter list is complete.
-        if (dataTypeToken.type() == Token::Type::RParen) {
-            current--; // Put back the ')' token for the calling
-                       // function.
-            break;
-        }
-
-        // Check that the current token is a valid data type.
         if (!isDataType(dataTypeToken.value())) {
-            cerr << "Expected a data type in parameter list, found '"
-                 << dataTypeToken.value() << "' at line "
-                 << dataTypeToken.lineNum() << "." << endl;
-            exit(1); // Terminate on syntax error.
+            cerr << "Syntax error on line " << dataTypeToken.lineNum()
+                 << ": expected a data type specifier, found '" << dataTypeToken.value() << "'" << endl;
+            exit(1);
+        }
+        addToCST(createNodePtr(dataTypeToken), RightSibling);
+
+        // Expect an identifier after data type
+        Token identifierToken = getToken();
+        if (identifierToken.type() != Token::Type::Identifier) {
+            cerr << "Syntax error on line " << identifierToken.lineNum()
+                 << ": expected an identifier, found '" << identifierToken.value() << "'" << endl;
+            exit(1);
+        }
+        addToCST(createNodePtr(identifierToken), RightSibling);
+
+        // Check for array syntax
+        Token nextToken = peekToken();
+        if (nextToken.type() == Token::Type::LBracket) {
+            // Consume '['
+            getToken();
+            addToCST(createNodePtr(nextToken), RightSibling);
+
+            // Expect and consume the array size (a whole number)
+            Token arraySizeToken = getToken();
+            if (arraySizeToken.type() != Token::Type::WholeNumber) {
+                cerr << "Syntax error on line " << arraySizeToken.lineNum()
+                     << ": expected an array size, found '" << arraySizeToken.value() << "'" << endl;
+                exit(6);
+            }
+            addToCST(createNodePtr(arraySizeToken), RightSibling);
+
+            // Expect and consume ']'
+            Token closeBracketToken = getToken();
+            if (closeBracketToken.type() != Token::Type::RBracket) {
+                cerr << "Syntax error on line " << closeBracketToken.lineNum()
+                     << ": expected ']', found '" << closeBracketToken.value() << "'" << endl;
+                exit(6);
+            }
+            addToCST(createNodePtr(closeBracketToken), RightSibling);
+
+            // Update nextToken to peek at the next token after the array syntax
+            nextToken = peekToken();
         }
 
-        // Get the next token, which should be the identifier for the
-        // parameter.
-        Token paramNameToken = getToken();
-        if (paramNameToken.type() != Token::Type::Identifier) {
-            cerr << "Expected an identifier for parameter name, found '"
-                 << paramNameToken.value() << "' at line "
-                 << paramNameToken.lineNum() << "." << endl;
-            exit(1); // Terminate on syntax error.
-        }
-
-        // Create a node for the data type and the parameter name.
-        NodePtr dataTypeNode = createNodePtr(dataTypeToken);
-        NodePtr paramNameNode = createNodePtr(paramNameToken);
-
-        // Link the identifier node as the right sibling of the data
-        // type node.
-        dataTypeNode->addRightSibling(paramNameNode);
-
-        // If this is the first parameter, set the firstParam pointer.
-        if (!firstParam) {
-            firstParam = dataTypeNode;
-        }
-
-        // Chain the parameters: set the last parameter's right sibling
-        // to the current data type node.
-        if (lastParam) {
-            lastParam->addRightSibling(dataTypeNode);
-        }
-        // Update the last parameter node to be the current identifier
-        // node.
-        lastParam = paramNameNode;
-
-        // If the next token is a comma, consume it to move on to the
-        // next parameter.
-        if (peekToken().type() == Token::Type::Comma) {
-            getToken(); // Consume the comma token.
+        // Handle end of parameter or continuation with comma
+        if (nextToken.type() == Token::Type::RParen) {
+            // End of parameter list
+            expectParameter = false;
+        } else if (nextToken.type() == Token::Type::Comma) {
+            // Consume comma and continue
+            getToken(); // This consumes the comma token, moving to the next parameter
+            addToCST(createNodePtr(nextToken), RightSibling);
+        } else {
+            cerr << "Syntax error on line " << nextToken.lineNum()
+                 << ": expected ',' or ')', found '" << nextToken.value() << "'" << endl;
+            exit(6);
         }
     }
-
-    // Return the head of the linked list of parameters.
-    return firstParam;
 }
 
 // A helper method to consume the next token and validate its type
