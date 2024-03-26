@@ -677,7 +677,7 @@ void Parser::parsePrintfStatement() {
     }
     // "string"
     Token stringToken = getToken();
-    addToCST(createNodePtr(stringToken), LeftChild);
+    addToCST(createNodePtr(stringToken), RightSibling);
 
     // ,
     nextToken = peekToken();
@@ -691,6 +691,7 @@ void Parser::parsePrintfStatement() {
 
     // ;
     addToCST( expectToken(Token::Type::Semicolon, "Expected ';' at the end of printf statement"), RightSibling);
+
 }
 
 
