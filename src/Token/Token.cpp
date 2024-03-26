@@ -42,6 +42,8 @@ std::string Token::typeToString(Type type) {
         return "MODULO";
     case Type::Caret:
         return "CARET";
+    case Type::If:
+        return "IF";
     case Type::Lt:
         return "LESS_THAN";
     case Type::Gt:

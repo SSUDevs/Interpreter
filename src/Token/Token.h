@@ -28,6 +28,7 @@ class Token {
         Asterisk,
         Modulo,
         Caret,
+        If,
         Lt,
         Gt,
         LtEqual,

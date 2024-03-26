@@ -238,19 +238,19 @@ Token Tokenizer::getToken() {
             if (std::isalnum(currentChar) || currentChar == '_') {
                 tokenValue += currentChar;
             } else {
-                if (tokenValue == "return") {
+                // Check if the identifier matches the "if" keyword
+                if (tokenValue == "if") {
+                    tokenType = Token::Type::If; // Recognize "if" as a keyword
+                } else if (tokenValue == "return") {
                     tokenType = Token::Type::Return;
+                } else if (tokenValue == "TRUE") {
+                    tokenType = Token::Type::BooleanTrue;
+                } else if (tokenValue == "FALSE") {
+                    tokenType = Token::Type::BooleanFalse;
                 }
-                _currentState =
-                    START; // End of identifier (Which is just a string realle)
+                _currentState = START;
                 tokenFound = true;
                 --_currentPos; // Re-evaluate the character in the next state
-
-                // change token type if identifier is true or false
-                if (tokenValue == "TRUE")
-                    tokenType = Token::Type::BooleanTrue;
-                else if (tokenValue == "FALSE")
-                    tokenType = Token::Type::BooleanFalse;
             }
             break;
         case INTEGER:
