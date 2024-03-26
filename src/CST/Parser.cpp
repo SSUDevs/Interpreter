@@ -650,7 +650,7 @@ void Parser::parseExpression() {
 
         if (peekToken().type() == Token::Type::LBracket) {
             // Array indexing
-            getToken();        // Consume '['
+            addToCST(createNodePtr(getToken()), RightSibling);        // Consume '['
             parseExpression(); // Parse the index expression
             addToCST(expectToken(Token::Type::RBracket, "Expected ']'"), RightSibling);
         }
