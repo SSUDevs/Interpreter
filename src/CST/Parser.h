@@ -63,5 +63,6 @@ private:
 
 bool isDataType(std::string id);
 bool isReserved(std::string id);
+bool isOperator(Token t);
 
 #endif // PARSER_H

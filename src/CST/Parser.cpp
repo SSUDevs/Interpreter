@@ -449,7 +449,7 @@ void Parser::parseExpression() {
         }
         
         // Check for an operator after the operand
-        if (isNumericalOperator(peekToken().type()) || isBooleanOperator(peekToken().type())) {
+        if (isOperator(peekToken())) {
             Token operatorToken = getToken(); 
             addToCST(createNodePtr(operatorToken), RightSibling); 
             parseExpression();
@@ -459,10 +459,6 @@ void Parser::parseExpression() {
         exit(1);
     }
 }
-
-
-
-
 
 void Parser::parseAssignmentStatement() {
     Token currtoken = getToken();
@@ -585,6 +581,7 @@ void Parser::parseIterationStatement() {
         exit(1);
     }
 }
+
 void Parser::parsePrintfStatement() {
     getToken();
 
@@ -600,8 +597,7 @@ void Parser::parsePrintfStatement() {
 
      nextToken = peekToken();
     if (match(Token::Type::Comma, nextToken)) {
-        addToCST(createNodePtr(stringToken), RightSibling);
-        getToken();
+        addToCST(createNodePtr(getToken()), RightSibling);
         parseIDENTIFIER_AND_IDENTIFIER_ARRAY_LIST();
     }
 
@@ -653,7 +649,7 @@ Token Parser::peekToken() const {
 
 // A helper method to peek ahead more than one token without incrementing
 // 'current'
-Token Parser::peekAhead(int offset = 0) const {
+Token Parser::peekAhead(int offset) const {
     if (current + offset >= tokens.size()) {
         throw std::runtime_error("Unexpected end of input while peeking at token.");
     }
@@ -672,6 +668,27 @@ bool isReserved(string id) {
         id == "function" || id == "procedure" || id == "main" ||
         id == "return" || id == "printf" || id == "getchar" || id == "if" ||
         id == "else" || id == "for" || id == "while")
+        return true;
+    return false;
+}
+
+bool isOperator(Token t) {
+    if (t.type() == Token::Type::Plus
+        || t.type() == Token::Type::Minus
+        || t.type() == Token::Type::Slash
+        || t.type() == Token::Type::Asterisk
+        || t.type() == Token::Type::Modulo
+        || t.type() == Token::Type::Caret
+        || t.type() == Token::Type::Lt
+        || t.type() == Token::Type::Gt
+        || t.type() == Token::Type::LtEqual
+        || t.type() == Token::Type::GtEqual
+        || t.type() == Token::Type::BooleanAnd
+        || t.type() == Token::Type::BooleanOr
+        || t.type() == Token::Type::BooleanNot
+        || t.type() == Token::Type::BooleanEqual
+        || t.type() == Token::Type::BooleanNotEqual
+    )
         return true;
     return false;
 }
