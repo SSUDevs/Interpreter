@@ -416,6 +416,12 @@ void Parser::parseStatement() {
     }
 }
 
+void Parser::parseSelectionStatement() {
+
+
+    
+}
+
 void Parser::parseExpression() {
     
     Token currToken = peekToken();
@@ -459,10 +465,6 @@ void Parser::parseExpression() {
         exit(1);
     }
 }
-
-
-
-
 
 void Parser::parseAssignmentStatement() {
     Token currtoken = getToken();
