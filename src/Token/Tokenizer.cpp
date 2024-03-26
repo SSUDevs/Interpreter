@@ -252,6 +252,12 @@ Token Tokenizer::getToken() {
                     START; // End of identifier (Which is just a string realle)
                 tokenFound = true;
                 --_currentPos; // Re-evaluate the character in the next state
+
+                // change token type if identifier is true or false
+                if (tokenValue == "TRUE")
+                    tokenType = Token::Type::BooleanTrue;
+                else if (tokenValue == "FALSE")
+                    tokenType = Token::Type::BooleanFalse;
             }
             break;
         case INTEGER:
