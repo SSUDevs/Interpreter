@@ -1,5 +1,6 @@
 #include "Parser.h"
 #include <iostream>
+#include <string>
 using namespace std;
 // Use make_shared to dynamically allocate Node instances.
 // When a new node is created, it's managed by a shared_ptr.
@@ -125,9 +126,7 @@ void Parser::parseIDENTIFIER_ARRAY_LIST() {
                      << "\" cannot be used for a variable name." << endl;
                 exit(10);
             }
-            if (stoi(num.value()) < 0 &&
-                !match(Token::Type::Identifier,
-                       num)) { // ERROR negative array size
+            if (num.value()[0] == '-' && !match(Token::Type::Identifier,num)) { // ERROR negative array size
                 cerr << "Syntax error on line " << num.lineNum()
                      << ": array declaration size must be a positive integer."
                      << endl;
@@ -226,6 +225,13 @@ void Parser::parseProcedure() {
              << "." << endl;
         exit(13);
     }
+
+    if (isReserved(identifier.value()) && identifier.value() != "main") {
+        cerr << "Syntax error on line " << identifier.lineNum()
+             << ": can't use \""
+             << identifier.value() << "\" as a procedure name." << endl;
+        exit(1);
+    }
     // Create a procedure declaration node with identifier and add to CST
     addToCST(createNodePtr(identifier), LeftChild);
 
@@ -271,7 +277,9 @@ void Parser::parseFunction() {
              << "." << endl;
         exit(10);
     }
+
     addToCST(createNodePtr(return_type), RightSibling);
+
     Token identifier = getToken();
     if (identifier.type() != Token::Type::Identifier) {
         cerr << "Syntax error: Expected an identifier for the "
@@ -280,6 +288,14 @@ void Parser::parseFunction() {
              << "." << endl;
         exit(20);
     }
+
+    if (isReserved(identifier.value())) {
+        cerr << "Syntax error on line " << identifier.lineNum()
+             << ": can't use \""
+             << identifier.value() << "\" as a function name." << endl;
+        exit(888);
+    }
+
     addToCST(createNodePtr(identifier), RightSibling);
 
     NodePtr lParenNode =
@@ -330,6 +346,13 @@ void Parser::parseParameterList() {
             cerr << "Syntax error on line " << identifierToken.lineNum()
                  << ": expected an identifier, found '"
                  << identifierToken.value() << "'" << endl;
+            exit(1);
+        }
+
+        if (isReserved(identifierToken.value())) {
+            cerr << "Syntax error on line " << identifierToken.lineNum()
+                 << ": can't use \""
+                 << identifierToken.value() << "\" as a variable name." << endl;
             exit(1);
         }
         addToCST(createNodePtr(identifierToken), RightSibling);
@@ -476,10 +499,18 @@ void Parser::parseStatement() {
 
     }
     // only possible statement that starts with unreserved word
-    else if (match(Token::Type::AssignmentOperator, peekAhead(1))) {
-        parseAssignmentStatement();
-    } else
-        parseProcedureStatement();
+    else{
+        if (match(Token::Type::AssignmentOperator, peekAhead(1))) {
+            parseAssignmentStatement();
+        }
+        else if (match(Token::Type::LBracket, peekAhead(1))) {
+            parseAssignmentStatement();
+        }
+        else
+            parseProcedureStatement();
+    }
+
+
 }
 
 void Parser::parseProcedureStatement() {
@@ -631,16 +662,51 @@ void Parser::parseExpression() {
 }
 
 void Parser::parseAssignmentStatement() {
-    Token currtoken = getToken();
-    Token next = getToken();
+    Token currtoken = peekToken();
+    Token next = peekAhead(1);
 
-    if (next.type() != Token::Type::AssignmentOperator) {
+    if (next.type() != Token::Type::AssignmentOperator && next.type() != Token::Type::LBracket) {
         cerr << "Syntax error: Expected a Assignment opertator, found '"
              << next.value() << "' at line " << next.lineNum() << "." << endl;
         exit(200);
-    } else {
-        addToCST(createNodePtr(currtoken), LeftChild);
-        addToCST(createNodePtr(next), RightSibling);
+    }
+    // array assignment
+    else if (next.type() == Token::Type::LBracket) {
+        // add identifier
+        addToCST(createNodePtr(getToken()), LeftChild);
+
+        // [
+        addToCST(createNodePtr(getToken()), RightSibling);
+
+        next = peekToken();
+
+        if (next.type() != Token::Type::Integer && next.type() != Token::Type::Identifier) {
+            cerr << "Syntax error: Expected a valid array index, found '"
+                 << next.value() << "' at line " << next.lineNum() << "." << endl;
+            exit(203);
+        }
+
+        if (isReserved(next.value())) {
+            cerr << "Syntax error: can't use reserved name as array index '"
+                 << next.value() << "' at line " << next.lineNum() << "." << endl;
+            exit(204);
+        }
+
+        // array index
+        addToCST(createNodePtr(getToken()), RightSibling);
+
+        // ]
+        addToCST(expectToken(Token::Type::RBracket, "Expected ']'"), RightSibling);
+
+        // =
+        addToCST(expectToken(Token::Type::AssignmentOperator, "Expected ']'"), RightSibling);
+    }
+    // simple assignment
+    else {
+        // identifier
+        addToCST(createNodePtr(getToken()), LeftChild);
+        // =
+        addToCST(createNodePtr(getToken()), RightSibling);
     }
     Token token = peekToken();
 
