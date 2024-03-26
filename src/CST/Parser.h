@@ -58,14 +58,6 @@ private:
  
     void parseExpression();
 
-    void parseNumericalExpression();
-    void parseNumericalOperand();
-
-    void parseBooleanExpression();
-    bool isBooleanOperator(Token::Type type);
-    bool isBooleanValue(const std::string& value);
-    bool isNumericalOperator(Token::Type type);
-    bool isComparisonOperator(Token::Type type);
 
 };
 
