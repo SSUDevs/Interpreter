@@ -29,7 +29,7 @@ void Tokenizer::tokenizeVector() {
     while (_currentPos < _size) {
         Token token = getToken(); // Gonna get the next token
         if (token.type() !=
-            Token::Type::Unknown) { // Skiping unknown tokens for now
+            Token::Type::Unknown) { // Skipping unknown tokens for now
             _tokens.push_back(token);
         }
     }
@@ -279,36 +279,53 @@ Token Tokenizer::getToken() {
             break;
         case DQ_STRING:
             if (currentChar == '"') {
-                if (tokenValue.length() == 1) {
-
-                    tokenType = Token::Type::DoubleQuote;
-                } else {
-
-                    tokenType = Token::Type::DoubleQuotedString;
+                // if the previous character was a backslash don't count this quote as a quote
+                if (_file[_currentPos - 1] == '\\') {
+                    tokenValue += currentChar;
                 }
-                tokenFound = true;
-                tokenValue += currentChar;
-                _currentState = START;
-            } else {
+                else {
+                    if (tokenValue.length() == 1) {
 
+                        tokenType = Token::Type::DoubleQuote;
+                    } else {
+
+                        tokenType = Token::Type::DoubleQuotedString;
+                    }
+                    tokenFound = true;
+                    tokenValue += currentChar;
+                    _currentState = START;
+                }
+            } else {
+                if (currentChar == '\n') {
+                    std::cerr << "Unterminated string quote on line: " << _lineNum << std::endl;
+                    exit(99);
+                }
                 tokenValue += currentChar;
             }
             break;
        
         case SQ_STRING:
             if (currentChar == '\'') {
-                if (tokenValue.length() == 1) {
-
-                    tokenType = Token::Type::SingleQuote;
-                } else {
-
-                    tokenType = Token::Type::SingleQuotedString;
+                if (_file[_currentPos - 1] == '\\') {
+                    tokenValue += currentChar;
                 }
-                tokenFound = true;
-                tokenValue += currentChar;
-                _currentState = START;
-            } else {
+                else {
+                    if (tokenValue.length() == 1) {
 
+                        tokenType = Token::Type::SingleQuote;
+                    } else {
+
+                        tokenType = Token::Type::SingleQuotedString;
+                    }
+                    tokenFound = true;
+                    tokenValue += currentChar;
+                    _currentState = START;
+                }
+            } else {
+                if (currentChar == '\n') {
+                    std::cerr << "Unterminated string quote on line: " << _lineNum << std::endl;
+                    exit(99);
+                }
                 tokenValue += currentChar;
             }
             break;
