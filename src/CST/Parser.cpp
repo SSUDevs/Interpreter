@@ -391,6 +391,14 @@ Token Parser::peekToken() const {
     }
     return tokens[current];
 }
+// Helper method to peek at the next token by an offset, which can peek more than one
+Token Parser::peekAhead(int offset = 0) const {
+    if (current + offset >= tokens.size()) {
+        throw std::runtime_error("Unexpected end of input while peeking at token.");
+    }
+    return tokens[current + offset];
+}
+
 
 void Parser::parseCompoundStatement() {
 
@@ -435,12 +443,46 @@ void Parser::parseStatement() {
 }
 
 void Parser::parseExpression() {
-    Token nextToken = peekToken();
-    if (isBooleanOperator(nextToken.type()) ||
-        isBooleanValue(nextToken.value())) {
-        parseBooleanExpression();
+    
+    Token currToken = peekToken();
+    
+    // If the current token is '('
+    if (match(Token::Type::LParen, currToken)) {
+        getToken(); 
+        addToCST(createNodePtr(currToken), RightSibling); 
+        parseExpression();
+        NodePtr rParenNode = expectToken(Token::Type::RParen, "Expected ')'");
+        addToCST(rParenNode, RightSibling); 
+        parseExpression();
+    } else if (!isReserved(currToken.value())) { // If the token is an operand and it's not reserved
+        addToCST(createNodePtr(currToken), RightSibling);
+        getToken(); 
+        
+        Token nextToken = peekToken();
+        if (match(Token::Type::LParen, nextToken) && currToken.type() == Token::Type::Identifier) {
+            getToken(); 
+            addToCST(createNodePtr(nextToken), RightSibling); 
+            
+            if (peekAhead(1).type() == Token::Type::Comma) { 
+                // If the next token indicates a parameter list
+                parseIdentifierAndIdentifierArrayList();
+            } else {
+                // Otherwise, it's an expression within parentheses
+                parseExpression();
+            }
+            NodePtr closingRParen = expectToken(Token::Type::RParen, "Expected ')'");
+            addToCST(closingRParen, RightSibling); 
+        }
+        
+        // Check for an operator after the operand
+        if (isNumericalOperator(peekToken().type()) || isBooleanOperator(peekToken().type())) {
+            Token operatorToken = getToken(); 
+            addToCST(createNodePtr(operatorToken), RightSibling); 
+            parseExpression();
+        }
     } else {
-        parseNumericalExpression();
+        cerr << "Syntax error: Expected expression, found '" << currToken.value() << "' at line " << currToken.lineNum() << "." << endl;
+        exit(1);
     }
 }
 
@@ -448,7 +490,7 @@ void Parser::parseSelectionStatement() {
     // Used for parsing selection statements (if-else)
 }
 
-void Parser::parseNumericalExpression() {
+/*void Parser::parseNumericalExpression() {
     Token currToken = peekToken();
     if (match(Token::Type::LParen, currToken)) {
         getToken(); // consume '('
@@ -485,8 +527,8 @@ void Parser::parseNumericalOperand() {
 void Parser::parseBooleanExpression() {
     Token currToken = peekToken();
 
-    if (/*match(Token::Type::BooleanTrue, currToken) ||
-           match(Token::Type::BooleanFalse, currToken) ||*/
+    if (match(Token::Type::BooleanTrue, currToken) ||
+           match(Token::Type::BooleanFalse, currToken) ||
         match(Token::Type::Identifier, currToken)) {
         getToken();
         addToCST(createNodePtr(currToken), RightSibling);
@@ -541,7 +583,7 @@ bool Parser::isComparisonOperator(Token::Type type) {
            type == Token::Type::LtEqual || type == Token::Type::GtEqual ||
            type == Token::Type::BooleanEqual ||
            type == Token::Type::BooleanNotEqual;
-}
+}*/
 
 bool isDataType(string id) {
     if (id == "char" || id == "int" || id == " bool")
