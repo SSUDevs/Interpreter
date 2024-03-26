@@ -20,7 +20,7 @@ public:
     // Constructor (Using explicit to avoid accidental implicit conversions)
     explicit Parser(const std::vector<Token>& tokens);
 
-    NodePtr parse(); 
+    NodePtr parse();
 
 private:
     Token getToken(); // Gets the current token and moves to the next
@@ -29,6 +29,9 @@ private:
     NodePtr createNodePtr(const Token& token);
 
     Token peekToken() const;
+    //peek ahead more than one tokens
+    Token peekAhead(int offset ) const;
+
     NodePtr expectToken(Token::Type expectedType, const std::string &errorMessage);
 
 
@@ -46,9 +49,10 @@ private:
     void parseCompoundStatement();
     void parseStatement();
     void parseAssignmentStatement();    // not done
+    void parseInLineStatement();     // not done
     void parseIterationStatement();     // not done
     void parsePrintfStatement();        // not done
-    void parseReturnStatement();        
+    void parseReturnStatement();
     void parseSelectionStatement();     // For IF statements
 
 
