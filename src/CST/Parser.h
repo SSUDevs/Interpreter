@@ -51,7 +51,7 @@ private:
     void parseReturnStatement();        
     void parseSelectionStatement();     // For IF statements
 
- 
+
     void parseExpression();
 
     void parseNumericalExpression();

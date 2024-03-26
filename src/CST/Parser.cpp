@@ -41,6 +41,8 @@ Token Parser::getToken() {
 }
 
 void Parser::addToCST(NodePtr node, InsertionMode mode) {
+    cout<<"Adding token with value "<<node->Value().value()<<" to tree with mode "<< mode <<endl;
+
     if (!root) {
         root = node;
     } else {
@@ -257,9 +259,8 @@ void Parser::parseProcedure() {
 
 void Parser::parseFunction() {
     addToCST(createNodePtr(getToken()), LeftChild); // add 'function' identifier to CST
-
     Token return_type = getToken();
-    cout << "current return type " << return_type.value() << endl;
+
     if (!isDataType(return_type.value())) {
         cerr << "Syntax error: Expected an return type for the "
                 "function name, found '"
@@ -267,6 +268,7 @@ void Parser::parseFunction() {
              << "." << endl;
         exit(10);
     }
+    addToCST(createNodePtr(return_type),RightSibling);
     Token identifier = getToken();
     if (identifier.type() != Token::Type::Identifier) {
         cerr << "Syntax error: Expected an identifier for the "
@@ -275,7 +277,7 @@ void Parser::parseFunction() {
              << "." << endl;
         exit(20);
     }
-    addToCST(createNodePtr(identifier), LeftChild);
+    addToCST(createNodePtr(identifier), RightSibling);
 
     NodePtr lParenNode =
         expectToken(Token::Type::LParen, "Expected '(' after procedure name.");
@@ -296,14 +298,14 @@ void Parser::parseFunction() {
 
     NodePtr lBraceNode = expectToken(
         Token::Type::LBrace, "Expected '{' to start the procedure body.");
-    addToCST(lBraceNode, RightSibling);
+    addToCST(lBraceNode, LeftChild);
 
     // Parse the procedure body (a compound statement).
     parseCompoundStatement();
 
     NodePtr rBraceNode =
         expectToken(Token::Type::RBrace, "Expected '}' to end the procedure.");
-    addToCST(rBraceNode, RightSibling);
+    addToCST(rBraceNode, LeftChild);
 }
 
 void Parser::parseParameterList() {
@@ -462,7 +464,7 @@ void Parser::parseNumericalOperand() {
     addToCST(createNodePtr(currToken), RightSibling);
 }
 
-void Parser::parseAssignmentStatement() {}     // not done
+void Parser::   parseAssignmentStatement() {}     // not done
 void Parser::parseIterationStatement() {}     // not done
 void Parser::parsePrintfStatement() {}        // not done
 
@@ -566,6 +568,7 @@ bool Parser::isComparisonOperator(Token::Type type) {
            type == Token::Type::BooleanEqual ||
            type == Token::Type::BooleanNotEqual;
 }
+
 
 bool isDataType(string id) {
     if (id == "char" || id == "int" || id == " bool")
