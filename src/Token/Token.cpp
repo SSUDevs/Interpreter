@@ -60,6 +60,10 @@ std::string Token::typeToString(Type type) {
         return "BOOLEAN_EQUAL";
     case Type::BooleanNotEqual:
         return "BOOLEAN_NOT_EQUAL";
+    case Type::BooleanTrue:
+        return "BOOLEAN_TRUE";
+    case Type::BooleanFalse:
+        return "BOOLEAN_False";
     case Type::Escape:
         return "ESCAPE";
     case Type::Identifier:

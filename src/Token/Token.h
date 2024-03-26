@@ -37,6 +37,8 @@ class Token {
         BooleanNot,
         BooleanEqual,
         BooleanNotEqual,
+        BooleanTrue,
+        BooleanFalse,
         Escape,
         Identifier,
         String,

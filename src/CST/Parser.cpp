@@ -528,8 +528,7 @@ bool isReserved(string id) {
     if (id == "char" || id == "int" || id == "bool" || id == "void" ||
         id == "function" || id == "procedure" || id == "main" ||
         id == "return" || id == "printf" || id == "getchar" || id == "if" ||
-        id == "else" || id == "for" || id == "while" || id == "TRUE" ||
-        id == "FALSE")
+        id == "else" || id == "for" || id == "while")
         return true;
     return false;
 }
