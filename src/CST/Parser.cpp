@@ -221,7 +221,7 @@ void Parser::parseProcedure() {
                 "procedure name, found '"
              << identifier.value() << "' at line " << identifier.lineNum()
              << "." << endl;
-        exit(1);
+        exit(13);
     }
     // Create a procedure declaration node with identifier and add to CST
     addToCST(createNodePtr(identifier), LeftChild);
@@ -471,15 +471,17 @@ void Parser::parseExpression() {
         getToken();
         addToCST(createNodePtr(currToken), RightSibling);
         parseExpression();
+
         NodePtr rParenNode = expectToken(Token::Type::RParen, "Expected ')'");
         addToCST(rParenNode, RightSibling);
+
         if (isOperator(peekToken())) {
             Token operatorToken = getToken();
             addToCST(createNodePtr(operatorToken), RightSibling);
             parseExpression();
         }
 
-    } else if (!isReserved(currToken.value())) { // If the token is an operand and it's not reserved
+    } else if (!isReserved(currToken.value()) || currToken.type() == Token::Type::DoubleQuotedString ||currToken.type() == Token::Type::SingleQuotedString) { // If the token is an operand and it's not reserved
         addToCST(createNodePtr(currToken), RightSibling);
         getToken();
 
