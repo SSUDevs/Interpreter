@@ -21,7 +21,7 @@ NodePtr Parser::parse() {
             } else if (tokenValue == "function") {
                 parseFunction();
             } else { // error, global scope can only contain global variable
-                     // declarations, procedures, and functions
+                // declarations, procedures, and functions
                 cerr << "Invalid syntax in global scope at line " << t.lineNum()
                      << " with identifier: " << tokenValue << endl;
                 exit(1);
@@ -227,7 +227,7 @@ void Parser::parseProcedure() {
     addToCST(createNodePtr(identifier), LeftChild);
 
     NodePtr lParenNode =
-        expectToken(Token::Type::LParen, "Expected '(' after procedure name.");
+            expectToken(Token::Type::LParen, "Expected '(' after procedure name.");
     addToCST(lParenNode, RightSibling);
 
     // See if next token is 'void' or params
@@ -241,27 +241,26 @@ void Parser::parseProcedure() {
     }
 
     NodePtr rParenNode =
-        expectToken(Token::Type::RParen, "Expected ')' after parameter list.");
+            expectToken(Token::Type::RParen, "Expected ')' after parameter list.");
     addToCST(rParenNode, RightSibling);
 
     NodePtr lBraceNode = expectToken(
-        Token::Type::LBrace, "Expected '{' to start the procedure body.");
+            Token::Type::LBrace, "Expected '{' to start the procedure body.");
     addToCST(lBraceNode, RightSibling);
 
     // Parse the procedure body (a compound statement).
     parseCompoundStatement();
 
     NodePtr rBraceNode =
-        expectToken(Token::Type::RBrace, "Expected '}' to end the procedure.");
+            expectToken(Token::Type::RBrace, "Expected '}' to end the procedure.");
     addToCST(rBraceNode, RightSibling);
 }
 
 
 void Parser::parseFunction() {
     addToCST(createNodePtr(getToken()), LeftChild); // add 'function' identifier to CST
-
     Token return_type = getToken();
-    cout << "current return type " << return_type.value() << endl;
+
     if (!isDataType(return_type.value())) {
         cerr << "Syntax error: Expected an return type for the "
                 "function name, found '"
@@ -269,6 +268,7 @@ void Parser::parseFunction() {
              << "." << endl;
         exit(10);
     }
+    addToCST(createNodePtr(return_type),RightSibling);
     Token identifier = getToken();
     if (identifier.type() != Token::Type::Identifier) {
         cerr << "Syntax error: Expected an identifier for the "
@@ -277,10 +277,10 @@ void Parser::parseFunction() {
              << "." << endl;
         exit(20);
     }
-    addToCST(createNodePtr(identifier), LeftChild);
+    addToCST(createNodePtr(identifier), RightSibling);
 
     NodePtr lParenNode =
-        expectToken(Token::Type::LParen, "Expected '(' after procedure name.");
+            expectToken(Token::Type::LParen, "Expected '(' after procedure name.");
     addToCST(lParenNode, RightSibling);
 
     // See if next token is 'void' or params
@@ -293,20 +293,21 @@ void Parser::parseFunction() {
         parseParameterList();
     }
     NodePtr rParenNode =
-        expectToken(Token::Type::RParen, "Expected ')' after parameter list.");
+            expectToken(Token::Type::RParen, "Expected ')' after parameter list.");
     addToCST(rParenNode, RightSibling);
 
     NodePtr lBraceNode = expectToken(
-        Token::Type::LBrace, "Expected '{' to start the procedure body.");
-    addToCST(lBraceNode, RightSibling);
+            Token::Type::LBrace, "Expected '{' to start the procedure body.");
+    addToCST(lBraceNode, LeftChild);
 
     // Parse the procedure body (a compound statement).
     parseCompoundStatement();
 
     NodePtr rBraceNode =
-        expectToken(Token::Type::RBrace, "Expected '}' to end the procedure.");
-    addToCST(rBraceNode, RightSibling);
+            expectToken(Token::Type::RBrace, "Expected '}' to end the procedure.");
+    addToCST(rBraceNode, LeftChild);
 }
+
 
 void Parser::parseParameterList() {
     bool expectParameter = true;
@@ -386,9 +387,9 @@ void Parser::parseStatement() {
 
     // must be an identifier
     if (!match(Token::Type::Identifier, next)) {
-        cerr << "Syntax error on line " << next.lineNum()
+        cerr << "Syntax error on line " << next.lineNum()<<" token found "<< next.typeToString(next.type())
              << ": expected a statement" << endl;
-        exit(1);
+        exit(4);
     }
 
     // these reserved words have statements
@@ -406,20 +407,27 @@ void Parser::parseStatement() {
         else {
             cerr << "Syntax error on line " << next.lineNum()
                  << ": unexpected statement error" << endl;
-            exit(1);
+            exit(3);
         }
 
     }
-    // only possible statement that starts with unreserved word
+        // only possible statement that starts with unreserved word
     else {
         parseAssignmentStatement();
     }
 }
 
 void Parser::parseSelectionStatement() {
-    NodePtr ifNode = expectToken(Token::Type::If, "Expected 'if'");
-    addToCST(ifNode, LeftChild);
+//    NodePtr ifNode = expectToken(Token::Type::Identifier, "Expected 'if'");
+        Token ifToken = getToken();
+        if(ifToken.value() != "if"){
+            cerr<<"Expected an if but got "<<ifToken.value()<<" at line "<< ifToken.lineNum()<<endl;
+            exit(37);
+        }
+             addToCST(createNodePtr(ifToken), LeftChild);
 
+    NodePtr LParenNode = expectToken(Token::Type::LParen, "Expected ')' after boolean expression");
+    addToCST(LParenNode, RightSibling);
     // Parse the boolean expression within the if statement.
     parseExpression(); 
 
@@ -455,27 +463,32 @@ void Parser::parseStatementOrBlock() {
 }
 
 void Parser::parseExpression() {
-    
+
     Token currToken = peekToken();
-    
+
     // If the current token is '('
     if (match(Token::Type::LParen, currToken)) {
-        getToken(); 
-        addToCST(createNodePtr(currToken), RightSibling); 
+        getToken();
+        addToCST(createNodePtr(currToken), RightSibling);
         parseExpression();
         NodePtr rParenNode = expectToken(Token::Type::RParen, "Expected ')'");
-        addToCST(rParenNode, RightSibling); 
-        parseExpression();
+        addToCST(rParenNode, RightSibling);
+        if (isOperator(peekToken())) {
+            Token operatorToken = getToken();
+            addToCST(createNodePtr(operatorToken), RightSibling);
+            parseExpression();
+        }
+
     } else if (!isReserved(currToken.value())) { // If the token is an operand and it's not reserved
         addToCST(createNodePtr(currToken), RightSibling);
-        getToken(); 
-        
+        getToken();
+
         Token nextToken = peekToken();
         if (match(Token::Type::LParen, nextToken) && currToken.type() == Token::Type::Identifier) {
-            getToken(); 
-            addToCST(createNodePtr(nextToken), RightSibling); 
-            
-            if (peekAhead(1).type() == Token::Type::Comma) { 
+            getToken();
+            addToCST(createNodePtr(nextToken), RightSibling);
+
+            if (peekAhead(1).type() == Token::Type::Comma) {
                 // If the next token indicates a parameter list
                 parseIDENTIFIER_AND_IDENTIFIER_ARRAY_LIST();
             } else {
@@ -483,13 +496,13 @@ void Parser::parseExpression() {
                 parseExpression();
             }
             NodePtr closingRParen = expectToken(Token::Type::RParen, "Expected ')'");
-            addToCST(closingRParen, RightSibling); 
+            addToCST(closingRParen, RightSibling);
         }
-        
+
         // Check for an operator after the operand
         if (isOperator(peekToken())) {
-            Token operatorToken = getToken(); 
-            addToCST(createNodePtr(operatorToken), RightSibling); 
+            Token operatorToken = getToken();
+            addToCST(createNodePtr(operatorToken), RightSibling);
             parseExpression();
         }
     } else {
@@ -510,24 +523,27 @@ void Parser::parseAssignmentStatement() {
         addToCST(createNodePtr(currtoken),LeftChild);
         addToCST(createNodePtr(next),RightSibling);
     }
-    Token token = getToken();
+    Token token = peekToken();
 
     if(token.type() == Token::Type::SingleQuotedString ||token.type() == Token::Type::DoubleQuotedString){
+        token = getToken();
         addToCST(createNodePtr(token),RightSibling);
     }else if(token.type()== Token::Type::Integer ||
-            token.type()== Token::Type::WholeNumber||
-            token.type()== Token::Type::HexDigit ||
-            token.type()== Token::Type::Digit){
+             token.type()== Token::Type::WholeNumber||
+             token.type()== Token::Type::HexDigit ||
+             token.type()== Token::Type::Digit){
+        token = getToken();
         addToCST(createNodePtr(token),RightSibling);
-        }
-        else{
-            parseExpression();
-        }
+
+    }
+    else{
+        parseExpression();
+    }
 
     token = getToken();
     if(token.type() != Token::Type::Semicolon){
         cerr << "Syntax error: Expected a semicolon, found '"
-             << next.value() << "' at line " << next.lineNum() << "."<<endl;
+             << token.value() << "' at line " << token.lineNum() << "."<<endl;
         exit(201);
     }
     addToCST(createNodePtr(token),RightSibling);
@@ -633,7 +649,7 @@ void Parser::parsePrintfStatement() {
     Token stringToken = getToken();
     addToCST(createNodePtr(stringToken), LeftChild);
 
-     nextToken = peekToken();
+    nextToken = peekToken();
     if (match(Token::Type::Comma, nextToken)) {
         addToCST(createNodePtr(getToken()), RightSibling);
         parseIDENTIFIER_AND_IDENTIFIER_ARRAY_LIST();
@@ -642,23 +658,38 @@ void Parser::parsePrintfStatement() {
     expectToken(Token::Type::RParen, "Expected ')' after printf statement");
 
     expectToken(Token::Type::Semicolon, "Expected ';' at the end of printf statement");
-}       
+}
 
 
 void Parser::parseReturnStatement() {
-    NodePtr returnNode = expectToken(Token::Type::Return, "Syntax error: Expected 'return'");
-    addToCST(returnNode, LeftChild); 
+//    NodePtr returnNode = expectToken(Token::Type::Return, "Syntax error: Expected 'return'");
+    Token return_token= getToken();
 
-    // NOTE: Currenlty not worrying about returning anything otherthan an Identifier
-    // Peek at the next token to decide if an Identifier follows
-    Token nextToken = peekToken();
-    if (match(Token::Type::Identifier, nextToken)) {
-        addToCST(createNodePtr(nextToken), RightSibling); // Adjust as necessary for your tree structure
+    if(return_token.value() != "return"){
+        cerr<<"Expected an return "<<return_token.value()<<" at line "<< return_token.lineNum()<<endl;
+        exit(23);
     }
+    addToCST(createNodePtr(return_token), LeftChild);
+
+    // NOTE: Currenlty not worrying about returning anything other than an Identifier
+    // Peek at the next token to decide if an Identifier follows
+     Token nextToken = peekToken();
+//    if (match(Token::Type::Identifier, nextToken)) {
+//        addToCST(createNodePtr(nextToken), RightSibling); // Adjust as necessary for your tree structure
+//    }
+        if(peekToken().type() == Token::Type::SingleQuotedString ||
+                peekToken().type() == Token::Type::DoubleQuotedString){
+            addToCST(createNodePtr(getToken()),RightSibling);
+        }else{parseExpression();}
 
     // Regardless of whether an Identifier was found, a semicolon is expected next
-    NodePtr semicolonNode = expectToken(Token::Type::Semicolon, "Syntax error: Expected ';' after return statement");
-    addToCST(semicolonNode, RightSibling); // Adjust insertion mode as needed
+//    NodePtr semicolonNode = expectToken(Token::Type::Semicolon, "Syntax error: Expected ';' after return statement");
+    Token semiToken = getToken();
+    if(semiToken.type() != Token::Type::Semicolon){
+        cerr<<"Expected an ; but got "<<semiToken.value()<<" at line "<< semiToken.lineNum()<<endl;
+        exit(39);
+    }
+    addToCST(createNodePtr(semiToken), RightSibling); // Adjust insertion mode as needed
 }
 
 // A helper method to consume the next token and validate its type
@@ -669,7 +700,7 @@ NodePtr Parser::expectToken(Token::Type expectedType,
     if (t.type() != expectedType) {
         cerr << errorMessage << " Found '" << Token::typeToString(t.type())
              << "' at line " << t.lineNum() << "." << endl;
-        exit(1);
+        exit(17);
     }
     // Create a NodePtr from the token and return it
     return createNodePtr(t);
@@ -680,7 +711,7 @@ NodePtr Parser::expectToken(Token::Type expectedType,
 Token Parser::peekToken() const {
     if (current >= tokens.size()) {
         throw std::runtime_error(
-            "Unexpected end of input while peeking at token.");
+                "Unexpected end of input while peeking at token.");
     }
     return tokens[current];
 }
@@ -700,6 +731,8 @@ bool isDataType(string id) {
         return true;
     return false;
 }
+
+
 
 bool isReserved(string id) {
     if (id == "char" || id == "int" || id == "bool" || id == "void" ||
@@ -726,7 +759,7 @@ bool isOperator(Token t) {
         || t.type() == Token::Type::BooleanNot
         || t.type() == Token::Type::BooleanEqual
         || t.type() == Token::Type::BooleanNotEqual
-    )
+            )
         return true;
     return false;
 }
