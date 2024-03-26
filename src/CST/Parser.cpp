@@ -439,7 +439,7 @@ void Parser::parseExpression() {
             
             if (peekAhead(1).type() == Token::Type::Comma) { 
                 // If the next token indicates a parameter list
-                parseIdentifierAndIdentifierArrayList();
+                parseIDENTIFIER_AND_IDENTIFIER_ARRAY_LIST();
             } else {
                 // Otherwise, it's an expression within parentheses
                 parseExpression();
@@ -600,8 +600,9 @@ void Parser::parsePrintfStatement() {
 
      nextToken = peekToken();
     if (match(Token::Type::Comma, nextToken)) {
+        addToCST(createNodePtr(stringToken), RightSibling);
         getToken();
-        parseIdentifierAndIdentifierArrayList();
+        parseIDENTIFIER_AND_IDENTIFIER_ARRAY_LIST();
     }
 
     expectToken(Token::Type::RParen, "Expected ')' after printf statement");
