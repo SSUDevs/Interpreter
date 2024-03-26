@@ -29,6 +29,9 @@ private:
     NodePtr createNodePtr(const Token& token);
 
     Token peekToken() const;
+    //peek more than one tokens
+    Token peekToken(int offset = 0) const;
+
     NodePtr expectToken(Token::Type expectedType, const std::string &errorMessage);
 
 
