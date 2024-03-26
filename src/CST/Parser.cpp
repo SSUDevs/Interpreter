@@ -587,7 +587,29 @@ void Parser::parseIterationStatement() {
         exit(1);
     }
 }
-void Parser::parsePrintfStatement() {}        // not done
+void Parser::parsePrintfStatement() {
+    getToken();
+
+    expectToken(Token::Type::LParen, "Expected '(' after 'printf'");
+
+    Token nextToken = peekToken();
+    if (!match(Token::Type::DoubleQuotedString, nextToken) && !match(Token::Type::SingleQuotedString, nextToken)) {
+        cerr << "Syntax error: Expected a quoted string after 'printf(', found '" << nextToken.value() << "' at line " << nextToken.lineNum() << "." << endl;
+        exit(1);
+    }
+    Token stringToken = getToken();
+    addToCST(createNodePtr(stringToken), LeftChild);
+
+     nextToken = peekToken();
+    if (match(Token::Type::Comma, nextToken)) {
+        getToken();
+        parseIdentifierAndIdentifierArrayList();
+    }
+
+    expectToken(Token::Type::RParen, "Expected ')' after printf statement");
+
+    expectToken(Token::Type::Semicolon, "Expected ';' at the end of printf statement");
+}       
 
 
 void Parser::parseReturnStatement() {
