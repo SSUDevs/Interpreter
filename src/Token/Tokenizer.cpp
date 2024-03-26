@@ -94,9 +94,7 @@ Token Tokenizer::getToken() {
                     tokenFound = true;
                     break;
                 case '"':
-                    tokenType = Token::Type::DoubleQuote;
-                    tokenValue = currentChar;
-                    tokenFound = true;
+                    tokenValue += currentChar;
                     _currentState = DQ_STRING;
                     break;
                 case '\'':
@@ -281,32 +279,21 @@ Token Tokenizer::getToken() {
             }
             break;
         case DQ_STRING:
-            if (currentChar != '"') {
-                tokenValue += currentChar;
-            } else {
-                 _currentState =
-                    DQ_END; // so next token can be read as end of string.
-                tokenType = Token::Type::String; // can combine to token:
-                // 'DOUBLE_QUOTED_STRING' but
-                // assignment just labels strings
+            if (currentChar == '"') {
+                if (tokenValue.length() == 1) {
+
+                    tokenType = Token::Type::DoubleQuote;
+                } else {
+
+                    tokenType = Token::Type::DoubleQuotedString;
+                }
                 tokenFound = true;
-                --_currentPos; // Re-evaluate this character in the next state
+            } else {
+
+                tokenValue += currentChar;
             }
             break;
-        case DQ_END:
-            // Error for not finishing quote
-            if (currentChar != '"') {
-                std::cerr << "Syntax error on line " << _lineNum
-                          << ": incomplete quote\n";
-                exit(1);
-            }
-
-            _currentState = START;
-            tokenType = Token::Type::DoubleQuote;
-            tokenValue = currentChar;
-            tokenFound = true;
-            break;
-
+       
         case SQ_STRING:
             if (currentChar != '\'') {
                 tokenValue += currentChar;
