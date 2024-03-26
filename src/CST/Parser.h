@@ -46,6 +46,7 @@ private:
     void parseCompoundStatement();
     void parseStatement();
     void parseAssignmentStatement();    // not done
+    void parseInLineStatement();     // not done
     void parseIterationStatement();     // not done
     void parsePrintfStatement();        // not done
     void parseReturnStatement();        
