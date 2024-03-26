@@ -235,7 +235,7 @@ void Parser::parseProcedure() {
         exit(1);
     }
     // Create a procedure declaration node with identifier and add to CST
-    addToCST(createNodePtr(identifier), LeftChild);
+    addToCST(createNodePtr(identifier), RightSibling);
 
     NodePtr lParenNode =
         expectToken(Token::Type::LParen, "Expected '(' after procedure name.");
