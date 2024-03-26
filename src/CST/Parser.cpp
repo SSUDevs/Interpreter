@@ -225,6 +225,13 @@ void Parser::parseProcedure() {
              << "." << endl;
         exit(13);
     }
+
+    if (isReserved(identifier.value()) && identifier.value() != "main") {
+        cerr << "Syntax error on line " << identifier.lineNum()
+             << ": can't use \""
+             << identifier.value() << "\" as a procedure name." << endl;
+        exit(1);
+    }
     // Create a procedure declaration node with identifier and add to CST
     addToCST(createNodePtr(identifier), LeftChild);
 
@@ -270,7 +277,9 @@ void Parser::parseFunction() {
              << "." << endl;
         exit(10);
     }
+
     addToCST(createNodePtr(return_type), RightSibling);
+
     Token identifier = getToken();
     if (identifier.type() != Token::Type::Identifier) {
         cerr << "Syntax error: Expected an identifier for the "
@@ -279,6 +288,14 @@ void Parser::parseFunction() {
              << "." << endl;
         exit(20);
     }
+
+    if (isReserved(identifier.value())) {
+        cerr << "Syntax error on line " << identifier.lineNum()
+             << ": can't use \""
+             << identifier.value() << "\" as a function name." << endl;
+        exit(888);
+    }
+
     addToCST(createNodePtr(identifier), RightSibling);
 
     NodePtr lParenNode =
@@ -329,6 +346,13 @@ void Parser::parseParameterList() {
             cerr << "Syntax error on line " << identifierToken.lineNum()
                  << ": expected an identifier, found '"
                  << identifierToken.value() << "'" << endl;
+            exit(1);
+        }
+
+        if (isReserved(identifierToken.value())) {
+            cerr << "Syntax error on line " << identifierToken.lineNum()
+                 << ": can't use \""
+                 << identifierToken.value() << "\" as a variable name." << endl;
             exit(1);
         }
         addToCST(createNodePtr(identifierToken), RightSibling);
