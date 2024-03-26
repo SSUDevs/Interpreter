@@ -78,6 +78,8 @@ std::string Token::typeToString(Type type) {
         return "WHOLE_NUMBER";
     case Type::Integer:
         return "INTEGER";
+    case Type::Return:
+        return "RETURN";
     case Type::Unknown:
         return "UNKNOWN";
     default:

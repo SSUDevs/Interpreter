@@ -368,30 +368,6 @@ void Parser::parseParameterList() {
     }
 }
 
-// A helper method to consume the next token and validate its type
-// Also add the expected token to the CST if it matches.
-NodePtr Parser::expectToken(Token::Type expectedType,
-                            const std::string &errorMessage) {
-    Token t = getToken();
-    if (t.type() != expectedType) {
-        cerr << errorMessage << " Found '" << Token::typeToString(t.type())
-             << "' at line " << t.lineNum() << "." << endl;
-        exit(1);
-    }
-    // Create a NodePtr from the token and return it
-    return createNodePtr(t);
-}
-
-// A helper method to peek at the current token without incrementing
-// 'current'
-Token Parser::peekToken() const {
-    if (current >= tokens.size()) {
-        throw std::runtime_error(
-            "Unexpected end of input while peeking at token.");
-    }
-    return tokens[current];
-}
-
 void Parser::parseCompoundStatement() {
 
     // parse statements until next token is a right brace
@@ -517,6 +493,46 @@ void Parser::parseBooleanExpression() {
 
         parseNumericalExpression();
     }
+}
+
+void Parser::parseReturnStatement() {
+    NodePtr returnNode = expectToken(Token::Type::Return, "Syntax error: Expected 'return'");
+    addToCST(returnNode, LeftChild); 
+
+    // NOTE: Currenlty not worrying about returning anything otherthan an Identifier
+    // Peek at the next token to decide if an Identifier follows
+    Token nextToken = peekToken();
+    if (match(Token::Type::Identifier, nextToken)) {
+        addToCST(createNodePtr(nextToken), RightSibling); // Adjust as necessary for your tree structure
+    }
+
+    // Regardless of whether an Identifier was found, a semicolon is expected next
+    NodePtr semicolonNode = expectToken(Token::Type::Semicolon, "Syntax error: Expected ';' after return statement");
+    addToCST(semicolonNode, RightSibling); // Adjust insertion mode as needed
+}
+
+// A helper method to consume the next token and validate its type
+// Also add the expected token to the CST if it matches.
+NodePtr Parser::expectToken(Token::Type expectedType,
+                            const std::string &errorMessage) {
+    Token t = getToken();
+    if (t.type() != expectedType) {
+        cerr << errorMessage << " Found '" << Token::typeToString(t.type())
+             << "' at line " << t.lineNum() << "." << endl;
+        exit(1);
+    }
+    // Create a NodePtr from the token and return it
+    return createNodePtr(t);
+}
+
+// A helper method to peek at the current token without incrementing
+// 'current'
+Token Parser::peekToken() const {
+    if (current >= tokens.size()) {
+        throw std::runtime_error(
+            "Unexpected end of input while peeking at token.");
+    }
+    return tokens[current];
 }
 
 bool Parser::isBooleanOperator(Token::Type type) {
