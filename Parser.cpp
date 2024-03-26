@@ -475,10 +475,18 @@ void Parser::parseStatement() {
 
     }
     // only possible statement that starts with unreserved word
-    else if (match(Token::Type::AssignmentOperator, peekAhead(1))) {
-        parseAssignmentStatement();
-    } else
-        parseProcedureStatement();
+    else{
+        if (match(Token::Type::AssignmentOperator, peekAhead(1))) {
+            parseAssignmentStatement();
+        }
+        else if (match(Token::Type::LBracket, peekAhead(1))) {
+            parseAssignmentStatement();
+        }
+        else
+            parseProcedureStatement();
+    }
+
+
 }
 
 void Parser::parseProcedureStatement() {
@@ -651,16 +659,51 @@ void Parser::parseExpression() {
 }
 
 void Parser::parseAssignmentStatement() {
-    Token currtoken = getToken();
-    Token next = getToken();
+    Token currtoken = peekToken();
+    Token next = peekAhead(1);
 
-    if (next.type() != Token::Type::AssignmentOperator) {
+    if (next.type() != Token::Type::AssignmentOperator && next.type() != Token::Type::LBracket) {
         cerr << "Syntax error: Expected a Assignment opertator, found '"
              << next.value() << "' at line " << next.lineNum() << "." << endl;
         exit(200);
-    } else {
-        addToCST(createNodePtr(currtoken), LeftChild);
-        addToCST(createNodePtr(next), RightSibling);
+    }
+    // array assignment
+    else if (next.type() == Token::Type::LBracket) {
+        // add identifier
+        addToCST(createNodePtr(getToken()), LeftChild);
+
+        // [
+        addToCST(createNodePtr(getToken()), RightSibling);
+
+        next = peekToken();
+
+        if (next.type() != Token::Type::Integer && next.type() != Token::Type::Identifier) {
+            cerr << "Syntax error: Expected a valid array index, found '"
+                 << next.value() << "' at line " << next.lineNum() << "." << endl;
+            exit(203);
+        }
+
+        if (isReserved(next.value())) {
+            cerr << "Syntax error: can't use reserved name as array index '"
+                 << next.value() << "' at line " << next.lineNum() << "." << endl;
+            exit(204);
+        }
+
+        // array index
+        addToCST(createNodePtr(getToken()), RightSibling);
+
+        // ]
+        addToCST(expectToken(Token::Type::RBracket, "Expected ']'"), RightSibling);
+
+        // =
+        addToCST(expectToken(Token::Type::AssignmentOperator, "Expected ']'"), RightSibling);
+    }
+    // simple assignment
+    else {
+        // identifier
+        addToCST(createNodePtr(getToken()), LeftChild);
+        // =
+        addToCST(createNodePtr(getToken()), RightSibling);
     }
     Token token = peekToken();
 
