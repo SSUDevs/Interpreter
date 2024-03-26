@@ -6,7 +6,6 @@
 #include "OutPutGenerator.h"
 
 void OutPutGenerator::PrintCST(NodePtr& root) {
-
     ofstream output("Concrete_SyntaxTree_Output.txt");
     if(!output.is_open()){
         cerr << "Cant open Concrete Output File "<<endl;
@@ -19,27 +18,32 @@ void OutPutGenerator::PrintCST(NodePtr& root) {
     int spaces=0;
 
     while (root != nullptr) {
-        output << root->Value().value();
+        cout << root->Value().value();
         spaces+= root->Value().value().length();
         if (root->Right() != nullptr) {
-            output << " --> ";
+            cout << " --> ";
             spaces +=5;
             root = root->Right();
         } else if (root->Left() != nullptr) {
 
-            output << " --> nullptr" << endl;
-            for(int i=0;i<spaces;i++){
-                output<<"-";
+            cout << " --> nullptr" << endl;
+            for(int i=0;i<spaces-1;i++){
+                cout<<" ";
             }
-            output<<endl;
-            output<<"↓"<<endl;
+            cout<<'|'<<endl;
+            for(int i=0;i<spaces;i++){
+                cout<<"-";
+            }
+
+            cout<<endl;
+            cout<<"↓"<<endl;
             root = root->Left();
             spaces=0;
         } else {
             break;
         }
     }
-
+    output.close();
 }
 
 

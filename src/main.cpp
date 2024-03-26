@@ -47,9 +47,9 @@ int main(int argc, char *argv[]) {
     // Use the Parser to parse the tokenized input
      Parser parser(tokens);
     auto cstRoot = parser.parse(); // Root of the Concrete Syntax Tree
-//    OutPutGenerator output;
+  OutPutGenerator output;
     // Still need a method to print or inspect CST
-//     output.PrintCST(cstRoot);
+    output.PrintCST(cstRoot);
 
     return 0;
 }
