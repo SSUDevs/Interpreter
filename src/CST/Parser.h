@@ -32,27 +32,9 @@ private:
     NodePtr expectToken(Token::Type expectedType, const std::string &errorMessage);
 
 
-    // NOTES: 
-    // <PROCEDURE_DECLARATION> ::= procedure <IDENTIFIER> <L_PAREN> 
-    // <PARAMETER_LIST> <R_PAREN> < L_BRACE> <COMPOUND_STATEMENT> <R_BRACE> 
-    // | procedure <IDENTIFIER> <L_PAREN> void <R_PAREN> < L_BRACE> <COMPOUND_STATEMENT> <R_BRACE>
     void parseProcedure();
-
-    // NOTES: 
-    // <PARAMETER_LIST> ::= <DATATYPE_SPECIFIER> <IDENTIFIER> | 
-    // <DATATYPE_SPECIFIER> <IDENTIFIER> <PARAMETER_LIST>
     NodePtr parseParameterList();
 
-    // NOTES: 
-    // <COMPOUND_STATEMENT> ::= <STATEMENT> | <STATEMENT> <COMPOUND_STATEMENT>
-    NodePtr parseCompoundStatement();
-
-    //NOTES: 
-    // <STATEMENT> ::= <DECLARATION_STATEMENT> | <ASSIGNMENT_STATEMENT> | 
-    // <ITERATION_STATEMENT> | <SELECTION_STATEMENT> | <PRINTF_STATEMENT> | 
-    // <RETURN_STATEMENT>
-
-    // NOTES: 
     void parseFunction();
 
     void parseDeclaration();
@@ -60,6 +42,13 @@ private:
     void parseIDENTIFIER_ARRAY_LIST();
     void parseIDENTIFIER_LIST();
 
+    void parseBlockStatement();
+    void parseCompoundStatement();
+    void parseStatement();
+    void parseAssignmentStatement();    // not done
+    void parseIterationStatement();     // not done
+    void parsePrintfStatement();        // not done
+    void parseReturnStatement();        // not done
 
 
     // Starting with this piece of the BNF
