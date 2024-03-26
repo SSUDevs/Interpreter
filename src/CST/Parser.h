@@ -54,6 +54,9 @@ private:
  
     void parseExpression();
 
+    //a peek function that peek ahead by more than one token
+    Token peekAhead(int offset) const;
+
     void parseNumericalExpression();
     void parseNumericalOperand();
 
