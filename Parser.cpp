@@ -89,16 +89,16 @@ void Parser::parseDeclaration() {
 
 void Parser::parseIDENTIFIER_AND_IDENTIFIER_ARRAY_LIST() {
 
-    while (!match(Token::Type::Semicolon, peekToken())) {
+    while (match(Token::Type::Identifier, peekToken())) {
         parseIDENTIFIER_ARRAY_LIST();
-        if (!match(Token::Type::Semicolon, peekToken()))
+        if (match(Token::Type::Identifier, peekToken()))
             parseIDENTIFIER_LIST();
     }
 }
 
 void Parser::parseIDENTIFIER_ARRAY_LIST() {
-    Token currToken = getToken();
-    Token nextToken = getToken();
+    Token currToken = peekToken();
+    Token nextToken = peekAhead(1);
     bool foundEnd = false;
 
     while (match(Token::Type::Identifier, currToken) && !foundEnd) {
@@ -109,10 +109,11 @@ void Parser::parseIDENTIFIER_ARRAY_LIST() {
             exit(9);
         }
 
+
         if (match(Token::Type::LBracket, nextToken)) {
-            addToCST(createNodePtr((currToken)),
+            addToCST(createNodePtr((getToken())),
                      RightSibling); // add array name
-            addToCST(createNodePtr((nextToken)),
+            addToCST(createNodePtr((getToken())),
                      RightSibling); // add left bracket
 
             Token num = getToken();
@@ -122,7 +123,7 @@ void Parser::parseIDENTIFIER_ARRAY_LIST() {
                      << "\" cannot be used for a variable name." << endl;
                 exit(10);
             }
-            if (stoi(num.value()) <= 0 &&
+            if (stoi(num.value()) < 0 &&
                 !match(Token::Type::Identifier,
                        num)) { // ERROR negative array size
                 cerr << "Syntax error on line " << num.lineNum()
@@ -146,22 +147,20 @@ void Parser::parseIDENTIFIER_ARRAY_LIST() {
             nextToken = peekToken();
             if (match(Token::Type::Comma, nextToken)) {
                 addToCST(createNodePtr((getToken())), RightSibling); // add comma
-                currToken = getToken();
-                nextToken = getToken();
+                currToken = peekToken();
+                nextToken = peekAhead(1);
             } else {
-
                 foundEnd = true;
             }
         } else{
-            current -= 2;
             foundEnd = true;
         }
     }
 }
 
 void Parser::parseIDENTIFIER_LIST() {
-    Token currToken = getToken();
-    Token nextToken = getToken();
+    Token currToken = peekToken();
+    Token nextToken = peekAhead(1);
 
     bool foundEnd = false;
 
@@ -175,18 +174,16 @@ void Parser::parseIDENTIFIER_LIST() {
 
         // next token not bracket
         if (!match(Token::Type::LBracket, nextToken)) {
-            addToCST(createNodePtr((currToken)),
+            addToCST(createNodePtr((getToken())),
                      RightSibling); // add variable name
             if (match(Token::Type::Comma, nextToken)) {
-                addToCST(createNodePtr((nextToken)), RightSibling); // add comma
-                currToken = getToken();
-                nextToken = getToken();
+                addToCST(createNodePtr((getToken())), RightSibling); // add comma
+                currToken = peekToken();
+                nextToken = peekAhead(1);
             } else {
                 foundEnd = true;
-                current--;
             }
         } else {
-            current -= 2;
             foundEnd = true;
         }
     }
@@ -413,26 +410,53 @@ void Parser::parseStatement() {
 
     }
         // only possible statement that starts with unreserved word
-    else {
+    else if (match(Token::Type::AssignmentOperator, peekAhead(1))) {
         parseAssignmentStatement();
     }
+    else
+        parseProcedureStatement();
 }
 
-void Parser::parseSelectionStatement() {
-//    NodePtr ifNode = expectToken(Token::Type::Identifier, "Expected 'if'");
-        Token ifToken = getToken();
-        if(ifToken.value() != "if"){
-            cerr<<"Expected an if but got "<<ifToken.value()<<" at line "<< ifToken.lineNum()<<endl;
-            exit(37);
-        }
-             addToCST(createNodePtr(ifToken), LeftChild);
+void Parser::parseProcedureStatement() {
+    Token token = peekToken();
 
+    if (!match(Token::Type::Identifier, token) || isReserved(token.value())) {
+        cerr<<"Can't use reserved name "<<token.value()<<" for procedure call at line "<< token.lineNum()<<endl;
+        exit(38);
+    }
+
+    // procedure name
+    addToCST(createNodePtr(getToken()), LeftChild);
+    // (
+    addToCST(expectToken(Token::Type::LParen, "Expected '('"), RightSibling);
+    // param list
+    parseIDENTIFIER_AND_IDENTIFIER_ARRAY_LIST();
+    // )
+    addToCST(expectToken(Token::Type::RParen, "Expected ')'"), RightSibling);
+    // ;
+    addToCST(expectToken(Token::Type::Semicolon, "Expected ';'"), RightSibling);
+
+}
+
+
+void Parser::parseSelectionStatement() {
+
+    // if
+    Token ifToken = getToken();
+    if(ifToken.value() != "if"){
+        cerr<<"Expected an if but got "<<ifToken.value()<<" at line "<< ifToken.lineNum()<<endl;
+        exit(37);
+    }
+    addToCST(createNodePtr(ifToken), LeftChild);
+
+    // (
     NodePtr LParenNode = expectToken(Token::Type::LParen, "Expected ')' after boolean expression");
     addToCST(LParenNode, RightSibling);
+
     // Parse the boolean expression within the if statement.
     parseExpression(); 
 
-    // After the boolean expression, expect a right parenthesis ')'.
+    // )
     NodePtr RParenNode = expectToken(Token::Type::RParen, "Expected ')' after boolean expression");
     addToCST(RParenNode, RightSibling);
 
@@ -441,7 +465,7 @@ void Parser::parseSelectionStatement() {
 
     // Check for "else" 
     Token next = peekToken();
-    if (match(Token::Type::Else, next)) {
+    if (next.value() == "else") {
         // Consume the "else" token.
         NodePtr elseNode = createNodePtr(getToken());
         addToCST(elseNode, RightSibling);
@@ -621,12 +645,12 @@ void Parser::parseIterationStatement() {
         // expression
         parseExpression();
         // )
-        addToCST(expectToken(Token::Type::LParen, "Syntax error: missing '('."), RightSibling);
+        addToCST(expectToken(Token::Type::RParen, "Syntax error: missing '('."), RightSibling);
 
         next = peekToken();
 
         // finish with a block statement or a single statement
-        if (match(Token::Type::LBracket, next))
+        if (match(Token::Type::LBrace, next))
             parseBlockStatement();
         else
             parseStatement();
@@ -640,27 +664,33 @@ void Parser::parseIterationStatement() {
 }
 
 void Parser::parsePrintfStatement() {
-    getToken();
+    // printf
+    addToCST(createNodePtr(getToken()), LeftChild);
 
-    expectToken(Token::Type::LParen, "Expected '(' after 'printf'");
+    // (
+    addToCST( expectToken(Token::Type::LParen, "Expected '(' after 'printf'"), RightSibling);
 
     Token nextToken = peekToken();
     if (!match(Token::Type::DoubleQuotedString, nextToken) && !match(Token::Type::SingleQuotedString, nextToken)) {
         cerr << "Syntax error: Expected a quoted string after 'printf(', found '" << nextToken.value() << "' at line " << nextToken.lineNum() << "." << endl;
         exit(1);
     }
+    // "string"
     Token stringToken = getToken();
     addToCST(createNodePtr(stringToken), LeftChild);
 
+    // ,
     nextToken = peekToken();
     if (match(Token::Type::Comma, nextToken)) {
         addToCST(createNodePtr(getToken()), RightSibling);
         parseIDENTIFIER_AND_IDENTIFIER_ARRAY_LIST();
     }
 
-    expectToken(Token::Type::RParen, "Expected ')' after printf statement");
+    // )
+    addToCST( expectToken(Token::Type::RParen, "Expected ')' after printf statement"), RightSibling);
 
-    expectToken(Token::Type::Semicolon, "Expected ';' at the end of printf statement");
+    // ;
+    addToCST( expectToken(Token::Type::Semicolon, "Expected ';' at the end of printf statement"), RightSibling);
 }
 
 
