@@ -40,9 +40,9 @@ int main(int argc, char *argv[]) {
 
     // Retrieve and print tokens 
     vector<Token> tokens = tokenizer.getTokens();
-    for (const auto &token : tokens) {
-        token.print();
-    }
+//    for (const auto &token : tokens) {
+//        token.print();
+//    }
 
     // Use the Parser to parse the tokenized input
      Parser parser(tokens);
