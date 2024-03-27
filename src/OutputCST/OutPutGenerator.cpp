@@ -31,11 +31,13 @@ void OutPutGenerator::PrintCST(NodePtr& root) {
                 cout<<" ";
             }
             cout<<'|'<<endl;
+            if(spaces>1){
             for(int i=0;i<spaces;i++){
                 cout<<"-";
             }
-
             cout<<endl;
+            }
+            
             cout<<"↓"<<endl;
             root = root->Left();
             spaces=0;
