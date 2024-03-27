@@ -38,7 +38,7 @@ void OutPutGenerator::PrintCST(NodePtr& root) {
             cout<<endl;
             }
             
-            cout<<"↓"<<endl;
+            cout<<"\\/"<<endl;
             root = root->Left();
             spaces=0;
         } else {
