@@ -851,7 +851,7 @@ void Parser::parsePrintfStatement() {
     }
     // "string"
     Token stringToken = getToken();
-    addToCST(createNodePtr(stringToken), LeftChild);
+    addToCST(createNodePtr(stringToken), RightSibling);
 
     // ,
     nextToken = peekToken();
