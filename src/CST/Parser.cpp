@@ -565,7 +565,7 @@ void Parser::parseSelectionStatement() {
     if (next.value() == "else") {
         // Consume the "else" token.
         NodePtr elseNode = createNodePtr(getToken());
-        addToCST(elseNode, RightSibling);
+        addToCST(elseNode, LeftChild);
 
         // Parse the statement or block statement following "else".
         parseStatementOrBlock(); // Reuse the helper function for the "else"
