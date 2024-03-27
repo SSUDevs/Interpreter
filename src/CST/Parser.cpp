@@ -257,7 +257,7 @@ void Parser::parseProcedure() {
 
     NodePtr lBraceNode = expectToken(
         Token::Type::LBrace, "Expected '{' to start the procedure body.");
-    addToCST(lBraceNode, RightSibling);
+    addToCST(lBraceNode, LeftChild);
 
     // Parse the procedure body (a compound statement).
     parseCompoundStatement();
@@ -412,7 +412,7 @@ void Parser::processFunctionCall() {
     // Process Function name
     NodePtr functionName = expectToken(Token::Type::Identifier,
                                        "Expected identifier for function call");
-    addToCST(functionName, LeftChild);
+    addToCST(functionName, RightSibling);
 
     NodePtr LParenNode =
         expectToken(Token::Type::LParen, "Expected '(' after function call");
