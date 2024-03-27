@@ -264,7 +264,7 @@ void Parser::parseProcedure() {
 
     NodePtr rBraceNode =
         expectToken(Token::Type::RBrace, "Expected '}' to end the procedure.");
-    addToCST(rBraceNode, RightSibling);
+    addToCST(rBraceNode, LeftChild);
 }
 
 void Parser::parseFunction() {
