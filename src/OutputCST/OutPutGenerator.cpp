@@ -42,6 +42,7 @@ void OutPutGenerator::PrintCST(NodePtr& root) {
             root = root->Left();
             spaces=0;
         } else {
+            cout<<" ---> nullptr";
             break;
         }
     }
