@@ -230,8 +230,8 @@ void Parser::parseProcedure() {
 
     if (isReserved(identifier.value()) && identifier.value() != "main") {
         cerr << "Syntax error on line " << identifier.lineNum()
-             << ": can't use \"" << identifier.value()
-             << "\" as a procedure name." << endl;
+             << ": Reserved word \"" << identifier.value()
+             << "\" can't be used as a procedure name." << endl;
         exit(1);
     }
     // Create a procedure declaration node with identifier and add to CST
@@ -293,8 +293,8 @@ void Parser::parseFunction() {
 
     if (isReserved(identifier.value())) {
         cerr << "Syntax error on line " << identifier.lineNum()
-             << ": can't use \"" << identifier.value()
-             << "\" as a function name." << endl;
+             << ": Reserved word \"" << identifier.value()
+             << "\" can't be used as a function name." << endl;
         exit(888);
     }
 
@@ -353,8 +353,8 @@ void Parser::parseParameterList() {
 
         if (isReserved(identifierToken.value())) {
             cerr << "Syntax error on line " << identifierToken.lineNum()
-                 << ": can't use \"" << identifierToken.value()
-                 << "\" as a variable name." << endl;
+                 << ": Reserved word \"" << identifierToken.value()
+                 << "\" can't be used as a variable name." << endl;
             exit(1);
         }
         addToCST(createNodePtr(identifierToken), RightSibling);
