@@ -18,4 +18,8 @@ add_executable(Interpreter
         src/OutputCST/OutPutGenerator.cpp
         src/OutputCST/OutPutGenerator.h
         src/CST/Parser.cpp
+        src/SymbolTable/SymbolTable.cpp
+        src/SymbolTable/SymbolTable.hpp
+        src/SymbolTable/SymbolTables.cpp
+        src/SymbolTable/SymbolTables.hpp
 )
