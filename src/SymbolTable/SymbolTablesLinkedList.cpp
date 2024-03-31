@@ -114,7 +114,6 @@ void SymbolTablesLinkedList::procedureTable() {
         std::cerr << "Expected '(' at the start of the procedure body. Found: " << nodeValue(peekNextCstNode()) << std::endl;
         return;
     }
-    getNextCstNode(); // Remove '('
     // Parse parameters creating its own symbol table
     parseParameters(procedureName); // Also Removes the ending ')'
     
@@ -125,7 +124,6 @@ void SymbolTablesLinkedList::procedureTable() {
         std::cerr << "Expected '{' at the start of the procedure body. Found: " << nodeValue(peekNextCstNode()) << std::endl;
         return;
     }
-
     while (nodeValue(peekNextCstNode()) != "}") { // Check fot the '}' that marks the end of the procedure body.
         auto currentNodeValue = nodeValue(peekNextCstNode());
         if (isDataType(currentNodeValue)) { // Check if the next node indicates a data type, i.e. a declaration.
@@ -134,13 +132,11 @@ void SymbolTablesLinkedList::procedureTable() {
             getNextCstNode(); // Skip nodes not relevant for the symbol table.
         }
     }
-
     getNextCstNode(); // Ends the procedure taking out the '{'.
 }
 
 void SymbolTablesLinkedList::parseParameters(const string& procedureOrFunctionName) {
     auto nextNode = peekNextCstNode(); 
-
     if (nodeValue(nextNode) == "void") {
         getNextCstNode(); // Skip 'void'
         return;
