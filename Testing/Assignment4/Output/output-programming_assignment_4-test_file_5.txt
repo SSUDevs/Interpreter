@@ -1,0 +1,1 @@
+Error on line 11: variable "announcement" is already defined globally

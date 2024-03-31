@@ -1,0 +1,64 @@
+      IDENTIFIER_NAME: hexdigit2int
+      IDENTIFIER_TYPE: function
+             DATATYPE: int
+    DATATYPE_IS_ARRAY: no
+  DATATYPE_ARRAY_SIZE: 0
+                SCOPE: 1
+
+      IDENTIFIER_NAME: i
+      IDENTIFIER_TYPE: datatype
+             DATATYPE: int
+    DATATYPE_IS_ARRAY: no
+  DATATYPE_ARRAY_SIZE: 0
+                SCOPE: 1
+
+      IDENTIFIER_NAME: digit
+      IDENTIFIER_TYPE: datatype
+             DATATYPE: int
+    DATATYPE_IS_ARRAY: no
+  DATATYPE_ARRAY_SIZE: 0
+                SCOPE: 1
+
+      IDENTIFIER_NAME: main
+      IDENTIFIER_TYPE: procedure
+             DATATYPE: NOT APPLICABLE
+    DATATYPE_IS_ARRAY: no
+  DATATYPE_ARRAY_SIZE: 0
+                SCOPE: 2
+
+      IDENTIFIER_NAME: hexnum
+      IDENTIFIER_TYPE: datatype
+             DATATYPE: char
+    DATATYPE_IS_ARRAY: yes
+  DATATYPE_ARRAY_SIZE: 9
+                SCOPE: 2
+
+      IDENTIFIER_NAME: i
+      IDENTIFIER_TYPE: datatype
+             DATATYPE: int
+    DATATYPE_IS_ARRAY: no
+  DATATYPE_ARRAY_SIZE: 0
+                SCOPE: 2
+
+      IDENTIFIER_NAME: digit
+      IDENTIFIER_TYPE: datatype
+             DATATYPE: int
+    DATATYPE_IS_ARRAY: no
+  DATATYPE_ARRAY_SIZE: 0
+                SCOPE: 2
+
+      IDENTIFIER_NAME: number
+      IDENTIFIER_TYPE: datatype
+             DATATYPE: int
+    DATATYPE_IS_ARRAY: no
+  DATATYPE_ARRAY_SIZE: 0
+                SCOPE: 2
+
+
+   PARAMETER LIST FOR: hexdigit2int
+      IDENTIFIER_NAME: hex_digit
+             DATATYPE: char
+    DATATYPE_IS_ARRAY: no
+  DATATYPE_ARRAY_SIZE: 0
+                SCOPE: 1
+

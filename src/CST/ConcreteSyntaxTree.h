@@ -1,7 +1,3 @@
-//
-// Created by Luis carmona on 3/19/24.
-//
-
 #ifndef ASSIGNMENT1_460_CONCRETESYNTAXTREE_H
 #define ASSIGNMENT1_460_CONCRETESYNTAXTREE_H
 #include"../Token/Token.h"

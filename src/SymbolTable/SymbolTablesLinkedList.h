@@ -1,7 +1,3 @@
-//
-// Created by Luis carmona on 3/28/24.
-//
-
 #ifndef ASSIGNMENT1_460_SYMBOLTABLESLINKEDLIST_H
 #define ASSIGNMENT1_460_SYMBOLTABLESLINKEDLIST_H
 #include "SymbolTable.h"

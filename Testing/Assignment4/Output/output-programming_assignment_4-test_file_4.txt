@@ -1,0 +1,131 @@
+      IDENTIFIER_NAME: my_string
+      IDENTIFIER_TYPE: datatype
+             DATATYPE: char
+    DATATYPE_IS_ARRAY: yes
+  DATATYPE_ARRAY_SIZE: 1024
+                SCOPE: 0
+
+      IDENTIFIER_NAME: main
+      IDENTIFIER_TYPE: procedure
+             DATATYPE: NOT APPLICABLE
+    DATATYPE_IS_ARRAY: no
+  DATATYPE_ARRAY_SIZE: 0
+                SCOPE: 1
+
+      IDENTIFIER_NAME: number
+      IDENTIFIER_TYPE: datatype
+             DATATYPE: int
+    DATATYPE_IS_ARRAY: no
+  DATATYPE_ARRAY_SIZE: 0
+                SCOPE: 0
+
+      IDENTIFIER_NAME: random_long_parameter_list
+      IDENTIFIER_TYPE: function
+             DATATYPE: bool
+    DATATYPE_IS_ARRAY: no
+  DATATYPE_ARRAY_SIZE: 0
+                SCOPE: 2
+
+      IDENTIFIER_NAME: result
+      IDENTIFIER_TYPE: datatype
+             DATATYPE: bool
+    DATATYPE_IS_ARRAY: no
+  DATATYPE_ARRAY_SIZE: 0
+                SCOPE: 0
+
+      IDENTIFIER_NAME: do_nothing
+      IDENTIFIER_TYPE: procedure
+             DATATYPE: NOT APPLICABLE
+    DATATYPE_IS_ARRAY: no
+  DATATYPE_ARRAY_SIZE: 0
+                SCOPE: 3
+
+      IDENTIFIER_NAME: i
+      IDENTIFIER_TYPE: datatype
+             DATATYPE: int
+    DATATYPE_IS_ARRAY: no
+  DATATYPE_ARRAY_SIZE: 0
+                SCOPE: 0
+
+      IDENTIFIER_NAME: j
+      IDENTIFIER_TYPE: datatype
+             DATATYPE: int
+    DATATYPE_IS_ARRAY: no
+  DATATYPE_ARRAY_SIZE: 0
+                SCOPE: 0
+
+      IDENTIFIER_NAME: k
+      IDENTIFIER_TYPE: datatype
+             DATATYPE: int
+    DATATYPE_IS_ARRAY: no
+  DATATYPE_ARRAY_SIZE: 0
+                SCOPE: 0
+
+
+   PARAMETER LIST FOR: random_long_parameter_list
+      IDENTIFIER_NAME: ensity
+             DATATYPE: int
+    DATATYPE_IS_ARRAY: no
+  DATATYPE_ARRAY_SIZE: 0
+                SCOPE: 2
+
+      IDENTIFIER_NAME: ter
+             DATATYPE: char
+    DATATYPE_IS_ARRAY: no
+  DATATYPE_ARRAY_SIZE: 0
+                SCOPE: 2
+
+      IDENTIFIER_NAME: rospective
+             DATATYPE: int
+    DATATYPE_IS_ARRAY: no
+  DATATYPE_ARRAY_SIZE: 0
+                SCOPE: 2
+
+      IDENTIFIER_NAME: egrity
+             DATATYPE: int
+    DATATYPE_IS_ARRAY: no
+  DATATYPE_ARRAY_SIZE: 0
+                SCOPE: 2
+
+      IDENTIFIER_NAME: latan
+             DATATYPE: char
+    DATATYPE_IS_ARRAY: no
+  DATATYPE_ARRAY_SIZE: 0
+                SCOPE: 2
+
+      IDENTIFIER_NAME: coal
+             DATATYPE: char
+    DATATYPE_IS_ARRAY: no
+  DATATYPE_ARRAY_SIZE: 0
+                SCOPE: 2
+
+      IDENTIFIER_NAME: elligent
+             DATATYPE: int
+    DATATYPE_IS_ARRAY: no
+  DATATYPE_ARRAY_SIZE: 0
+                SCOPE: 2
+
+      IDENTIFIER_NAME: lean
+             DATATYPE: bool
+    DATATYPE_IS_ARRAY: no
+  DATATYPE_ARRAY_SIZE: 0
+                SCOPE: 2
+
+      IDENTIFIER_NAME: treuse
+             DATATYPE: char
+    DATATYPE_IS_ARRAY: no
+  DATATYPE_ARRAY_SIZE: 0
+                SCOPE: 2
+
+      IDENTIFIER_NAME: ming
+             DATATYPE: char
+    DATATYPE_IS_ARRAY: no
+  DATATYPE_ARRAY_SIZE: 0
+                SCOPE: 2
+
+      IDENTIFIER_NAME: uitive
+             DATATYPE: int
+    DATATYPE_IS_ARRAY: no
+  DATATYPE_ARRAY_SIZE: 0
+                SCOPE: 2
+

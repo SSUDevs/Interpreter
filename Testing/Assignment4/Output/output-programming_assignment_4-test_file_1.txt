@@ -1,0 +1,43 @@
+      IDENTIFIER_NAME: sum_of_first_n_squares
+      IDENTIFIER_TYPE: function
+             DATATYPE: int
+    DATATYPE_IS_ARRAY: no
+  DATATYPE_ARRAY_SIZE: 0
+                SCOPE: 1
+
+      IDENTIFIER_NAME: sum
+      IDENTIFIER_TYPE: datatype
+             DATATYPE: int
+    DATATYPE_IS_ARRAY: no
+  DATATYPE_ARRAY_SIZE: 0
+                SCOPE: 1
+
+      IDENTIFIER_NAME: main
+      IDENTIFIER_TYPE: procedure
+             DATATYPE: NOT APPLICABLE
+    DATATYPE_IS_ARRAY: no
+  DATATYPE_ARRAY_SIZE: 0
+                SCOPE: 2
+
+      IDENTIFIER_NAME: n
+      IDENTIFIER_TYPE: datatype
+             DATATYPE: int
+    DATATYPE_IS_ARRAY: no
+  DATATYPE_ARRAY_SIZE: 0
+                SCOPE: 2
+
+      IDENTIFIER_NAME: sum
+      IDENTIFIER_TYPE: datatype
+             DATATYPE: int
+    DATATYPE_IS_ARRAY: no
+  DATATYPE_ARRAY_SIZE: 0
+                SCOPE: 2
+
+
+   PARAMETER LIST FOR: sum_of_first_n_squares
+      IDENTIFIER_NAME: n
+             DATATYPE: int
+    DATATYPE_IS_ARRAY: no
+  DATATYPE_ARRAY_SIZE: 0
+                SCOPE: 1
+

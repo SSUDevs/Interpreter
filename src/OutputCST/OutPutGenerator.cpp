@@ -1,8 +1,3 @@
-
-//
-// Created by Luis carmona on 3/22/24.
-//
-
 #include "OutPutGenerator.h"
 
 void OutPutGenerator::PrintCST(NodePtr& root) {

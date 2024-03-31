@@ -1,0 +1,72 @@
+      IDENTIFIER_NAME: announcement
+      IDENTIFIER_TYPE: datatype
+             DATATYPE: char
+    DATATYPE_IS_ARRAY: yes
+  DATATYPE_ARRAY_SIZE: 2048
+                SCOPE: 0
+
+      IDENTIFIER_NAME: main
+      IDENTIFIER_TYPE: procedure
+             DATATYPE: NOT APPLICABLE
+    DATATYPE_IS_ARRAY: no
+  DATATYPE_ARRAY_SIZE: 0
+                SCOPE: 1
+
+      IDENTIFIER_NAME: name
+      IDENTIFIER_TYPE: datatype
+             DATATYPE: char
+    DATATYPE_IS_ARRAY: yes
+  DATATYPE_ARRAY_SIZE: 100
+                SCOPE: 1
+
+      IDENTIFIER_NAME: empty_string
+      IDENTIFIER_TYPE: function
+             DATATYPE: bool
+    DATATYPE_IS_ARRAY: no
+  DATATYPE_ARRAY_SIZE: 0
+                SCOPE: 2
+
+      IDENTIFIER_NAME: i
+      IDENTIFIER_TYPE: datatype
+             DATATYPE: int
+    DATATYPE_IS_ARRAY: no
+  DATATYPE_ARRAY_SIZE: 0
+                SCOPE: 2
+
+      IDENTIFIER_NAME: num_bytes_before_null
+      IDENTIFIER_TYPE: datatype
+             DATATYPE: int
+    DATATYPE_IS_ARRAY: no
+  DATATYPE_ARRAY_SIZE: 0
+                SCOPE: 2
+
+      IDENTIFIER_NAME: found_null
+      IDENTIFIER_TYPE: datatype
+             DATATYPE: bool
+    DATATYPE_IS_ARRAY: no
+  DATATYPE_ARRAY_SIZE: 0
+                SCOPE: 2
+
+      IDENTIFIER_NAME: display_announcement
+      IDENTIFIER_TYPE: procedure
+             DATATYPE: NOT APPLICABLE
+    DATATYPE_IS_ARRAY: no
+  DATATYPE_ARRAY_SIZE: 0
+                SCOPE: 3
+
+
+   PARAMETER LIST FOR: empty_string
+      IDENTIFIER_NAME: string
+             DATATYPE: char
+    DATATYPE_IS_ARRAY: yes
+  DATATYPE_ARRAY_SIZE: 4096
+                SCOPE: 2
+
+
+   PARAMETER LIST FOR: display_announcement
+      IDENTIFIER_NAME: name
+             DATATYPE: char
+    DATATYPE_IS_ARRAY: yes
+  DATATYPE_ARRAY_SIZE: 512
+                SCOPE: 3
+

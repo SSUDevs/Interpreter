@@ -1,0 +1,1 @@
+Error on line 18: variable "found_something" is already defined locally

@@ -1,7 +1,3 @@
-//
-// Created by Luis carmona on 3/27/24.
-//
-
 #ifndef ASSIGNMENT1_460_SYMBOLTABLE_H
 #define ASSIGNMENT1_460_SYMBOLTABLE_H
 
@@ -31,6 +27,7 @@ class SymbolTable {
     bool _isArray;
     int _arraySize,_scope;
     SymTblPtr nextTable = nullptr;
+    std::vector<SymbolTableEntry> parameters; 
 
 };
 
