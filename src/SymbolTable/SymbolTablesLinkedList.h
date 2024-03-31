@@ -1,21 +1,19 @@
 #ifndef ASSIGNMENT1_460_SYMBOLTABLESLINKEDLIST_H
 #define ASSIGNMENT1_460_SYMBOLTABLESLINKEDLIST_H
-#include "SymbolTable.h"
-#include"../CST/Node.h"
+#include "../CST/Node.h"
 #include "../CST/Parser.h"
-#include <vector>
+#include "SymbolTable.h"
+#include <vector>e
 using namespace std;
-
 
 class SymbolTablesLinkedList {
   public:
-
-    SymbolTablesLinkedList (const NodePtr CST_root);
+    SymbolTablesLinkedList(const NodePtr CST_root);
 
     SymTblPtr parse();
 
-    NodePtr getNextCstNode ();
-    NodePtr peekNextCstNode ();
+    NodePtr getNextCstNode();
+    NodePtr peekNextCstNode();
 
     string nodeValue(NodePtr node);
 
@@ -26,10 +24,10 @@ class SymbolTablesLinkedList {
     void functionTable();
     void procedureTable();
 
+    // Creating symbol tables for parameter lists for Procedures and Functions
+    void parseParameters(const string &)
 
-
-  private:
-    NodePtr curCstNode;
+    private : NodePtr curCstNode;
 
     size_t current = 0;
     SymTblPtr root;

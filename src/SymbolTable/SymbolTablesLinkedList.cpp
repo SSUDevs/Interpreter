@@ -87,52 +87,97 @@ void SymbolTablesLinkedList::functionTable() {
 
 }
 
-
 void SymbolTablesLinkedList::procedureTable() {
-    // The current node should be the "procedure" identifier when entering this function
-    auto procedureNameNode = getNextCstNode(); // Move to the procedure name node.
+    // Move past "procedure" keyword
+    getNextCstNode();
+    
+    // Now at procedure name
+    auto procedureNameNode = getNextCstNode(); 
     string procedureName = nodeValue(procedureNameNode);
 
-    // Create a new symbol table entry for the procedure.
-    auto procedureEntry = make_shared<SymbolTable>();
+    // Create symbol table entry for the procedure
+    auto procedureEntry = std::make_shared<SymbolTable>();
     procedureEntry->_idName = procedureName;
     procedureEntry->_idtype = SymbolTable::IDType::procedure;
-    procedureEntry->_dataType = "NOT APPLICABLE"; // Procedures don't have a return type.
-    procedureEntry->_scope = currentScope++; // Increment current scope for the procedure body.
-    addToSymTable(procedureEntry);
+    procedureEntry->_dataType = "void"; // Procedures have no return type
+    procedureEntry->_scope = current++; // Add to scope for each procedure
+    procedureEntry->_isArray = false;
+    procedureEntry->_arraySize = 0;
 
-    // Move to the parameter list or the procedure body if there are no parameters.
-    auto paramOrBodyNode = getNextCstNode(); // This will be the first parameter or the body if no parameters
+    // Add procedure entry to the symbol table list
+    addToSymTable(procedureEntry); 
+
+    // Check the '(' that starts the procedure params.
+    if (nodeValue(peekNextCstNode()) == "(") {
+        getNextCstNode(); // Move past '(' to start processing the params
+    } else {
+        std::cerr << "Expected '(' at the start of the procedure body. Found: " << nodeValue(peekNextCstNode()) << std::endl;
+        return;
+    }
+    getNextCstNode(); // Remove '('
+    // Parse parameters creating its own symbol table
+    parseParameters(procedureName); // Also Removes the ending ')'
     
-    // Check if the node represents a parameter list start or the procedure body.
-    if (nodeValue(paramOrBodyNode) == "parameterListStart") {
-        auto paramNode = getNextCstNode(); // Move to the first parameter data type node.
-
-        while (nodeValue(paramNode) != "parameterListEnd") { // Check for end of parameter list marker.
-            string paramDataType = nodeValue(paramNode);
-            auto paramNameNode = getNextCstNode(); // Move to the parameter name node.
-            string paramName = nodeValue(paramNameNode);
-
-            // Create a new symbol table entry for the parameter.
-            auto paramEntry = make_shared<SymbolTable>();
-            paramEntry->_idName = paramName;
-            paramEntry->_dataType = paramDataType;
-            paramEntry->_idtype = SymbolTable::IDType::datatype;
-            paramEntry->_scope = currentScope; // The parameter is in the same scope as the procedure body.
-            addToSymTable(paramEntry);
-
-            paramNode = getNextCstNode(); // Move to the next parameter or the end of the parameter list.
-        }
-
-        // Move past the "parameterListEnd" marker to the procedure body.
-        paramOrBodyNode = getNextCstNode();
+    // Check the '{' that starts the procedure body.
+    if (nodeValue(peekNextCstNode()) == "{") {
+        getNextCstNode(); // Move past '{' to start processing the body
+    } else {
+        std::cerr << "Expected '{' at the start of the procedure body. Found: " << nodeValue(peekNextCstNode()) << std::endl;
+        return;
     }
 
-    // At this point, paramOrBodyNode should point to the start of the procedure body.
-    // Further processing of the procedure body would continue from here, we can reuse
-    // the declarationTable() method for any local variable declarations or similar logic
-    // for handling statements within the procedure.
+    while (nodeValue(peekNextCstNode()) != "}") { // Check fot the '}' that marks the end of the procedure body.
+        auto currentNodeValue = nodeValue(peekNextCstNode());
+        if (isDataType(currentNodeValue)) { // Check if the next node indicates a data type, i.e. a declaration.
+            declarationTable(); // Process a declaration. 
+        } else {
+            getNextCstNode(); // Skip nodes not relevant for the symbol table.
+        }
+    }
 
-    // Reset or decrement the current scope after exiting the procedure body.
-    currentScope--;
+    getNextCstNode(); // Ends the procedure taking out the '{'.
+}
+
+void SymbolTablesLinkedList::parseParameters(const string& procedureOrFunctionName) {
+    auto nextNode = peekNextCstNode(); 
+
+    if (nodeValue(nextNode) == "void") {
+        getNextCstNode(); // Skip 'void'
+        return;
+    }
+
+    // Begin parsing parameters until the end of the parameter list.
+    while (nodeValue(nextNode) != ")") {
+        auto paramTypeNode = getNextCstNode(); // Get the data type of the parameter.
+        auto paramNameNode = getNextCstNode(); // Get the name of the parameter.
+        bool isArray = false;
+        int arraySize = 0;
+
+        // Check if the parameter is an array.
+        if (nodeValue(peekNextCstNode()) == "[") {
+            getNextCstNode(); // Skip '['
+            auto arraySizeNode = getNextCstNode(); // Assuming the size is specified next.
+            arraySize = std::stoi(nodeValue(arraySizeNode)); // Convert the size to an integer.
+            getNextCstNode(); // Skip past ']'
+            isArray = true;
+        }
+
+        // Create a new SymbolTable entry for this parameter.
+        auto paramEntry = std::make_shared<SymbolTable>();
+        paramEntry->_idName = nodeValue(paramNameNode);
+        paramEntry->_dataType = nodeValue(paramTypeNode);
+        paramEntry->_idtype = SymbolTable::IDType::datatype; // Using datatype for parameters.
+        paramEntry->_isArray = isArray;
+        paramEntry->_arraySize = arraySize;
+        paramEntry->_scope = currentScope; // Parameters are at the same scope level as the function/procedure
+
+        addToSymTable(paramEntry);
+
+        nextNode = peekNextCstNode(); // Peek at the next node to see if more parameters exist.
+        if (nodeValue(nextNode) == ",") {
+            getNextCstNode(); // Skip the comma to move to the next parameter.
+        }
+    }
+
+    getNextCstNode(); // Skip past ')' marking the end of the parameter list.
 }
