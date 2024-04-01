@@ -1,7 +1,7 @@
 #include "SymbolTablesLinkedList.h"
 
 
-SymbolTablesLinkedList::SymbolTablesLinkedList(const NodePtr CST_root) {
+SymbolTablesLinkedList::SymbolTablesLinkedList(const NodePtr CST_root) : curCstNode(CST_root), currentScope(0) {
     curCstNode = CST_root;
 }
 
@@ -81,10 +81,62 @@ void SymbolTablesLinkedList::addToSymTable(SymTblPtr s) {
 
 void SymbolTablesLinkedList::declarationTable() {
 
+    auto dataTypeNode = getNextCstNode();
+    string dataType = nodeValue(dataTypeNode);
+
+    auto varNameNode = getNextCstNode();
+    string varName = nodeValue(varNameNode);
+
+    bool isArray = false;
+    int arraySize = 0;
+
+    // Check if the variable is an array
+    if (nodeValue(peekNextCstNode()) == "[") {
+        getNextCstNode(); // Skip '['
+        auto sizeNode = getNextCstNode(); // Get the array size
+        arraySize = std::stoi(nodeValue(sizeNode));
+        getNextCstNode(); // Skip past ']'
+        isArray = true;
+    }
+
+    // Create symbol table entry for the variable
+    auto varEntry = std::make_shared<SymbolTable>();
+    varEntry->_idName = varName;
+    varEntry->_dataType = dataType;
+    varEntry->_idtype = SymbolTable::IDType::datatype;
+    varEntry->_isArray = isArray;
+    varEntry->_arraySize = arraySize;
+    varEntry->_scope = currentScope;
+
+    addToSymTable(varEntry);
+
 }
 
 void SymbolTablesLinkedList::functionTable() {
+    getNextCstNode();
 
+    // Now at the return type of the function
+    auto returnTypeNode = getNextCstNode();
+    string returnType = nodeValue(returnTypeNode);
+
+    // Now at the function name
+    auto functionNameNode = getNextCstNode();
+    string functionName = nodeValue(functionNameNode);
+
+    // Create symbol table entry for the function
+    auto functionEntry = std::make_shared<SymbolTable>();
+    functionEntry->_idName = functionName;
+    functionEntry->_idtype = SymbolTable::IDType::function;
+    functionEntry->_dataType = returnType;
+    functionEntry->_scope = currentScope++;
+    functionEntry->_isArray = false;
+    functionEntry->_arraySize = 0;
+
+    addToSymTable(functionEntry);
+
+    // Assume the '(' starts the parameter list
+    getNextCstNode(); // Skip '(' to start processing parameters
+    parseParameters(functionName); // Also removes the ending ')'
 }
 
 void SymbolTablesLinkedList::procedureTable() {
