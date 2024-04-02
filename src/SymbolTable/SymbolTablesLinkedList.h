@@ -27,12 +27,15 @@ class SymbolTablesLinkedList {
     // Creating symbol tables for parameter lists for Procedures and Functions
     void parseParameters(const string &);
 
+    void printTables();
+
     private : NodePtr curCstNode;
 
     size_t current = 0;
     SymTblPtr root;
     SymTblPtr lastTable;
     int currentScope;
+    int scopeCount;
 };
 
 #endif // ASSIGNMENT1_460_SYMBOLTABLESLINKEDLIST_H

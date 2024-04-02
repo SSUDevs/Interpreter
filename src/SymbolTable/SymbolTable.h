@@ -25,7 +25,7 @@ class SymbolTable {
 
     std::string Name(){return _idName;}
     std::string dataType(){return _dataType;}
-    std::string isArray(){if(_isArray){return "true";}else{return "false";}}
+    std::string isArray(){if(_isArray){return "yes";}else{return "no";}}
     int arraySize(){return _arraySize;}
     int scope(){return _scope;}
     std::string idType(){

@@ -1,25 +1,46 @@
 #include "SymbolTablesLinkedList.h"
 
 
-SymbolTablesLinkedList::SymbolTablesLinkedList(const NodePtr CST_root) : curCstNode(CST_root), currentScope(0) {
+SymbolTablesLinkedList::SymbolTablesLinkedList(const NodePtr CST_root) : curCstNode(CST_root), scopeCount(0), currentScope(0) {
     curCstNode = CST_root;
 }
 
 SymTblPtr SymbolTablesLinkedList::parse() {
 
+    int braceCount = 0;
+    currentScope = 0;
+
     while (peekNextCstNode() != nullptr) {
         if (isDataType(nodeValue(peekNextCstNode()))) {
-            declarationTable();
+
+                declarationTable();
+
         }
         else if (nodeValue(peekNextCstNode()) == "function") {
+            scopeCount++;
+            currentScope = scopeCount;
             functionTable();
         }
         else if (nodeValue(peekNextCstNode()) == "procedure") {
+            scopeCount++;
+            currentScope = scopeCount;
             procedureTable();
         }
         // skip nodes until it's a node used for a symbol table
-        else
+        else {
+
+            if (nodeValue(peekNextCstNode()) == "{") {
+                braceCount++;
+            }
+            else if (nodeValue(peekNextCstNode()) == "}") {
+                braceCount--;
+                if (braceCount == 0)
+                    currentScope = 0;
+            }
+
             getNextCstNode();
+        }
+
     }
 
     return root;
@@ -128,7 +149,7 @@ void SymbolTablesLinkedList::functionTable() {
     functionEntry->_idName = functionName;
     functionEntry->_idtype = SymbolTable::IDType::function;
     functionEntry->_dataType = returnType;
-    functionEntry->_scope = currentScope++;
+    functionEntry->_scope = currentScope;
     functionEntry->_isArray = false;
     functionEntry->_arraySize = 0;
 
@@ -152,7 +173,7 @@ void SymbolTablesLinkedList::procedureTable() {
     procedureEntry->_idName = procedureName;
     procedureEntry->_idtype = SymbolTable::IDType::procedure;
     procedureEntry->_dataType = "void"; // Procedures have no return type
-    procedureEntry->_scope = current++; // Add to scope for each procedure
+    procedureEntry->_scope = currentScope; // Add to scope for each procedure
     procedureEntry->_isArray = false;
     procedureEntry->_arraySize = 0;
 
@@ -228,4 +249,21 @@ void SymbolTablesLinkedList::parseParameters(const string& procedureOrFunctionNa
     }
 
     getNextCstNode(); // Skip past ')' marking the end of the parameter list.
+}
+
+void SymbolTablesLinkedList::printTables() {
+    SymTblPtr current = root;
+
+    while (current != nullptr) {
+        cout << "IDENTIFIER_NAME: " << current->Name() << endl;
+        cout << "IDENTIFIER_TYPE: " << current->idType() << endl;
+        cout << "DATATYPE: " << current->dataType() << endl;
+        cout << "DATATYPE_IS_ARRAY: " << current->isArray() << endl;
+        cout << "DATATYPE_ARRAY_SIZE: " << current->arraySize() << endl;
+        cout << "SCOPE: " << current->scope() << endl;
+        cout << endl;
+
+        current = current->nextTable;
+    }
+
 }
