@@ -1,4 +1,10 @@
+//
+// Created by Luis carmona on 3/22/24.
+//
+
+
 #include "OutPutGenerator.h"
+
 
 void OutPutGenerator::PrintCST(NodePtr& root) {
     ofstream output("Concrete_SyntaxTree_Output.txt");
@@ -12,6 +18,7 @@ void OutPutGenerator::PrintCST(NodePtr& root) {
     }
     int spaces=0;
 
+
     while (root != nullptr) {
         cout << root->Value().value();
         spaces+= root->Value().value().length();
@@ -21,18 +28,19 @@ void OutPutGenerator::PrintCST(NodePtr& root) {
             root = root->Right();
         } else if (root->Left() != nullptr) {
 
+
             cout << " --> nullptr" << endl;
             for(int i=0;i<spaces-1;i++){
                 cout<<" ";
             }
             cout<<'|'<<endl;
             if(spaces>1){
-            for(int i=0;i<spaces;i++){
-                cout<<"-";
+                for(int i=0;i<spaces;i++){
+                    cout<<"-";
+                }
+                cout<<endl;
             }
-            cout<<endl;
-            }
-            
+
             cout<<"\\/"<<endl;
             root = root->Left();
             spaces=0;
@@ -45,3 +53,38 @@ void OutPutGenerator::PrintCST(NodePtr& root) {
 }
 
 
+void printATable(SymTblPtr &table){
+    cout<<"IDENTIFIER_NAME: "<<table->Name()<<endl;
+    cout<<"IDENTIFIER_TYPE: "<< table->idType()<<endl;
+    cout<<"DATATYPE: "<<table->dataType()<<endl;
+    cout<<"DATATYPE_IS_ARRAY: "<<table->isArray()<<endl;
+    cout<<"DATATYPE_ARRAY_SIZE: "<<table->arraySize()<<endl;
+    cout<<"Scope: "<<table->scope()<<endl;
+};
+
+
+void printParameterList(){
+
+
+}
+
+
+void OutPutGenerator::PrintSymbolTables(SymTblPtr &root) {
+
+
+    while(root != nullptr){
+        cout<<"--------------------------------------------"<<endl;
+        if(root->_idtype != SymbolTable::IDType::parameterList){
+            printATable(root);
+        }else{
+            printParameterList();
+        }
+
+
+        root = root->nextTable;
+
+
+    }
+
+
+}
