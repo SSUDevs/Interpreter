@@ -22,6 +22,28 @@ class SymbolTable {
         : _idName(idName), _dataType(dataType), _idtype(idtype), _scope(scope),
           _isArray(isArray), _arraySize(arraySize) {}
 
+
+    std::string Name(){return _idName;}
+    std::string dataType(){return _dataType;}
+    std::string isArray(){if(_isArray){return "true";}else{return "false";}}
+    int arraySize(){return _arraySize;}
+    int scope(){return _scope;}
+    std::string idType(){
+        if(_idtype==IDType::function){
+            return "function";
+        }
+        if(_idtype==IDType::datatype){
+            return "dataType";
+        }
+        if(_idtype==IDType::procedure){
+            return "procedure";
+        }
+
+
+    }
+
+
+
     string _idName, _dataType;
     IDType _idtype;
     bool _isArray;
