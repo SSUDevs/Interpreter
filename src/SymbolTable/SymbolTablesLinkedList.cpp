@@ -13,9 +13,7 @@ SymTblPtr SymbolTablesLinkedList::parse() {
 
     while (peekNextCstNode() != nullptr) {
         if (isDataType(nodeValue(peekNextCstNode()))) {
-
             declarationTable();
-
         } else if (nodeValue(peekNextCstNode()) == "function") {
             scopeCount++;
             currentScope = scopeCount;
@@ -27,7 +25,6 @@ SymTblPtr SymbolTablesLinkedList::parse() {
         }
         // skip nodes until it's a node used for a symbol table
         else {
-
             if (nodeValue(peekNextCstNode()) == "{") {
                 braceCount++;
             } else if (nodeValue(peekNextCstNode()) == "}") {
@@ -35,11 +32,9 @@ SymTblPtr SymbolTablesLinkedList::parse() {
                 if (braceCount == 0)
                     currentScope = 0;
             }
-
             getNextCstNode();
         }
     }
-
     return root;
 }
 

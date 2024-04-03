@@ -22,7 +22,6 @@ class SymbolTable {
         : _idName(idName), _dataType(dataType), _idtype(idtype), _scope(scope),
           _isArray(isArray), _arraySize(arraySize) {}
 
-
     std::string procOrFuncName(){return _procOrFuncName;}
     std::string Name(){return _idName;}
     std::string dataType(){return _dataType;}
@@ -44,8 +43,6 @@ class SymbolTable {
             exit(100);
         }
     }
-
-
 
     string _idName, _dataType, _procOrFuncName;
     IDType _idtype;

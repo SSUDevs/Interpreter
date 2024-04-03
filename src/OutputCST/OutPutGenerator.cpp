@@ -1,7 +1,3 @@
-//
-// Created by Luis carmona on 3/22/24.
-//
-
 #include "OutPutGenerator.h"
 
 void printFormattedLine(const std::string &label, const std::string &value) {
