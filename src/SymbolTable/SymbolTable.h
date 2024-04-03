@@ -16,13 +16,13 @@ class SymbolTable {
   public:
     enum class IDType { function, datatype, procedure, parameterList };
 
-    SymbolTable(std::string idName = "", std::string dataType = "",
+    SymbolTable(std::string _procOrFuncName = "", std::string idName = "", std::string dataType = "",
                 IDType idtype = IDType::datatype, int scope = 0,
                 bool isArray = false, int arraySize = 0)
         : _idName(idName), _dataType(dataType), _idtype(idtype), _scope(scope),
           _isArray(isArray), _arraySize(arraySize) {}
 
-
+    std::string procOrFuncName(){return _procOrFuncName;}
     std::string Name(){return _idName;}
     std::string dataType(){return _dataType;}
     std::string isArray(){if(_isArray){return "yes";}else{return "no";}}
@@ -32,19 +32,19 @@ class SymbolTable {
         if(_idtype==IDType::function){
             return "function";
         }
-        if(_idtype==IDType::datatype){
+        else if(_idtype==IDType::datatype){
             return "dataType";
         }
-        if(_idtype==IDType::procedure){
+        else if(_idtype==IDType::procedure){
             return "procedure";
         }
-
-
+        else {
+            cerr << "ID Type not identifiable." << endl;
+            exit(100);
+        }
     }
 
-
-
-    string _idName, _dataType;
+    string _idName, _dataType, _procOrFuncName;
     IDType _idtype;
     bool _isArray;
     int _arraySize, _scope;

@@ -7,10 +7,10 @@
  */
 
 #include "./CST/Parser.h"
-#include "./Token/Tokenizer.h"
 #include "./CommentRemoval/fileAsArray.h"
 #include "./OutputCST/OutPutGenerator.h"
 #include "./SymbolTable/SymbolTablesLinkedList.h"
+#include "./Token/Tokenizer.h"
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -39,19 +39,27 @@ int main(int argc, char *argv[]) {
     // Tokenize the vector
     tokenizer.tokenizeVector();
 
-    // Retrieve and print tokens 
+    // Retrieve and print tokens
     vector<Token> tokens = tokenizer.getTokens();
-//    for (const auto &token : tokens) {
-//        token.print();
-//    }
+    //    for (const auto &token : tokens) {
+    //        token.print();
+    //    }
 
     // Use the Parser to parse the tokenized input
-     Parser parser(tokens);
+    Parser parser(tokens);
     auto cstRoot = parser.parse(); // Root of the Concrete Syntax Tree
-  OutPutGenerator output;
-  SymbolTablesLinkedList tables(cstRoot);
-    // Still need a method to print or inspect CST
-    output.PrintCST(cstRoot);
+    
+    OutPutGenerator output;
+
+    // Method to print or inspect CST
+    // output.PrintCST(cstRoot);
+
+   // Generate symbol tables from the CST
+    SymbolTablesLinkedList tables(cstRoot);
+    auto symTableRoot = tables.parse(); // Parse the CST to generate symbol tables
+
+    // Print the Symbol Tables
+    output.PrintSymbolTables(symTableRoot);
 
     return 0;
 }
