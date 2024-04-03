@@ -251,7 +251,35 @@ void SymbolTablesLinkedList::parseParameters(
 }
 
 void SymbolTablesLinkedList::parseRootNode() {
-    if (nodeValue(curCstNode) == "function") {
+    if (isDataType(nodeValue(curCstNode))) {
+        string dataType = nodeValue(curCstNode);
+
+        auto varNameNode = getNextCstNode();
+        string varName = nodeValue(varNameNode);
+
+        bool isArray = false;
+        int arraySize = 0;
+
+        // Check if the variable is an array
+        if (nodeValue(peekNextCstNode()) == "[") {
+            getNextCstNode();                 // Skip '['
+            auto sizeNode = getNextCstNode(); // Get the array size
+            arraySize = std::stoi(nodeValue(sizeNode));
+            getNextCstNode(); // Skip past ']'
+            isArray = true;
+        }
+
+        // Create symbol table entry for the variable
+        auto varEntry = std::make_shared<SymbolTable>();
+        varEntry->_idName = varName;
+        varEntry->_dataType = dataType;
+        varEntry->_idtype = SymbolTable::IDType::datatype;
+        varEntry->_isArray = isArray;
+        varEntry->_arraySize = arraySize;
+        varEntry->_scope = currentScope;
+
+        addToSymTable(varEntry);
+    } else if (nodeValue(curCstNode) == "function") {
         scopeCount++;
         currentScope = scopeCount;
 
