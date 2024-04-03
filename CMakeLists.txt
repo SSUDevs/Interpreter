@@ -20,5 +20,7 @@ add_executable(Interpreter
         src/CST/Parser.cpp
         src/SymbolTable/SymbolTable.cpp
         src/SymbolTable/SymbolTable.h
+        src/SymbolTable/SymbolTablesLinkedList.h
+        src/SymbolTable/SymbolTablesLinkedList.cpp
 
 )

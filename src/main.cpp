@@ -10,6 +10,7 @@
 #include "./Token/Tokenizer.h"
 #include "./CommentRemoval/fileAsArray.h"
 #include "./OutputCST/OutPutGenerator.h"
+#include "./SymbolTable/SymbolTablesLinkedList.h"
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -48,6 +49,7 @@ int main(int argc, char *argv[]) {
      Parser parser(tokens);
     auto cstRoot = parser.parse(); // Root of the Concrete Syntax Tree
   OutPutGenerator output;
+  SymbolTablesLinkedList tables(cstRoot);
     // Still need a method to print or inspect CST
     output.PrintCST(cstRoot);
 
