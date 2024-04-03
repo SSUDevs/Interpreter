@@ -4,6 +4,7 @@
 #include "../CST/Parser.h"
 #include "SymbolTable.h"
 #include <vector>
+#include <utility>
 using namespace std;
 
 class SymbolTablesLinkedList {
@@ -37,6 +38,8 @@ class SymbolTablesLinkedList {
     SymTblPtr lastTable;
     int currentScope;
     int scopeCount;
+    vector<std::pair<std::string,int>> varaibleDeclared; // Used to store all the defined variables
+    vector<string>funcProcNames; // Used to store function/procedure names to check availability
 };
 
 #endif // ASSIGNMENT1_460_SYMBOLTABLESLINKEDLIST_H

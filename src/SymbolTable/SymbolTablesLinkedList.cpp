@@ -99,6 +99,38 @@ void SymbolTablesLinkedList::declarationTable() {
         anotherDeclaration = false;
         auto varNameNode = getNextCstNode();
         string varName = nodeValue(varNameNode);
+
+        // Check for redeclarations of varaibles
+        for (int i = 0; i < varaibleDeclared.size(); i++) {
+            if (varaibleDeclared.at(i).first == varName) {
+                if (varaibleDeclared.at(i).second == 0) {
+                    std::cerr << "Error on line "
+                              << varNameNode->Value().lineNum() << ": variable "
+                              << nodeValue(varNameNode)
+                              << " is already defined globally";
+                    exit(60);
+                }
+                if (varaibleDeclared.at(i).second == currentScope) {
+                    std::cerr << "Error on line "
+                              << varNameNode->Value().lineNum() << ": variable "
+                              << nodeValue(varNameNode)
+                              << " is already defined locally";
+                    exit(61);
+                }
+                if (currentScope == 0) {
+                    std::cerr << "Error on line "
+                              << varNameNode->Value().lineNum() << ": variable "
+                              << nodeValue(varNameNode)
+                              << " trying define global variable that is "
+                                 "already defined";
+                    exit(62);
+                }
+            }
+        }
+        varaibleDeclared.push_back(
+            make_pair(nodeValue(varNameNode),
+                      currentScope)); // Add the variable declaration
+
         bool isArray = false;
         int arraySize = 0;
 
@@ -140,6 +172,16 @@ void SymbolTablesLinkedList::functionTable() {
     // Now at the function name
     auto functionNameNode = getNextCstNode();
     string functionName = nodeValue(functionNameNode);
+
+    for (int i = 0; i < funcProcNames.size(); i++) {
+        if (funcProcNames.at(i) == functionName) {
+            std::cerr << "Error: " << functionName
+                      << " is already defined globally "
+                      << nodeValue(peekNextCstNode()) << std::endl;
+            exit(20);
+        }
+    }
+    funcProcNames.push_back(functionName); // Add the function name declaration
 
     // Create symbol table entry for the function
     auto functionEntry = std::make_shared<SymbolTable>();
@@ -223,6 +265,29 @@ void SymbolTablesLinkedList::parseParameters(
         auto paramTypeNode =
             getNextCstNode(); // Get the data type of the parameter.
         auto paramNameNode = getNextCstNode(); // Get the name of the parameter.
+
+        // Check for redeclarations of varaibles
+        for (int i = 0; i < varaibleDeclared.size(); i++) {
+            if (varaibleDeclared.at(i).first == nodeValue(paramNameNode)) {
+                if (varaibleDeclared.at(i).second == 0)
+                    std::cerr << "Error on line "
+                              << paramNameNode->Value().lineNum()
+                              << ": variable " << nodeValue(paramNameNode)
+                              << " is already defined globally";
+                exit(30);
+                if (varaibleDeclared.at(i).second == currentScope) {
+                    std::cerr << "Error on line "
+                              << paramNameNode->Value().lineNum()
+                              << ": variable " << nodeValue(paramNameNode)
+                              << " is already defined locally";
+                    exit(31);
+                }
+            }
+        }
+        varaibleDeclared.push_back(
+            make_pair(nodeValue(paramNameNode),
+                      currentScope)); // Add the variable declaration
+
         bool isArray = false;
         int arraySize = 0;
 
@@ -274,6 +339,38 @@ void SymbolTablesLinkedList::parseRootNode() {
             anotherDeclaration = false;
             auto varNameNode = getNextCstNode();
             string varName = nodeValue(varNameNode);
+
+            // Check for redeclarations of varaibles
+            for (int i = 0; i < varaibleDeclared.size(); i++) {
+                if (varaibleDeclared.at(i).first == varName) {
+                    if (varaibleDeclared.at(i).second == 0) {
+                        std::cerr << "Error on line "
+                                  << varNameNode->Value().lineNum()
+                                  << ": variable " << nodeValue(varNameNode)
+                                  << " is already defined globally";
+                        exit(20);
+                    }
+                    if (varaibleDeclared.at(i).second == currentScope) {
+                        std::cerr << "Error on line "
+                                  << varNameNode->Value().lineNum()
+                                  << ": variable " << nodeValue(varNameNode)
+                                  << " is already defined locally";
+                        exit(21);
+                    }
+                    if (currentScope == 0) {
+                        std::cerr << "Error on line "
+                                  << varNameNode->Value().lineNum()
+                                  << ": variable " << nodeValue(varNameNode)
+                                  << " trying define global variable that is "
+                                     "already defined";
+                        exit(22);
+                    }
+                }
+            }
+            varaibleDeclared.push_back(
+                make_pair(nodeValue(varNameNode),
+                          currentScope)); // Add the variable declaration
+
             bool isArray = false;
             int arraySize = 0;
 
