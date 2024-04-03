@@ -61,7 +61,7 @@ void printATable(SymTblPtr &table) {
 };
 
 void printParameterList(SymTblPtr &list) {
-    cout << endl << "PARAMETER LIST FOR: " << list->procOrFuncName() << endl;
+
     printFormattedLine("IDENTIFIER_NAME", list->Name());
     printFormattedLine("DATATYPE", list->dataType());
     printFormattedLine("DATATYPE_IS_ARRAY", list->isArray());
@@ -84,9 +84,13 @@ void OutPutGenerator::PrintSymbolTables(SymTblPtr &root) {
 
         root = root->nextTable;
     }
-
-    for (auto &prmList : prmLists) {
+    string last ="";
+    for (int i=0; i<prmLists.size();i++) {
         cout << "--------------------------------------------" << endl;
-        printParameterList(prmList);
+        if(last != prmLists.at(i)->procOrFuncName())
+            cout << endl << "PARAMETER LIST FOR: " << prmLists.at(i)->procOrFuncName() << endl;
+            cout << "--------------------------------------------" << endl;
+        last = prmLists.at(i)->procOrFuncName();
+        printParameterList(prmLists.at(i));
     }
 }
