@@ -32,14 +32,16 @@ class SymbolTable {
         if(_idtype==IDType::function){
             return "function";
         }
-        if(_idtype==IDType::datatype){
+        else if(_idtype==IDType::datatype){
             return "dataType";
         }
-        if(_idtype==IDType::procedure){
+        else if(_idtype==IDType::procedure){
             return "procedure";
         }
-
-
+        else {
+            cerr << "ID Type not identifiable." << endl;
+            exit(100);
+        }
     }
 
 

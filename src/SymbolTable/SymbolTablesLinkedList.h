@@ -3,7 +3,7 @@
 #include "../CST/Node.h"
 #include "../CST/Parser.h"
 #include "SymbolTable.h"
-#include <vector>e
+#include <vector>
 using namespace std;
 
 class SymbolTablesLinkedList {

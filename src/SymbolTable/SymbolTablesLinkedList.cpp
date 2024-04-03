@@ -128,7 +128,7 @@ void SymbolTablesLinkedList::declarationTable() {
     varEntry->_isArray = isArray;
     varEntry->_arraySize = arraySize;
     varEntry->_scope = currentScope;
-
+  
     addToSymTable(varEntry);
 
 }
@@ -235,7 +235,7 @@ void SymbolTablesLinkedList::parseParameters(const string& procedureOrFunctionNa
         auto paramEntry = std::make_shared<SymbolTable>();
         paramEntry->_idName = nodeValue(paramNameNode);
         paramEntry->_dataType = nodeValue(paramTypeNode);
-        paramEntry->_idtype = SymbolTable::IDType::datatype; // Using datatype for parameters.
+        paramEntry->_idtype = SymbolTable::IDType::parameterList; 
         paramEntry->_isArray = isArray;
         paramEntry->_arraySize = arraySize;
         paramEntry->_scope = currentScope; // Parameters are at the same scope level as the function/procedure

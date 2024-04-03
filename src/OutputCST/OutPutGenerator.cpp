@@ -5,6 +5,9 @@
 
 #include "OutPutGenerator.h"
 
+void printFormattedLine(const std::string& label, const std::string& value) {
+    std::cout << std::setw(20) << std::left << label << ": " << value << std::endl;
+}
 
 void OutPutGenerator::PrintCST(NodePtr& root) {
     ofstream output("Concrete_SyntaxTree_Output.txt");
@@ -54,23 +57,23 @@ void OutPutGenerator::PrintCST(NodePtr& root) {
 
 
 void printATable(SymTblPtr &table){
-    cout<<"IDENTIFIER_NAME: "<<table->Name()<<endl;
-    cout<<"IDENTIFIER_TYPE: "<< table->idType()<<endl;
-    cout<<"DATATYPE: "<<table->dataType()<<endl;
-    cout<<"DATATYPE_IS_ARRAY: "<<table->isArray()<<endl;
-    cout<<"DATATYPE_ARRAY_SIZE: "<<table->arraySize()<<endl;
-    cout<<"Scope: "<<table->scope()<<endl;
+    printFormattedLine("IDENTIFIER_NAME", table->Name());
+    printFormattedLine("IDENTIFIER_TYPE", table->idType());
+    printFormattedLine("DATATYPE", table->dataType());
+    printFormattedLine("DATATYPE_IS_ARRAY", table->isArray());
+    printFormattedLine("DATATYPE_ARRAY_SIZE", std::to_string(table->arraySize()));
+    printFormattedLine("SCOPE", std::to_string(table->scope()));
+    std::cout << std::endl; 
 };
 
 
 void printParameterList(SymTblPtr &list){
-
-    cout<<"PARAMETER LIST FOR: "<<endl;
-    cout<<"IDENTIFIER_NAME: "<<list->Name()<<endl;
-    cout<<"DATATYPE: "<<list->dataType()<<endl;
-    cout<<"DATATYPE_IS_ARRAY: "<<list->isArray()<<endl;
-    cout<<"DATATYPE_ARRAY_SIZE: "<<list->arraySize()<<endl;
-    cout<<"SCOPE: "<<list->scope()<<endl;
+    std::cout << std::endl << "   PARAMETER LIST FOR: " << list->Name() << std::endl;
+    printFormattedLine("IDENTIFIER_NAME", list->Name());
+    printFormattedLine("DATATYPE", list->dataType());
+    printFormattedLine("DATATYPE_IS_ARRAY", list->isArray());
+    printFormattedLine("DATATYPE_ARRAY_SIZE", std::to_string(list->arraySize()));
+    printFormattedLine("SCOPE", std::to_string(list->scope()));
 }
 
 
