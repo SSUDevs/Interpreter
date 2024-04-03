@@ -91,35 +91,48 @@ void SymbolTablesLinkedList::addToSymTable(SymTblPtr s) {
 }
 
 void SymbolTablesLinkedList::declarationTable() {
+    bool anotherDeclaration = false;
+    string dataType;
+    string repeatDataType;
+    do {                          // For multi declaration on single-line
+        if (anotherDeclaration) { // Inline declarations repreat datatype
+            dataType = repeatDataType;
+        } else {
+            auto dataTypeNode = getNextCstNode();
+            dataType = nodeValue(dataTypeNode);
+        }
+        anotherDeclaration = false;
+        auto varNameNode = getNextCstNode();
+        string varName = nodeValue(varNameNode);
+        bool isArray = false;
+        int arraySize = 0;
 
-    auto dataTypeNode = getNextCstNode();
-    string dataType = nodeValue(dataTypeNode);
+        // Check if the variable is an array
+        if (nodeValue(peekNextCstNode()) == "[") {
+            getNextCstNode();                 // Skip '['
+            auto sizeNode = getNextCstNode(); // Get the array size
+            arraySize = std::stoi(nodeValue(sizeNode));
+            getNextCstNode(); // Skip past ']'
+            isArray = true;
+        }
 
-    auto varNameNode = getNextCstNode();
-    string varName = nodeValue(varNameNode);
+        // Create symbol table entry for the variable
+        auto varEntry = std::make_shared<SymbolTable>();
+        varEntry->_idName = varName;
+        varEntry->_dataType = dataType;
+        varEntry->_idtype = SymbolTable::IDType::datatype;
+        varEntry->_isArray = isArray;
+        varEntry->_arraySize = arraySize;
+        varEntry->_scope = currentScope;
 
-    bool isArray = false;
-    int arraySize = 0;
-
-    // Check if the variable is an array
-    if (nodeValue(peekNextCstNode()) == "[") {
-        getNextCstNode();                 // Skip '['
-        auto sizeNode = getNextCstNode(); // Get the array size
-        arraySize = std::stoi(nodeValue(sizeNode));
-        getNextCstNode(); // Skip past ']'
-        isArray = true;
-    }
-
-    // Create symbol table entry for the variable
-    auto varEntry = std::make_shared<SymbolTable>();
-    varEntry->_idName = varName;
-    varEntry->_dataType = dataType;
-    varEntry->_idtype = SymbolTable::IDType::datatype;
-    varEntry->_isArray = isArray;
-    varEntry->_arraySize = arraySize;
-    varEntry->_scope = currentScope;
-
-    addToSymTable(varEntry);
+        addToSymTable(varEntry);
+        if (nodeValue(peekNextCstNode()) == ",") {
+            getNextCstNode(); // Skip comma and move to next declaration
+            // Save dataType to repeat
+            repeatDataType = dataType;
+            anotherDeclaration = true;
+        }
+    } while (anotherDeclaration);
 }
 
 void SymbolTablesLinkedList::functionTable() {
@@ -251,34 +264,50 @@ void SymbolTablesLinkedList::parseParameters(
 }
 
 void SymbolTablesLinkedList::parseRootNode() {
-    if (isDataType(nodeValue(curCstNode))) {
-        string dataType = nodeValue(curCstNode);
+    auto currNode = curCstNode;
+    bool anotherDeclaration = false;
+    if (isDataType(nodeValue(currNode))) {
+        bool anotherDeclaration = false;
+        string dataType;
+        string repeatDataType;
+        do {                          // For multi declaration on single-line
+            if (anotherDeclaration) { // Inline declarations repreat datatype
+                dataType = repeatDataType;
+            } else {
+                dataType = nodeValue(currNode);
+            }
+            anotherDeclaration = false;
+            auto varNameNode = getNextCstNode();
+            string varName = nodeValue(varNameNode);
+            bool isArray = false;
+            int arraySize = 0;
 
-        auto varNameNode = getNextCstNode();
-        string varName = nodeValue(varNameNode);
+            // Check if the variable is an array
+            if (nodeValue(peekNextCstNode()) == "[") {
+                getNextCstNode();                 // Skip '['
+                auto sizeNode = getNextCstNode(); // Get the array size
+                arraySize = std::stoi(nodeValue(sizeNode));
+                getNextCstNode(); // Skip past ']'
+                isArray = true;
+            }
 
-        bool isArray = false;
-        int arraySize = 0;
+            // Create symbol table entry for the variable
+            auto varEntry = std::make_shared<SymbolTable>();
+            varEntry->_idName = varName;
+            varEntry->_dataType = dataType;
+            varEntry->_idtype = SymbolTable::IDType::datatype;
+            varEntry->_isArray = isArray;
+            varEntry->_arraySize = arraySize;
+            varEntry->_scope = currentScope;
 
-        // Check if the variable is an array
-        if (nodeValue(peekNextCstNode()) == "[") {
-            getNextCstNode();                 // Skip '['
-            auto sizeNode = getNextCstNode(); // Get the array size
-            arraySize = std::stoi(nodeValue(sizeNode));
-            getNextCstNode(); // Skip past ']'
-            isArray = true;
-        }
-
-        // Create symbol table entry for the variable
-        auto varEntry = std::make_shared<SymbolTable>();
-        varEntry->_idName = varName;
-        varEntry->_dataType = dataType;
-        varEntry->_idtype = SymbolTable::IDType::datatype;
-        varEntry->_isArray = isArray;
-        varEntry->_arraySize = arraySize;
-        varEntry->_scope = currentScope;
-
-        addToSymTable(varEntry);
+            addToSymTable(varEntry);
+            if (nodeValue(peekNextCstNode()) == ",") {
+                getNextCstNode(); // Skip comma and move to next declaration
+                // Save dataType to repeat
+                repeatDataType = dataType;
+                anotherDeclaration = true;
+            }
+        } while (anotherDeclaration);
     } else if (nodeValue(curCstNode) == "function") {
         scopeCount++;
         currentScope = scopeCount;

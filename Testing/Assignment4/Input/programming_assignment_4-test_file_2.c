@@ -9,9 +9,11 @@
 // *                                                                                 *
 // * Hex digit returns -1 upon error                                                 *
 // ***********************************************************************************
+
+int i, digit;
+
 function int hexdigit2int (char hex_digit)
 {
-  int i, digit;
 
   digit = -1;
   if ((hex_digit >= '0') && (hex_digit <= '9'))
