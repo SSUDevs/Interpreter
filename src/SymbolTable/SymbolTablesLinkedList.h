@@ -11,6 +11,7 @@ class SymbolTablesLinkedList {
     SymbolTablesLinkedList(const NodePtr CST_root);
 
     SymTblPtr parse();
+    void parseRootNode();
 
     NodePtr getNextCstNode();
     NodePtr peekNextCstNode();
