@@ -63,27 +63,36 @@ void printATable(SymTblPtr &table){
 };
 
 
-void printParameterList(){
+void printParameterList(SymTblPtr &list){
 
-
+    cout<<"PARAMETER LIST FOR: "<<endl;
+    cout<<"IDENTIFIER_NAME: "<<list->Name()<<endl;
+    cout<<"DATATYPE: "<<list->dataType()<<endl;
+    cout<<"DATATYPE_IS_ARRAY: "<<list->isArray()<<endl;
+    cout<<"DATATYPE_ARRAY_SIZE: "<<list->arraySize()<<endl;
+    cout<<"SCOPE: "<<list->scope()<<endl;
 }
 
 
 void OutPutGenerator::PrintSymbolTables(SymTblPtr &root) {
 
+    vector<SymTblPtr> prmLists;
 
     while(root != nullptr){
         cout<<"--------------------------------------------"<<endl;
         if(root->_idtype != SymbolTable::IDType::parameterList){
             printATable(root);
         }else{
-            printParameterList();
+            prmLists.push_back(root);
         }
-
 
         root = root->nextTable;
 
+    }
 
+    for(auto & prmList : prmLists){
+        cout<<"--------------------------------------------"<<endl;
+        printParameterList(prmList);
     }
 
 
