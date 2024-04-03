@@ -231,6 +231,7 @@ void SymbolTablesLinkedList::parseParameters(
 
         // Create a new SymbolTable entry for this parameter.
         auto paramEntry = std::make_shared<SymbolTable>();
+        paramEntry->_procOrFuncName = procedureOrFunctionName;
         paramEntry->_idName = nodeValue(paramNameNode);
         paramEntry->_dataType = nodeValue(paramTypeNode);
         paramEntry->_idtype = SymbolTable::IDType::parameterList;
@@ -272,6 +273,8 @@ void SymbolTablesLinkedList::parseRootNode() {
         functionEntry->_arraySize = 0;
 
         addToSymTable(functionEntry);
+        getNextCstNode();
+        parseParameters(functionName);
     } else if (nodeValue(curCstNode) == "procedure") {
         scopeCount++;
         currentScope = scopeCount;
@@ -289,8 +292,10 @@ void SymbolTablesLinkedList::parseRootNode() {
             currentScope; // Add to scope for each procedure
         procedureEntry->_isArray = false;
         procedureEntry->_arraySize = 0;
-        // Add procedure entry to the symbol table list
+
         addToSymTable(procedureEntry);
+        getNextCstNode();
+        parseParameters(procedureName);
     }
 }
 
