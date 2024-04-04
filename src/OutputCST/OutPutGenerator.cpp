@@ -1,4 +1,5 @@
 #include "OutPutGenerator.h"
+#include <iomanip>
 
 void printFormattedLine(const std::string &label, const std::string &value) {
     std::cout << std::setw(20) << std::left << label << ": " << value

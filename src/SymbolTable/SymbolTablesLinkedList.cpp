@@ -106,24 +106,24 @@ void SymbolTablesLinkedList::declarationTable() {
             if (varaibleDeclared.at(i).first == varName) {
                 if (varaibleDeclared.at(i).second == 0) {
                     std::cerr << "Error on line "
-                              << varNameNode->Value().lineNum() << ": variable "
+                              << varNameNode->Value().lineNum() << ": variable \""
                               << nodeValue(varNameNode)
-                              << " is already defined globally ";
+                              << "\" is already defined globally ";
                     exit(60);
                 }
                 if (varaibleDeclared.at(i).second == currentScope) {
                     std::cerr << "Error on line "
-                              << varNameNode->Value().lineNum() << ": variable "
+                              << varNameNode->Value().lineNum() << ": variable \""
                               << nodeValue(varNameNode)
-                              << " is already defined locally ";
+                              << "\" is already defined locally ";
                     exit(61);
                 }
                 if (currentScope == 0) {
                     std::cerr << "Error on line "
-                              << varNameNode->Value().lineNum() << ": variable "
+                              << varNameNode->Value().lineNum() << ": variable \""
                               << nodeValue(varNameNode)
-                              << " trying define global variable that is "
-                                 "already defined ";
+                              << "\" trying define global variable that is "
+                                 "already defined elsewhere";
                     exit(62);
                 }
             }
@@ -176,8 +176,8 @@ void SymbolTablesLinkedList::functionTable() {
 
     for (int i = 0; i < funcProcNames.size(); i++) {
         if (funcProcNames.at(i) == functionName) {
-            std::cerr << "Error: " << functionName
-                      << " is already defined globally "
+            std::cerr << "Error: \"" << functionName
+                      << "\" is already defined globally "
                       << nodeValue(peekNextCstNode()) << std::endl;
             exit(20);
         }
@@ -292,22 +292,22 @@ void SymbolTablesLinkedList::parseParameters(
                 if (varaibleDeclared.at(i).second == 0) {
                     std::cerr << "Error on line "
                               << paramNameNode->Value().lineNum()
-                              << ": variable " << nodeValue(paramNameNode)
-                              << " is already defined globally ";
+                              << ": variable \"" << nodeValue(paramNameNode)
+                              << "\" is already defined globally ";
                     exit(60);
                 }
                 if (varaibleDeclared.at(i).second == currentScope) {
                     std::cerr << "Error on line "
                               << paramNameNode->Value().lineNum()
-                              << ": variable " << nodeValue(paramNameNode)
-                              << " is already defined locally ";
+                              << ": variable \"" << nodeValue(paramNameNode)
+                              << "\" is already defined locally ";
                     exit(61);
                 }
                 if (currentScope == 0) {
                     std::cerr << "Error on line "
                               << paramNameNode->Value().lineNum()
-                              << ": variable " << nodeValue(paramNameNode)
-                              << " trying define global variable that is "
+                              << ": variable \"" << nodeValue(paramNameNode)
+                              << "\" trying define global variable that is "
                                  "already defined ";
                     exit(62);
                 }
@@ -375,23 +375,23 @@ void SymbolTablesLinkedList::parseRootNode() {
                     if (varaibleDeclared.at(i).second == 0) {
                         std::cerr << "Error on line "
                                   << varNameNode->Value().lineNum()
-                                  << ": variable " << nodeValue(varNameNode)
-                                  << " is already defined globally ";
+                                  << ": variable \"" << nodeValue(varNameNode)
+                                  << "\" is already defined globally ";
                         exit(20);
                     }
                     if (varaibleDeclared.at(i).second == currentScope) {
                         std::cerr << "Error on line "
                                   << varNameNode->Value().lineNum()
-                                  << ": variable " << nodeValue(varNameNode)
-                                  << " is already defined locally ";
+                                  << ": variable \"" << nodeValue(varNameNode)
+                                  << "\" is already defined locally ";
                         exit(21);
                     }
                     if (currentScope == 0) {
                         std::cerr << "Error on line "
                                   << varNameNode->Value().lineNum()
-                                  << ": variable " << nodeValue(varNameNode)
-                                  << " trying define global variable that is "
-                                     "already defined ";
+                                  << ": variable \"" << nodeValue(varNameNode)
+                                  << "\" trying define global variable that is "
+                                     "already defined elsewhere";
                         exit(22);
                     }
                 }
