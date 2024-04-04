@@ -265,22 +265,31 @@ void SymbolTablesLinkedList::parseParameters(
         auto paramTypeNode =
             getNextCstNode(); // Get the data type of the parameter.
         auto paramNameNode = getNextCstNode(); // Get the name of the parameter.
-
+        string varName = nodeValue(paramNameNode);
         // Check for redeclarations of varaibles
         for (int i = 0; i < varaibleDeclared.size(); i++) {
-            if (varaibleDeclared.at(i).first == nodeValue(paramNameNode)) {
-                if (varaibleDeclared.at(i).second == 0)
+            if (varaibleDeclared.at(i).first == varName) {
+                if (varaibleDeclared.at(i).second == 0) {
                     std::cerr << "Error on line "
-                              << paramNameNode->Value().lineNum()
-                              << ": variable " << nodeValue(paramNameNode)
+                              << paramNameNode->Value().lineNum() << ": variable "
+                              << nodeValue(paramNameNode)
                               << " is already defined globally";
-                exit(30);
+                    exit(60);
+                }
                 if (varaibleDeclared.at(i).second == currentScope) {
                     std::cerr << "Error on line "
-                              << paramNameNode->Value().lineNum()
-                              << ": variable " << nodeValue(paramNameNode)
+                              << paramNameNode->Value().lineNum() << ": variable "
+                              << nodeValue(paramNameNode)
                               << " is already defined locally";
-                    exit(31);
+                    exit(61);
+                }
+                if (currentScope == 0) {
+                    std::cerr << "Error on line "
+                              << paramNameNode->Value().lineNum() << ": variable "
+                              << nodeValue(paramNameNode)
+                              << " trying define global variable that is "
+                                 "already defined";
+                    exit(62);
                 }
             }
         }

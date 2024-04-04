@@ -49,7 +49,6 @@ cout << "Starting main" << endl;
     // Use the Parser to parse the tokenized input
     Parser parser(tokens);
     auto cstRoot = parser.parse(); // Root of the Concrete Syntax Tree
-    cout << "Parsing in main" << endl;
 
     OutPutGenerator output;
 
@@ -58,10 +57,8 @@ cout << "Starting main" << endl;
 
    // Generate symbol tables from the CST
     SymbolTablesLinkedList tables(cstRoot);
-    cout << "CST made in main" << endl;
 
     auto symTableRoot = tables.parse(); // Parse the CST to generate symbol tables
-    cout << "Tables made in main" << endl;
 
     // Print the Symbol Tables
     output.PrintSymbolTables(symTableRoot);
