@@ -17,49 +17,40 @@ Each stage is designed to address a specific aspect of language interpretation, 
 ## Implemented Features
 
 ### ✅ Comment Removal for a C-like Programming Language
-
-#### Objective
-
-This initial step aims to prepare the source code for further processing by removing comments. It's essential for simplifying the code analysis in subsequent stages.
-
-#### How It Works
-
-- The program uses a deterministic finite state automaton (DFA) to identify and eliminate both line and block comments from the source code.
-- The cleaned code is then outputted, ready for tokenization.
-
-#### Code Structure
+This initial step aims to prepare the source code for further processing by removing comments. It's essential for simplifying the code analysis in subsequent stages. The program uses a deterministic finite state automaton (DFA) to identify and eliminate both line and block comments from the source code. The cleaned code is then outputted, ready for tokenization.
 
 - `main.cpp`: Initiates the comment removal process.
 - `fileAsArray.h` and `fileAsArray.cpp`: Implements the `fileAsArray` class for reading and processing the file according to DFA rules.
 
 ### ✅ Tokenizing 
-
 The tokenizing stage is designed to convert the cleaned source code into a series of tokens. These tokens are used by the parser to understand the code's structure and semantics.
 
-- **Current Status**: Implementation underway. This step involves using a DFA to identify tokens accurately.
+- `Token.h` and `Token.cpp`: Defines all recognizable tokens used for tokenizing
+- `Tokenizer.h` and `Tokenizer.cpp`: Creates tokens using a DFA to represent the codes structure and semantics
 
-### 🚧 Recursive Decent Parser (In Progress)
+### ✅ Recursive Decent Parser 
+Creates a concrete syntax tree (CST) based upon the Backus-Naur Form (BNF) language definition using a procedurally-driven DFA. Utilizes an LCRS binary tree (Left-Child, Right-Sibling) to store the CST. The program may also display the resulting CST in breadth-first order, if desired.
+
+- `Node.h` and `Node.cpp`: Used for the parser's internal representation. Each Node instance represents a part of the source code, such as a token or a syntax rule, and can link to child nodes and sibling nodes to form a tree structure.
+- `Parser.h` and `Parser.cpp`:Implement the Parser class which takes a sequence of tokens as input and constructs the CST by recursively applying grammar rules defined in the BNF. The parser checks the source code's syntax and generates a parse tree that reflects the code's hierarchical structure.
+- `ConcreteSyntaxTree.h` and `ConcreteSyntaxTree.cpp`: Provide functionalities to manage the Concrete Syntax Tree, allowing for the insertion and navigation of nodes within the tree. Used to represent the parsed source code in a hierarchical manner, allowing for further analysis or interpretation.
+- `OutPutGenerator.h` and `OutPutGenerator.cpp`: Generate output based on the constructed syntax tree. Includes printing the tree structure in a breadth-first order for debugging or visualization purposes, as well as generating intermediate code or direct interpretation for execution.
+
+### ✅ Symbol Table
+Creates symbol tables for all the defined variables (including their type and scope) and the names of all functions and procedures to be used for semantic analysis, scope management, and identifier resolution in the parsing process. 
+- This includes:
+    - Ensuring that variables and functions are declared and accessed within their respective scopes.
+    - Associating identifiers with their data types and values, as well as checking for type consistency across operations.
+    - Handling the declaration and invocation of functions and procedures, including parameter passing mechanisms.
+    - Identifying undeclared identifiers, type mismatches, and scope violations.
+
+- `SymbolTable.h` and `SymbolTable.cpp`: Define and implement the SymbolTable class, which represents individual entries in the symbol table. Each entry can denote a variable, function, procedure, or a parameter list, with attributes such as name, data type, identifier type, scope level, and array-related properties. The symbol table entries are used for checking variable declarations, resolving identifier references, and performing type checking during the interpretation process.
+- `SymbolTablesLinkedList.h` and `SymbolTablesLinkedList.cpp`: Responsible for managing a linked list of SymbolTable entries, facilitating the construction and manipulation of the entire symbol table. This structure supports the nesting of scopes and the hierarchical nature defined in the BNF.
+
+### 🚧 Abstract Syntax Tree (In Progress)
+Creates an Abstract Syntax Tree (AST) based on the Concrete Syntax Tree (CST). An Abstract Syntax Tree is not a clone of a Concrete Syntax Tree. Utilizes an LCRS binary tree (Left-Child, Right-Sibling) to store the AST. Allows for the isplay of the resulting AST in breadth-first order. 
 
 *Not yet implemented.*
-
-### 🔲 Symbol Table
-
-*Not yet implemented.*
-
-### 🔲 Abstract Syntax Tree
-
-*Not yet implemented.*
-
-## Future Work
-
-Moving forward, the project will focus on:
-
-- **Finalizing Tokenization**: Completing the implementation to ensure accurate conversion of source code into tokens.
-- **Recursive Decent Parsing**: Developing a parser to analyze the tokenized code's structure.
-- **Symbol Table**: Implementing a symbol table for managing variable and function declarations.
-- **Abstract Syntax Tree**: Constructing an AST to represent the program's structure for efficient execution.
-
-The completion of these stages will culminate in a fully functional interpreter for a C-like language, enabling the execution of C-like programs with high efficiency and accuracy.
 
 
 ## Contributors
