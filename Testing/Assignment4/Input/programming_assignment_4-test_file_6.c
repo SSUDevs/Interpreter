@@ -23,6 +23,5 @@ function bool my_function (char byte)
 
 procedure do_nothing (int i, int j, int k)
 {
-  int hey;
 }
 

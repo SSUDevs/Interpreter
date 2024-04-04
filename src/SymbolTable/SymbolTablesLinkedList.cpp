@@ -18,13 +18,14 @@ SymTblPtr SymbolTablesLinkedList::parse() {
             scopeCount++;
             currentScope = scopeCount;
             functionTable();
+            currentScope = 0; // Reset scope to global so that variables declared outside will be global
         } else if (nodeValue(peekNextCstNode()) == "procedure") {
             scopeCount++;
             currentScope = scopeCount;
             procedureTable();
-        }
-        // skip nodes until it's a node used for a symbol table
-        else {
+            currentScope = 0;
+        } else {
+            // skip nodes until it's a node used for a symbol table
             if (nodeValue(peekNextCstNode()) == "{") {
                 braceCount++;
             } else if (nodeValue(peekNextCstNode()) == "}") {
@@ -107,14 +108,14 @@ void SymbolTablesLinkedList::declarationTable() {
                     std::cerr << "Error on line "
                               << varNameNode->Value().lineNum() << ": variable "
                               << nodeValue(varNameNode)
-                              << " is already defined globally";
+                              << " is already defined globally ";
                     exit(60);
                 }
                 if (varaibleDeclared.at(i).second == currentScope) {
                     std::cerr << "Error on line "
                               << varNameNode->Value().lineNum() << ": variable "
                               << nodeValue(varNameNode)
-                              << " is already defined locally";
+                              << " is already defined locally ";
                     exit(61);
                 }
                 if (currentScope == 0) {
@@ -122,7 +123,7 @@ void SymbolTablesLinkedList::declarationTable() {
                               << varNameNode->Value().lineNum() << ": variable "
                               << nodeValue(varNameNode)
                               << " trying define global variable that is "
-                                 "already defined";
+                                 "already defined ";
                     exit(62);
                 }
             }
@@ -197,6 +198,26 @@ void SymbolTablesLinkedList::functionTable() {
     // Assume the '(' starts the parameter list
     getNextCstNode(); // Skip '(' to start processing parameters
     parseParameters(functionName);
+    
+    getNextCstNode(); // Skip past ')' marking the end of the parameter list.
+    // Check the '{' that starts the procedure body.
+    if (nodeValue(peekNextCstNode()) == "{") {
+        getNextCstNode(); // Move past '{' to start processing the body
+    } else {
+        std::cerr << "Expected '{' at the start of the procedure body. Found: "
+                  << nodeValue(peekNextCstNode()) << std::endl;
+        return;
+    }
+    while (nodeValue(peekNextCstNode()) !=
+           "}") { // Check fot the '}' that marks the end of the procedure body.
+        auto currentNodeValue = nodeValue(peekNextCstNode());
+        if (isDataType(currentNodeValue)) { // Check if the next node indicates
+                                            // a data type, i.e. a declaration.
+            declarationTable();             // Process a declaration.
+        } else {
+            getNextCstNode(); // Skip nodes not relevant for the symbol table.
+        }
+    }
 }
 
 void SymbolTablesLinkedList::procedureTable() {
@@ -249,7 +270,6 @@ void SymbolTablesLinkedList::procedureTable() {
             getNextCstNode(); // Skip nodes not relevant for the symbol table.
         }
     }
-    getNextCstNode(); // Ends the procedure taking out the '{'.
 }
 
 void SymbolTablesLinkedList::parseParameters(
@@ -271,24 +291,24 @@ void SymbolTablesLinkedList::parseParameters(
             if (varaibleDeclared.at(i).first == varName) {
                 if (varaibleDeclared.at(i).second == 0) {
                     std::cerr << "Error on line "
-                              << paramNameNode->Value().lineNum() << ": variable "
-                              << nodeValue(paramNameNode)
-                              << " is already defined globally";
+                              << paramNameNode->Value().lineNum()
+                              << ": variable " << nodeValue(paramNameNode)
+                              << " is already defined globally ";
                     exit(60);
                 }
                 if (varaibleDeclared.at(i).second == currentScope) {
                     std::cerr << "Error on line "
-                              << paramNameNode->Value().lineNum() << ": variable "
-                              << nodeValue(paramNameNode)
-                              << " is already defined locally";
+                              << paramNameNode->Value().lineNum()
+                              << ": variable " << nodeValue(paramNameNode)
+                              << " is already defined locally ";
                     exit(61);
                 }
                 if (currentScope == 0) {
                     std::cerr << "Error on line "
-                              << paramNameNode->Value().lineNum() << ": variable "
-                              << nodeValue(paramNameNode)
+                              << paramNameNode->Value().lineNum()
+                              << ": variable " << nodeValue(paramNameNode)
                               << " trying define global variable that is "
-                                 "already defined";
+                                 "already defined ";
                     exit(62);
                 }
             }
@@ -356,14 +376,14 @@ void SymbolTablesLinkedList::parseRootNode() {
                         std::cerr << "Error on line "
                                   << varNameNode->Value().lineNum()
                                   << ": variable " << nodeValue(varNameNode)
-                                  << " is already defined globally";
+                                  << " is already defined globally ";
                         exit(20);
                     }
                     if (varaibleDeclared.at(i).second == currentScope) {
                         std::cerr << "Error on line "
                                   << varNameNode->Value().lineNum()
                                   << ": variable " << nodeValue(varNameNode)
-                                  << " is already defined locally";
+                                  << " is already defined locally ";
                         exit(21);
                     }
                     if (currentScope == 0) {
@@ -371,7 +391,7 @@ void SymbolTablesLinkedList::parseRootNode() {
                                   << varNameNode->Value().lineNum()
                                   << ": variable " << nodeValue(varNameNode)
                                   << " trying define global variable that is "
-                                     "already defined";
+                                     "already defined ";
                         exit(22);
                     }
                 }

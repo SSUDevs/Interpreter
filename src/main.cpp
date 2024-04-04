@@ -18,7 +18,6 @@
 using namespace std;
 
 int main(int argc, char *argv[]) {
-cout << "Starting main" << endl;
     if (argc < 2) {
         cerr << "Usage: " << argv[0] << " <filename>" << endl;
         return 1;
