@@ -58,6 +58,17 @@ void SymbolTablesLinkedList::reportError(const string &message, int lineNumber,
     exit(errorCode);
 }
 
+// Checks for redeclaration of a function or procedure name
+void SymbolTablesLinkedList::checkFuncProcRedeclaration(const string &name, const string &type) {
+    for (const auto &existingName : funcProcNames) {
+        if (existingName == name) {
+            std::cerr << "Error: \"" << name << "\" is already defined globally as a " << type << std::endl;
+            exit(31);
+        }
+    }
+    funcProcNames.push_back(name); // Add the name to the list 
+}
+
 bool SymbolTablesLinkedList::checkVariableRedeclaration(const string &varName,
                                                         int scope,
                                                         int lineNumber) {
@@ -187,15 +198,9 @@ void SymbolTablesLinkedList::functionTable() {
     auto functionNameNode = getNextCstNode();
     string functionName = nodeValue(functionNameNode);
 
-    // Check for function redeclaration
-    for (int i = 0; i < funcProcNames.size(); i++) {
-        if (funcProcNames.at(i) == functionName) {
-            std::cerr << "Error: \"" << functionName
-                      << "\" is already defined globally "
-                      << nodeValue(peekNextCstNode()) << std::endl;
-            exit(31);
-        }
-    }
+    // Checks for redeclaration and add sthe name to the list if not already present
+    checkFuncProcRedeclaration(functionName, "function");
+
     funcProcNames.push_back(functionName); // Add the function name declaration
 
     auto functionEntry = make_shared<SymbolTable>(
@@ -232,17 +237,8 @@ void SymbolTablesLinkedList::procedureTable() {
     auto procedureNameNode = getNextCstNode();
     string procedureName = nodeValue(procedureNameNode);
 
-    // Check for procedure redeclaration
-    for (int i = 0; i < funcProcNames.size(); i++) {
-        if (funcProcNames.at(i) == procedureName) {
-            std::cerr << "Error: \"" << procedureName
-                      << "\" is already defined globally "
-                      << nodeValue(peekNextCstNode()) << std::endl;
-            exit(31);
-        }
-    }
-    funcProcNames.push_back(
-        procedureName); // Add procedure name to track redeclarations
+    // Checks for redeclaration and add sthe name to the list if not already present
+    checkFuncProcRedeclaration(procedureName, "procedure");
 
     auto procedureEntry = make_shared<SymbolTable>(
         procedureName, "void", SymbolTable::IDType::procedure, currentScope);
@@ -358,17 +354,8 @@ void SymbolTablesLinkedList::parseRootNode() {
         auto functionNameNode = getNextCstNode();
         string functionName = nodeValue(functionNameNode);
 
-        // Check for procedure redeclaration
-        for (int i = 0; i < funcProcNames.size(); i++) {
-            if (funcProcNames.at(i) == functionName) {
-                std::cerr << "Error: \"" << functionName
-                          << "\" is already defined globally "
-                          << nodeValue(peekNextCstNode()) << std::endl;
-                exit(31);
-            }
-        }
-        funcProcNames.push_back(
-            functionName); // Add procedure name to track redeclarations
+        // Checks for redeclaration and add sthe name to the list if not already present
+        checkFuncProcRedeclaration(functionName, "procedure");
 
         auto functionEntry = make_shared<SymbolTable>(
             functionName, returnType, SymbolTable::IDType::function,
@@ -384,17 +371,8 @@ void SymbolTablesLinkedList::parseRootNode() {
         auto procedureNameNode = getNextCstNode();
         string procedureName = nodeValue(procedureNameNode);
 
-        // Check for procedure redeclaration
-        for (int i = 0; i < funcProcNames.size(); i++) {
-            if (funcProcNames.at(i) == procedureName) {
-                std::cerr << "Error: \"" << procedureName
-                          << "\" is already defined globally "
-                          << nodeValue(peekNextCstNode()) << std::endl;
-                exit(31);
-            }
-        }
-        funcProcNames.push_back(
-            procedureName); // Add procedure name to track redeclarations
+        // Checks for redeclaration and add sthe name to the list if not already present
+        checkFuncProcRedeclaration(procedureName, "procedure");
 
         // Create symbol table entry for the procedure
         auto procedureEntry = make_shared<SymbolTable>(
