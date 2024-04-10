@@ -51,24 +51,24 @@ void OutPutGenerator::PrintCST(NodePtr &root) {
 }
 
 void printATable(SymTblPtr &table) {
-    printFormattedLine("IDENTIFIER_NAME", table->Name());
-    printFormattedLine("IDENTIFIER_TYPE", table->idType());
-    printFormattedLine("DATATYPE", table->dataType());
-    printFormattedLine("DATATYPE_IS_ARRAY", table->isArray());
+    printFormattedLine("IDENTIFIER_NAME", table->GetName());
+    printFormattedLine("IDENTIFIER_TYPE", table->GetStringIdType());
+    printFormattedLine("DATATYPE", table->GetDataType());
+    printFormattedLine("DATATYPE_IS_ARRAY", table->GetIsArray());
     printFormattedLine("DATATYPE_ARRAY_SIZE",
-                       std::to_string(table->arraySize()));
-    printFormattedLine("SCOPE", std::to_string(table->scope()));
+                       std::to_string(table->GetArraySize()));
+    printFormattedLine("SCOPE", std::to_string(table->GetScope()));
     cout << endl;
 };
 
 void printParameterList(SymTblPtr &list) {
 
-    printFormattedLine("IDENTIFIER_NAME", list->Name());
-    printFormattedLine("DATATYPE", list->dataType());
-    printFormattedLine("DATATYPE_IS_ARRAY", list->isArray());
+    printFormattedLine("IDENTIFIER_NAME", list->GetName());
+    printFormattedLine("DATATYPE", list->GetDataType());
+    printFormattedLine("DATATYPE_IS_ARRAY", list->GetIsArray());
     printFormattedLine("DATATYPE_ARRAY_SIZE",
-                       std::to_string(list->arraySize()));
-    printFormattedLine("SCOPE", std::to_string(list->scope()));
+                       std::to_string(list->GetArraySize()));
+    printFormattedLine("SCOPE", std::to_string(list->GetScope()));
 }
 
 void OutPutGenerator::PrintSymbolTables(SymTblPtr &root) {
@@ -76,14 +76,14 @@ void OutPutGenerator::PrintSymbolTables(SymTblPtr &root) {
     vector<SymTblPtr> prmLists;
 
     while (root != nullptr) {
-        if (root->_idtype != SymbolTable::IDType::parameterList) {
+        if (root->GetIdType() != SymbolTable::IDType::parameterList) {
             cout << "--------------------------------------------" << endl;
             printATable(root);
         } else {
             prmLists.push_back(root);
         }
 
-        root = root->nextTable;
+        root = root->GetNextTable();
     }
     string last ="";
     for (int i=0; i<prmLists.size();i++) {

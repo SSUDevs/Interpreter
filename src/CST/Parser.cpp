@@ -650,9 +650,10 @@ void Parser::parseExpression() {
 
         if (peekToken().type() == Token::Type::LBracket) {
             // Array indexing
-            addToCST(createNodePtr(getToken()), RightSibling);        // Consume '['
+            addToCST(createNodePtr(getToken()), RightSibling); // Consume '['
             parseExpression(); // Parse the index expression
-            addToCST(expectToken(Token::Type::RBracket, "Expected ']'"), RightSibling);
+            addToCST(expectToken(Token::Type::RBracket, "Expected ']'"),
+                     RightSibling);
         }
 
         // Check for an operator after the operand
@@ -882,13 +883,7 @@ void Parser::parseReturnStatement() {
     }
     addToCST(createNodePtr(return_token), LeftChild);
 
-    // NOTE: Currenlty not worrying about returning anything other than an
-    // Identifier Peek at the next token to decide if an Identifier follows
     Token nextToken = peekToken();
-    //    if (match(Token::Type::Identifier, nextToken)) {
-    //        addToCST(createNodePtr(nextToken), RightSibling); // Adjust as
-    //        necessary for your tree structure
-    //    }
     if (peekToken().type() == Token::Type::SingleQuotedString ||
         peekToken().type() == Token::Type::DoubleQuotedString) {
         addToCST(createNodePtr(getToken()), RightSibling);
@@ -897,9 +892,6 @@ void Parser::parseReturnStatement() {
     }
 
     // Regardless of whether an Identifier was found, a semicolon is expected
-    // next
-    //    NodePtr semicolonNode = expectToken(Token::Type::Semicolon, "Syntax
-    //    error: Expected ';' after return statement");
     Token semiToken = getToken();
     if (semiToken.type() != Token::Type::Semicolon) {
         cerr << "Expected an ; but got " << semiToken.value() << " at line "
@@ -924,8 +916,7 @@ NodePtr Parser::expectToken(Token::Type expectedType,
     return createNodePtr(t);
 }
 
-// A helper method to peek at the current token without incrementing
-// 'current'
+// Helper method to peek at current token without incrementing 'current'
 Token Parser::peekToken() const {
     if (current >= tokens.size()) {
         throw std::runtime_error(

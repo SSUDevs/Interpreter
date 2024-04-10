@@ -4,52 +4,75 @@
 #include <iostream>
 #include <memory> // Used for shared_ptr
 
-// Forward declaration to resolve circular references
-class SymbolTable;
-
-// Alias for shared_ptr to Node for convenience
-using SymTblPtr = std::shared_ptr<SymbolTable>; // shared_ptr used to help with
-                                                // automatic memory cleanup
+using std::make_shared;
+using std::shared_ptr;
+using std::string;
 
 using namespace std;
+
+class SymbolTable;
+
+// Alias for shared_ptr to SymbolTable for convenience
+using SymTblPtr = std::shared_ptr<SymbolTable>;
+
 class SymbolTable {
   public:
     enum class IDType { function, datatype, procedure, parameterList };
 
-    SymbolTable(std::string _procOrFuncName = "", std::string idName = "", std::string dataType = "",
+    // Ensure constructor parameters match expected usage
+    SymbolTable(string idName = "", string dataType = "",
                 IDType idtype = IDType::datatype, int scope = 0,
-                bool isArray = false, int arraySize = 0)
+                bool isArray = false, int arraySize = 0,
+                string procOrFuncName = "")
         : _idName(idName), _dataType(dataType), _idtype(idtype), _scope(scope),
-          _isArray(isArray), _arraySize(arraySize) {}
+          _isArray(isArray), _arraySize(arraySize),
+          _procOrFuncName(procOrFuncName) {}
 
-    std::string procOrFuncName(){return _procOrFuncName;}
-    std::string Name(){return _idName;}
-    std::string dataType(){return _dataType;}
-    std::string isArray(){if(_isArray){return "yes";}else{return "no";}}
-    int arraySize(){return _arraySize;}
-    int scope(){return _scope;}
-    std::string idType(){
-        if(_idtype==IDType::function){
+    void SetNextTable(const SymTblPtr &next);
+
+    string GetName() const { return _idName; }
+    string GetDataType() const { return _dataType; }
+    string GetIsArray() const { return _isArray ? "yes" : "no"; }
+    int GetArraySize() const { return _arraySize; }
+    int GetScope() const { return _scope; }
+    SymTblPtr GetNextTable() const { return nextTable; }
+    std::string procOrFuncName() { return _procOrFuncName; }
+
+    string GetStringIdType() const {
+        switch (_idtype) {
+        case IDType::function:
             return "function";
-        }
-        else if(_idtype==IDType::datatype){
-            return "dataType";
-        }
-        else if(_idtype==IDType::procedure){
+        case IDType::datatype:
+            return "datatype";
+        case IDType::procedure:
             return "procedure";
+        case IDType::parameterList:
+            return "parameterList";
+        default:
+            return "Unknown";
         }
-        else {
-            cerr << "ID Type not identifiable." << endl;
-            exit(100);
+    }
+    IDType GetIdType() const {
+        switch (_idtype) {
+        case IDType::function:
+            return IDType::function;
+        case IDType::datatype:
+            return IDType::datatype;
+        case IDType::procedure:
+            return IDType::procedure;
+        case IDType::parameterList:
+            return IDType::parameterList;
+        default:
+            return IDType::datatype;
         }
     }
 
+  private:
     string _idName, _dataType, _procOrFuncName;
     IDType _idtype;
     bool _isArray;
     int _arraySize, _scope;
     SymTblPtr nextTable = nullptr;
-
 };
 
 #endif // ASSIGNMENT1_460_SYMBOLTABLE_H

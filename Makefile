@@ -1,4 +1,4 @@
-CC = g++ -std=c++11
+CC = g++ -std=c++17 
 
 # define any compile-time flags
 CFLAGS = 
@@ -17,7 +17,7 @@ LFLAGS =
 LIBS = 
 
 # define the C source files
-SRCS = ./src/main.cpp ./src/CommentRemoval/fileAsArray.cpp ./src/Token/Tokenizer.cpp ./src/Token/Token.cpp ./src/CST/ConcreteSyntaxTree.cpp ./src/CST/Node.cpp ./src/CST/Parser.cpp ./src/OutputCST/OutPutGenerator.cpp ./src/SymbolTable/SymbolTablesLinkedList.cpp
+SRCS = ./src/main.cpp ./src/CommentRemoval/fileAsArray.cpp ./src/Token/Tokenizer.cpp ./src/Token/Token.cpp ./src/CST/ConcreteSyntaxTree.cpp ./src/CST/Node.cpp ./src/CST/Parser.cpp ./src/OutputCST/OutPutGenerator.cpp ./src/SymbolTable/SymbolTable.cpp ./src/SymbolTable/SymbolTablesLinkedList.cpp 
 
 # define the C object files 
 #
