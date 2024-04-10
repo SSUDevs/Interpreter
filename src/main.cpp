@@ -41,11 +41,11 @@ int main(int argc, char *argv[]) {
 
     // Retrieve and print tokens
     vector<Token> tokens = tokenizer.getTokens();
-    //    for (const auto &token : tokens) {
-    //        token.print();
-    //    }
+//        for (const auto &token : tokens) {
+//            token.print();
+//        }
 
-    // Use the Parser to parse the tokenized input
+//     Use the Parser to parse the tokenized input
     Parser parser(tokens);
     auto cstRoot = parser.parse(); // Root of the Concrete Syntax Tree
 
@@ -60,7 +60,7 @@ int main(int argc, char *argv[]) {
     auto symTableRoot = tables.parse(); // Parse the CST to generate symbol tables
 
     // Print the Symbol Tables
-    output.PrintSymbolTables(symTableRoot);
+    //output.PrintSymbolTables(symTableRoot);
 
     return 0;
 }
