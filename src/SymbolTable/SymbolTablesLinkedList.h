@@ -35,6 +35,8 @@ class SymbolTablesLinkedList {
     // Helper methods for error handling and declaration checks
     void reportError(const string &message, int lineNumber,
                      int errorCode) const;
+    void checkFuncProcRedeclaration(const string &name, const string &type);
+  
     bool checkVariableRedeclaration(const string &varName, int scope,
                                     int lineNumber);
     pair<bool, int> parseArrayDeclaration();
