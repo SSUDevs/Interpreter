@@ -1,5 +1,5 @@
-#ifndef INTERPRETER_TOKEN_H
-#define INTERPRETER_TOKEN_H
+#ifndef TOKEN_H
+#define TOKEN_H
 
 #include <iostream>
 #include <string>
@@ -69,4 +69,4 @@ class Token {
     void print() const;
 };
 
-#endif // INTERPRETER_TOKEN_H
+#endif // TOKEN_H

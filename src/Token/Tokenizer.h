@@ -1,5 +1,5 @@
-#ifndef INTERPRETER_TOKENIZER_H
-#define INTERPRETER_TOKENIZER_H
+#ifndef TOKENIZER_H
+#define TOKENIZER_H
 
 #include "Token.h"
 #include <cctype> // For isspace, isalpha, etc..
@@ -34,4 +34,4 @@ class Tokenizer {
     Token getToken();
 };
 
-#endif // INTERPRETER_TOKENIZER_H
+#endif // TOKENIZER_H

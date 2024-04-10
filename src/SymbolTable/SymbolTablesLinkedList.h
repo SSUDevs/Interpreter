@@ -1,5 +1,5 @@
-#ifndef ASSIGNMENT1_460_SYMBOLTABLESLINKEDLIST_H
-#define ASSIGNMENT1_460_SYMBOLTABLESLINKEDLIST_H
+#ifndef SYMBOLTABLESLINKEDLIST_H
+#define SYMBOLTABLESLINKEDLIST_H
 
 #include "../CST/Node.h"
 #include "../CST/Parser.h"
@@ -55,4 +55,4 @@ class SymbolTablesLinkedList {
     vector<string> funcProcNames;
 };
 
-#endif // ASSIGNMENT1_460_SYMBOLTABLESLINKEDLIST_H
+#endif // SYMBOLTABLESLINKEDLIST_H

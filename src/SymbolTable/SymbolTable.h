@@ -1,5 +1,5 @@
-#ifndef ASSIGNMENT1_460_SYMBOLTABLE_H
-#define ASSIGNMENT1_460_SYMBOLTABLE_H
+#ifndef SYMBOLTABLE_H
+#define SYMBOLTABLE_H
 
 #include <iostream>
 #include <memory> // Used for shared_ptr
@@ -75,4 +75,4 @@ class SymbolTable {
     SymTblPtr nextTable = nullptr;
 };
 
-#endif // ASSIGNMENT1_460_SYMBOLTABLE_H
+#endif // SYMBOLTABLE_H

@@ -1,5 +1,5 @@
-#ifndef ASSIGNMENT1_460_CONCRETESYNTAXTREE_H
-#define ASSIGNMENT1_460_CONCRETESYNTAXTREE_H
+#ifndef CONCRETESYNTAXTREE_H
+#define CONCRETESYNTAXTREE_H
 #include"../Token/Token.h"
 #include "Node.h"
 #include <vector>
@@ -20,4 +20,4 @@ private:
 };
 
 
-#endif //ASSIGNMENT1_460_CONCRETESYNTAXTREE_H
+#endif // CONCRETESYNTAXTREE_H

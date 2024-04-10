@@ -1,5 +1,5 @@
-#ifndef ASSIGNMENT1_460_OUTPUTGENERATOR_H
-#define ASSIGNMENT1_460_OUTPUTGENERATOR_H
+#ifndef OUTPUTGENERATOR_H
+#define OUTPUTGENERATOR_H
 #include "../CST/ConcreteSyntaxTree.h"
 #include <fstream>
 #include "../SymbolTable/SymbolTable.h"
@@ -11,4 +11,4 @@ public:
 };
 
 
-#endif //ASSIGNMENT1_460_OUTPUTGENERATOR_H
+#endif // OUTPUTGENERATOR_H

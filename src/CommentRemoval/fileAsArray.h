@@ -1,5 +1,5 @@
-#ifndef INTERPRETER_FILEASARRAY_H
-#define INTERPRETER_FILEASARRAY_H
+#ifndef FILEASARRAY_H
+#define FILEASARRAY_H
 
 #include <fstream>
 #include <iostream>
@@ -45,4 +45,4 @@ class fileAsArray {
     std::string inputFileName;
 };
 
-#endif // INTERPRETER_FILEASARRAY_H
+#endif // FILEASARRAY_H

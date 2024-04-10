@@ -11,6 +11,7 @@
 #include "./OutputCST/OutPutGenerator.h"
 #include "./SymbolTable/SymbolTablesLinkedList.h"
 #include "./Token/Tokenizer.h"
+
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -54,10 +55,11 @@ int main(int argc, char *argv[]) {
     // Method to print or inspect CST
     // output.PrintCST(cstRoot);
 
-   // Generate symbol tables from the CST
+    // Generate symbol tables from the CST
     SymbolTablesLinkedList tables(cstRoot);
 
-    auto symTableRoot = tables.parse(); // Parse the CST to generate symbol tables
+    auto symTableRoot =
+        tables.parse(); // Parse the CST to generate symbol tables
 
     // Print the Symbol Tables
     output.PrintSymbolTables(symTableRoot);
