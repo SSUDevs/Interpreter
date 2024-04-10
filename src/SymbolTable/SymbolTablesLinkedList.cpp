@@ -58,14 +58,17 @@ void SymbolTablesLinkedList::reportError(const string &message, int lineNumber,
 }
 
 // Checks for redeclaration of a function or procedure name
-void SymbolTablesLinkedList::checkFuncProcRedeclaration(const string &name, const string &type) {
+void SymbolTablesLinkedList::checkFuncProcRedeclaration(const string &name,
+                                                        const string &type) {
     for (const auto &existingName : funcProcNames) {
         if (existingName == name) {
-            std::cerr << "Error: \"" << name << "\" is already defined globally as a " << type << std::endl;
+            std::cerr << "Error: \"" << name
+                      << "\" is already defined globally as a " << type
+                      << std::endl;
             exit(31);
         }
     }
-    funcProcNames.push_back(name); // Add the name to the list 
+    funcProcNames.push_back(name); // Add the name to the list
 }
 
 bool SymbolTablesLinkedList::checkVariableRedeclaration(const string &varName,
@@ -121,10 +124,8 @@ SymTblPtr SymbolTablesLinkedList::parse() {
     int braceCount = 0;
     currentScope = 0;
 
-    parseRootNode();
-
     while (peekNextCstNode() != nullptr) {
-        string currentNodeValue = nodeValue(peekNextCstNode());
+        string currentNodeValue = nodeValue(curCstNode);
         if (isDataType(currentNodeValue)) {
             declarationTable();
         } else if (currentNodeValue == "function") {
@@ -160,6 +161,9 @@ void SymbolTablesLinkedList::declarationTable() {
     do {
         if (anotherDeclaration) {
             dataType = repeatDataType;
+        } else if (currentScope == 0) {
+            auto dataTypeNode = curCstNode;
+            dataType = nodeValue(dataTypeNode);
         } else {
             auto dataTypeNode = getNextCstNode();
             dataType = nodeValue(dataTypeNode);
@@ -190,14 +194,14 @@ void SymbolTablesLinkedList::declarationTable() {
 }
 
 void SymbolTablesLinkedList::functionTable() {
-    getNextCstNode(); // Skip 'function' keyword
     auto returnTypeNode = getNextCstNode();
     string returnType = nodeValue(returnTypeNode);
 
     auto functionNameNode = getNextCstNode();
     string functionName = nodeValue(functionNameNode);
 
-    // Checks for redeclaration and add sthe name to the list if not already present
+    // Checks for redeclaration and add sthe name to the list if not already
+    // present
     checkFuncProcRedeclaration(functionName, "function");
 
     funcProcNames.push_back(functionName); // Add the function name declaration
@@ -232,11 +236,11 @@ void SymbolTablesLinkedList::functionTable() {
 }
 
 void SymbolTablesLinkedList::procedureTable() {
-    getNextCstNode(); // Skip 'procedure' keyword
     auto procedureNameNode = getNextCstNode();
     string procedureName = nodeValue(procedureNameNode);
 
-    // Checks for redeclaration and add sthe name to the list if not already present
+    // Checks for redeclaration and add sthe name to the list if not already
+    // present
     checkFuncProcRedeclaration(procedureName, "procedure");
 
     auto procedureEntry = make_shared<SymbolTable>(
@@ -305,82 +309,6 @@ void SymbolTablesLinkedList::parseParameters(const string &procOrFuncName) {
 
         if (nodeValue(peekNextCstNode()) == ",")
             getNextCstNode(); // Skip comma for multiple parameters
-    }
-}
-
-void SymbolTablesLinkedList::parseRootNode() {
-    auto currNode = curCstNode;
-    bool anotherDeclaration = false;
-    if (isDataType(nodeValue(currNode))) {
-        bool anotherDeclaration = false;
-        string dataType;
-        string repeatDataType;
-        do {                          // For multi declaration on single-line
-            if (anotherDeclaration) { // Inline declarations repreat datatype
-                dataType = repeatDataType;
-            } else {
-                dataType = nodeValue(currNode);
-            }
-            anotherDeclaration = false;
-            auto varNameNode = getNextCstNode();
-            string varName = nodeValue(varNameNode);
-
-            // If no error then it is added to the variableDeclared vector
-            if (checkVariableRedeclaration(varName, currentScope,
-                                           varNameNode->Value().lineNum())) {
-                continue;
-            }
-            auto [isArray, arraySize] = parseArrayDeclaration();
-            auto varEntry = make_shared<SymbolTable>(
-                varName, dataType, SymbolTable::IDType::datatype, currentScope,
-                isArray, arraySize);
-
-            addToSymTable(varEntry);
-            if (nodeValue(peekNextCstNode()) == ",") {
-                getNextCstNode(); // Skip comma and move to next declaration
-                // Save dataType to repeat
-                repeatDataType = dataType;
-                anotherDeclaration = true;
-            }
-        } while (anotherDeclaration);
-    } else if (nodeValue(curCstNode) == "function") {
-        scopeCount++;
-        currentScope = scopeCount;
-
-        auto returnTypeNode = getNextCstNode();
-        string returnType = nodeValue(returnTypeNode);
-
-        auto functionNameNode = getNextCstNode();
-        string functionName = nodeValue(functionNameNode);
-
-        // Checks for redeclaration and add sthe name to the list if not already present
-        checkFuncProcRedeclaration(functionName, "procedure");
-
-        auto functionEntry = make_shared<SymbolTable>(
-            functionName, returnType, SymbolTable::IDType::function,
-            currentScope, false, 0);
-
-        addToSymTable(functionEntry);
-        getNextCstNode();
-        parseParameters(functionName);
-    } else if (nodeValue(curCstNode) == "procedure") {
-        scopeCount++;
-        currentScope = scopeCount;
-
-        auto procedureNameNode = getNextCstNode();
-        string procedureName = nodeValue(procedureNameNode);
-
-        // Checks for redeclaration and add sthe name to the list if not already present
-        checkFuncProcRedeclaration(procedureName, "procedure");
-
-        // Create symbol table entry for the procedure
-        auto procedureEntry = make_shared<SymbolTable>(
-            procedureName, "void", SymbolTable::IDType::procedure, currentScope,
-            false, 0);
-
-        addToSymTable(procedureEntry);
-        getNextCstNode();
-        parseParameters(procedureName);
     }
 }
 
