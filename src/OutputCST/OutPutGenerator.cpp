@@ -10,7 +10,7 @@ void OutPutGenerator::PrintCST(NodePtr &root) {
     ofstream output("Concrete_SyntaxTree_Output.txt");
     if (!output.is_open()) {
         cerr << "Cant open Concrete Output File " << endl;
-        exit(90); // Exit if there's an error
+        exit(26); // Exit if there's an error
     }
     if (root == nullptr) {
         cout << "Tree is empty." << endl;

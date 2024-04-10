@@ -14,7 +14,7 @@ void fileAsArray::readFile() {
             << std::endl;
         std::cout << "Make sure that " << inputFileName
                   << " exists and is readable. Terminating.";
-        exit(2);
+        exit(1);
     }
 
     char c;

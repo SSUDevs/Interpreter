@@ -259,7 +259,7 @@ Token Tokenizer::getToken() {
                 !isdigit(currentChar)) {
                 std::cerr << "Syntax error on line " << _lineNum
                           << ": invalid signed integer\n";
-                exit(1);
+                exit(23);
             }
 
             if (std::isdigit(
@@ -270,7 +270,7 @@ Token Tokenizer::getToken() {
                        isalpha(currentChar)) {
                 std::cerr << "Syntax error on line " << _lineNum
                           << ": invalid Integer\n";
-                exit(1);
+                exit(24);
             } else {
                 _currentState = START; // Ending number
                 tokenFound = true;
@@ -298,7 +298,7 @@ Token Tokenizer::getToken() {
             } else {
                 if (currentChar == '\n') {
                     std::cerr << "Unterminated string quote on line: " << _lineNum << std::endl;
-                    exit(99);
+                    exit(25);
                 }
                 tokenValue += currentChar;
             }
@@ -324,7 +324,7 @@ Token Tokenizer::getToken() {
             } else {
                 if (currentChar == '\n') {
                     std::cerr << "Unterminated string quote on line: " << _lineNum << std::endl;
-                    exit(99);
+                    exit(25);
                 }
                 tokenValue += currentChar;
             }
