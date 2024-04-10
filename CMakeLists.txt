@@ -22,5 +22,9 @@ add_executable(Interpreter
         src/SymbolTable/SymbolTable.h
         src/SymbolTable/SymbolTablesLinkedList.h
         src/SymbolTable/SymbolTablesLinkedList.cpp
+        src/AST/AST_Node.cpp
+        src/AST/AST_Node.hpp
+        src/AST/AST.cpp
+        src/AST/AST.hpp
 
 )
