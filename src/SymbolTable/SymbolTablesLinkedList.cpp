@@ -8,7 +8,6 @@ SymbolTablesLinkedList::SymbolTablesLinkedList(const NodePtr CST_root)
 // increments to next cstNode, also returning the curCSTNode.
 // Note: only the leftChild or rightSib can have a node, not both
 NodePtr SymbolTablesLinkedList::getNextCstNode() {
-
     if (curCstNode->rightSibling != nullptr) {
         curCstNode = curCstNode->rightSibling;
     } else if (curCstNode->leftChild != nullptr) {

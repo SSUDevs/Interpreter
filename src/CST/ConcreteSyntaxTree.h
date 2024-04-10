@@ -6,13 +6,9 @@
 using namespace std;
 class ConcreteSyntaxTree {
 public:
-    ConcreteSyntaxTree();
-    ~ConcreteSyntaxTree();
-    void CreateTree(vector<Token>);
-    void insert(Token);
-
     NodePtr Left();
     NodePtr Right();
+
 
 private:
     Node *root;
