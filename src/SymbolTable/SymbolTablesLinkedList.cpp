@@ -90,7 +90,6 @@ bool SymbolTablesLinkedList::checkVariableRedeclaration(const string &varName,
     }
     // If no redeclaration is found, add the variable to the tracked
     variableDeclared.push_back(make_pair(varName, scope));
-    cout << "variable defined: " << varName << " with scope: " << scope << endl;
     return false; // No redeclaration found
 }
 
@@ -121,16 +120,11 @@ SymTblPtr SymbolTablesLinkedList::parse() {
         } else if (currentNodeValue == "function") {
             scopeCount++;
             currentScope = scopeCount;
-
-            cout << "Function found with scope: " << currentScope << endl;
-
             functionTable();
             currentScope = 0; // Reset scope to global after function parsing
         } else if (currentNodeValue == "procedure") {
             scopeCount++;
             currentScope = scopeCount;
-
-            cout << "Procedure found with scope: " << currentScope << endl;
 
             procedureTable();
             currentScope = 0; // Reset scope to global after procedure parsing
@@ -189,9 +183,6 @@ void SymbolTablesLinkedList::functionTable() {
     getNextCstNode(); // Skip 'function' keyword
     auto returnTypeNode = getNextCstNode();
     string returnType = nodeValue(returnTypeNode);
-
-    cout << "Entering function with return type: " << returnType
-         << "and scope: " << currentScope << endl;
 
     auto functionNameNode = getNextCstNode();
     string functionName = nodeValue(functionNameNode);

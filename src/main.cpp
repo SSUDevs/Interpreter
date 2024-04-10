@@ -62,7 +62,7 @@ int main(int argc, char *argv[]) {
         tables.parse(); // Parse the CST to generate symbol tables
 
     // Print the Symbol Tables
-    //output.PrintSymbolTables(symTableRoot);
+    output.PrintSymbolTables(symTableRoot);
 
     return 0;
 }
