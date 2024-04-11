@@ -12,6 +12,10 @@
 #include "./SymbolTable/SymbolTablesLinkedList.h"
 #include "./Token/Tokenizer.h"
 
+#include "./Token/Token.h"
+#include "./CST/Node.h"
+#include "./AST/AST.hpp"
+
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -63,6 +67,38 @@ int main(int argc, char *argv[]) {
 
     // Print the Symbol Tables
     output.PrintSymbolTables(symTableRoot);
+
+
+
+
+// VERY HARD CODED INFIX to POSTFIX testing
+//    vector<Token> temp;
+//
+//    temp.push_back(Token(Token::Type::LParen, "0", 0));
+//    temp.push_back(Token(Token::Type::Identifier, "0", 0));
+//    temp.push_back(Token(Token::Type::Gt, "0", 0));
+//    temp.push_back(Token(Token::Type::Integer, "0", 0));
+//    temp.push_back(Token(Token::Type::RParen, "0", 0));
+//    temp.push_back(Token(Token::Type::BooleanAnd, "0", 0));
+//    temp.push_back(Token(Token::Type::BooleanNot, "0", 0));
+//    temp.push_back(Token(Token::Type::LParen, "0", 0));
+//    temp.push_back(Token(Token::Type::Identifier, "0", 0));
+//    temp.push_back(Token(Token::Type::Lt, "0", 0));
+//    temp.push_back(Token(Token::Type::Integer, "0", 0));
+//    temp.push_back(Token(Token::Type::RParen, "0", 0));
+//
+//    vector<Node> testIn;
+//
+//    for (int i = 0; i < temp.size(); ++i) {
+//        testIn.push_back(Node(temp[i]));
+//    }
+//
+//    auto testOut = inToPostFix(testIn);
+//
+//    for (int i = 0; i < testOut.size(); ++i) {
+//        cout << Token::typeToString(testOut[i].value.type()) << endl;
+//    }
+
 
     return 0;
 }

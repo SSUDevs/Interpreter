@@ -4,8 +4,12 @@
 
 #ifndef ASSIGNMENT1_460_AST_HPP
 #define ASSIGNMENT1_460_AST_HPP
+#include <vector>
 #include "AST_Node.hpp"
 #include "../CST/Node.h"
+
+using namespace std;
+
 class AST {
   public:
 
@@ -13,8 +17,7 @@ class AST {
 
     void parse(NodePtr *Croot);
 
-    AST_Node inToPostfix_Integer();
-    AST_Node inToPostfix_Bool();
+
 
 
   private:
@@ -22,5 +25,9 @@ class AST {
 
 
 };
+
+// give a vector of nodes that make up an expression in infix
+// outputs a vector of these nodes in postfix order
+vector<Node> inToPostFix (const vector<Node>& inFix);
 
 #endif // ASSIGNMENT1_460_AST_HPP
