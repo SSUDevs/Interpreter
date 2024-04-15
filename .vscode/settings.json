@@ -68,7 +68,8 @@
         "memory": "cpp",
         "type_traits": "cpp",
         "algorithm": "cpp",
-        "filesystem": "cpp"
+        "filesystem": "cpp",
+        "__memory": "cpp"
     },
     "C_Cpp.errorSquiggles": "disabled",
     "cmake.configureOnOpen": false

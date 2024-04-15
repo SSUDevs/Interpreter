@@ -15,10 +15,9 @@ class ASTParser {
     enum InsertionMode { LeftChild, RightSibling };
 
     NodePtr parse();
-    std::vector<Node> inToPostFix(const std::vector<Node> &infix);
+    // std::vector<Node> inToPostFix(const std::vector<Node> &infix);
 
   private:
-    
     NodePtr root;        // Root of the AST
     NodePtr currCstNode; // Current node in the CST being processed
     NodePtr lastASTNode; // Last node added to the AST
@@ -30,6 +29,9 @@ class ASTParser {
 
     // maps the semantics identifiers to the type defined in Node class
     Node::Type determineSemanticNodeType(const std::string &value);
+    NodePtr parseAssignment(NodePtr startOfAssignmentNode);
+
+    std::vector<NodePtr> inToPostFix(const std::vector<NodePtr>& infix);
 
     NodePtr getNextCSTNode();
     void addToAST(NodePtr node, InsertionMode);

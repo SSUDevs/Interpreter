@@ -1,6 +1,7 @@
 #include "ASTParser.h"
 #include <iostream>
 #include <string>
+#include <vector>
 
 using namespace std;
 
@@ -19,6 +20,10 @@ NodePtr ASTParser::parse() {
         // Add as child or sibling based on the type
         if (type != Node::Type::OTHER) {
             addToAST(newNode, LeftChild);
+        } else if (currCstNode->Value().type() == Token::Type::Identifier) {
+            // Must be an assignment op
+
+            // parseAssignment(currCstNode);
         }
 
         // Move to the next important node
@@ -30,6 +35,26 @@ NodePtr ASTParser::parse() {
         currCstNode = currCstNode->Left();
     }
     return root;
+}
+
+NodePtr ASTParser::parseAssignment(NodePtr currCstNode) {
+    // Store the line of nodes in this subtree as a vector
+    // Pass it into the function and then add them all in the AST in that orde
+    NodePtr rootSubTreeNode = currCstNode;
+    std::vector<NodePtr> assignmentNodes;
+
+    while (currCstNode->Right()) {
+        assignmentNodes.push_back(currCstNode);
+        currCstNode = getNextCSTNode();
+    }
+    // Must parse the entire line in postFix notations
+    assignmentNodes = inToPostFix(assignmentNodes);
+
+    // Now for the size of the vector, add to the tree
+    for (const auto &node : assignmentNodes) {
+        addToAST(node, RightSibling);
+    }
+    return rootSubTreeNode;
 }
 
 NodePtr ASTParser::getNextCSTNode() {
@@ -79,12 +104,12 @@ bool ASTParser::isDataType(string id) {
     return false;
 }
 
-vector<Node> ASTParser::inToPostFix(const std::vector<Node> &inFix) {
-    vector<Node> stack;
-    vector<Node> postFix;
+std::vector<NodePtr> ASTParser::inToPostFix(const std::vector<NodePtr> &inFix) {
+    vector<NodePtr> stack;
+    vector<NodePtr> postFix;
 
     for (int i = 0; i < inFix.size(); ++i) {
-        Token::Type tokType = inFix[i].value.type();
+        Token::Type tokType = inFix[i]->Value().type();
 
         if (tokType == Token::Type::Integer ||
             tokType == Token::Type::Identifier ||
@@ -100,7 +125,7 @@ vector<Node> ASTParser::inToPostFix(const std::vector<Node> &inFix) {
                 if (tokType == Token::Type::RParen) {
                     bool finished = false;
                     while (!finished) {
-                        if (stack.back().value.type() == Token::Type::LParen) {
+                        if (stack.back()->value.type() == Token::Type::LParen) {
                             stack.pop_back();
                             finished = true;
                         } else {
@@ -128,7 +153,7 @@ vector<Node> ASTParser::inToPostFix(const std::vector<Node> &inFix) {
                         if (stack.empty()) {
                             stack.push_back(inFix[i]); // put on stack
                         } else {
-                            if (stack.back().value.type() ==
+                            if (stack.back()->value.type() ==
                                 Token::Type::LParen) {
                                 stack.push_back(inFix[i]); // put on stack
                             } else {
@@ -136,7 +161,7 @@ vector<Node> ASTParser::inToPostFix(const std::vector<Node> &inFix) {
                                     bool finished = false;
                                     while (!finished) {
                                         if (!stack.empty()) {
-                                            if (stack.back().value.type() ==
+                                            if (stack.back()->value.type() ==
                                                 Token::Type::BooleanNot) {
                                                 postFix.push_back(
                                                     stack.back()); // display
@@ -162,14 +187,14 @@ vector<Node> ASTParser::inToPostFix(const std::vector<Node> &inFix) {
                                         bool finished = false;
                                         while (!finished) {
                                             if (!stack.empty()) {
-                                                if (stack.back().value.type() ==
+                                                if (stack.back()->value.type() ==
                                                         Token::Type::
                                                             BooleanNot ||
-                                                    stack.back().value.type() ==
+                                                    stack.back()->value.type() ==
                                                         Token::Type::Asterisk ||
-                                                    stack.back().value.type() ==
+                                                    stack.back()->value.type() ==
                                                         Token::Type::Slash ||
-                                                    stack.back().value.type() ==
+                                                    stack.back()->value.type() ==
                                                         Token::Type::Modulo) {
                                                     postFix.push_back(
                                                         stack
@@ -198,26 +223,26 @@ vector<Node> ASTParser::inToPostFix(const std::vector<Node> &inFix) {
                                             while (!finished) {
                                                 if (!stack.empty()) {
                                                     if (stack.back()
-                                                                .value.type() ==
+                                                                ->value.type() ==
                                                             Token::Type::
                                                                 BooleanNot ||
                                                         stack.back()
-                                                                .value.type() ==
+                                                                ->value.type() ==
                                                             Token::Type::
                                                                 Asterisk ||
                                                         stack.back()
-                                                                .value.type() ==
+                                                                ->value.type() ==
                                                             Token::Type::
                                                                 Slash ||
                                                         stack.back()
-                                                                .value.type() ==
+                                                                ->value.type() ==
                                                             Token::Type::
                                                                 Modulo ||
                                                         stack.back()
-                                                                .value.type() ==
+                                                                ->value.type() ==
                                                             Token::Type::Plus ||
                                                         stack.back()
-                                                                .value.type() ==
+                                                                ->value.type() ==
                                                             Token::Type::
                                                                 Minus) {
                                                         postFix.push_back(
@@ -249,72 +274,72 @@ vector<Node> ASTParser::inToPostFix(const std::vector<Node> &inFix) {
                                                 while (!finished) {
                                                     if (!stack.empty()) {
                                                         if (stack.back()
-                                                                    .value
+                                                                    ->value
                                                                     .type() ==
                                                                 Token::Type::
                                                                     BooleanNot ||
                                                             stack.back()
-                                                                    .value
+                                                                    ->value
                                                                     .type() ==
                                                                 Token::Type::
                                                                     Asterisk ||
                                                             stack.back()
-                                                                    .value
+                                                                    ->value
                                                                     .type() ==
                                                                 Token::Type::
                                                                     Slash ||
                                                             stack.back()
-                                                                    .value
+                                                                    ->value
                                                                     .type() ==
                                                                 Token::Type::
                                                                     Modulo ||
                                                             stack.back()
-                                                                    .value
+                                                                    ->value
                                                                     .type() ==
                                                                 Token::Type::
                                                                     Plus ||
                                                             stack.back()
-                                                                    .value
+                                                                    ->value
                                                                     .type() ==
                                                                 Token::Type::
                                                                     Minus ||
                                                             stack.back()
-                                                                    .value
+                                                                    ->value
                                                                     .type() ==
                                                                 Token::Type::
                                                                     BooleanEqual ||
                                                             stack.back()
-                                                                    .value
+                                                                    ->value
                                                                     .type() ==
                                                                 Token::Type::
                                                                     BooleanNotEqual ||
                                                             stack.back()
-                                                                    .value
+                                                                    ->value
                                                                     .type() ==
                                                                 Token::Type::
                                                                     Lt ||
                                                             stack.back()
-                                                                    .value
+                                                                    ->value
                                                                     .type() ==
                                                                 Token::Type::
                                                                     Gt ||
                                                             stack.back()
-                                                                    .value
+                                                                    ->value
                                                                     .type() ==
                                                                 Token::Type::
                                                                     LtEqual ||
                                                             stack.back()
-                                                                    .value
+                                                                    ->value
                                                                     .type() ==
                                                                 Token::Type::
                                                                     GtEqual ||
                                                             stack.back()
-                                                                    .value
+                                                                    ->value
                                                                     .type() ==
                                                                 Token::Type::
                                                                     BooleanAnd ||
                                                             stack.back()
-                                                                    .value
+                                                                    ->value
                                                                     .type() ==
                                                                 Token::Type::
                                                                     BooleanOr) {
@@ -344,72 +369,72 @@ vector<Node> ASTParser::inToPostFix(const std::vector<Node> &inFix) {
                                                     while (!finished) {
                                                         if (!stack.empty()) {
                                                             if (stack.back()
-                                                                        .value
+                                                                        ->value
                                                                         .type() ==
                                                                     Token::Type::
                                                                         BooleanNot ||
                                                                 stack.back()
-                                                                        .value
+                                                                        ->value
                                                                         .type() ==
                                                                     Token::Type::
                                                                         Asterisk ||
                                                                 stack.back()
-                                                                        .value
+                                                                        ->value
                                                                         .type() ==
                                                                     Token::Type::
                                                                         Slash ||
                                                                 stack.back()
-                                                                        .value
+                                                                        ->value
                                                                         .type() ==
                                                                     Token::Type::
                                                                         Modulo ||
                                                                 stack.back()
-                                                                        .value
+                                                                        ->value
                                                                         .type() ==
                                                                     Token::Type::
                                                                         Plus ||
                                                                 stack.back()
-                                                                        .value
+                                                                        ->value
                                                                         .type() ==
                                                                     Token::Type::
                                                                         Minus ||
                                                                 stack.back()
-                                                                        .value
+                                                                        ->value
                                                                         .type() ==
                                                                     Token::Type::
                                                                         BooleanEqual ||
                                                                 stack.back()
-                                                                        .value
+                                                                        ->value
                                                                         .type() ==
                                                                     Token::Type::
                                                                         BooleanNotEqual ||
                                                                 stack.back()
-                                                                        .value
+                                                                        ->value
                                                                         .type() ==
                                                                     Token::Type::
                                                                         Lt ||
                                                                 stack.back()
-                                                                        .value
+                                                                        ->value
                                                                         .type() ==
                                                                     Token::Type::
                                                                         Gt ||
                                                                 stack.back()
-                                                                        .value
+                                                                        ->value
                                                                         .type() ==
                                                                     Token::Type::
                                                                         LtEqual ||
                                                                 stack.back()
-                                                                        .value
+                                                                        ->value
                                                                         .type() ==
                                                                     Token::Type::
                                                                         GtEqual ||
                                                                 stack.back()
-                                                                        .value
+                                                                        ->value
                                                                         .type() ==
                                                                     Token::Type::
                                                                         BooleanAnd ||
                                                                 stack.back()
-                                                                        .value
+                                                                        ->value
                                                                         .type() ==
                                                                     Token::Type::
                                                                         BooleanOr) {
