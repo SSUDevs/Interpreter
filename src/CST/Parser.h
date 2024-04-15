@@ -2,7 +2,7 @@
 #define PARSER_H
 
 #include "../Token/Token.h"
-#include "Node.h" // Defines the concrete syntax tree
+#include "../Node/Node.h" 
 #include <vector>
 
 class Parser {

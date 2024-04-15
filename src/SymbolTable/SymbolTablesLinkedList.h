@@ -1,7 +1,7 @@
 #ifndef SYMBOLTABLESLINKEDLIST_H
 #define SYMBOLTABLESLINKEDLIST_H
 
-#include "../CST/Node.h"
+#include "../Node/Node.h" 
 #include "../CST/Parser.h"
 #include "SymbolTable.h"
 #include <utility>

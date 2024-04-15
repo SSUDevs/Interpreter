@@ -6,6 +6,44 @@ void printFormattedLine(const std::string &label, const std::string &value) {
               << std::endl;
 }
 
+void OutPutGenerator::PrintAST(NodePtr &root) {
+    if (root == nullptr) {
+        cout << "Tree is empty." << endl;
+        return;
+    }
+    int spaces = 0;
+
+    while (root != nullptr) {
+        cout << Node::semanticTypeToString(root->getSemanticType());
+        spaces += Node::semanticTypeToString(root->getSemanticType()).length();
+        if (root->Right() != nullptr) {
+            cout << " --> ";
+            spaces += 5;
+            root = root->Right();
+        } else if (root->Left() != nullptr) {
+
+            cout << " --> nullptr" << endl;
+            for (int i = 0; i < spaces - 1; i++) {
+                cout << " ";
+            }
+            cout << '|' << endl;
+            if (spaces > 1) {
+                for (int i = 0; i < spaces; i++) {
+                    cout << "-";
+                }
+                cout << endl;
+            }
+
+            cout << "\\/" << endl;
+            root = root->Left();
+            spaces = 0;
+        } else {
+            cout << " ---> nullptr";
+            break;
+        }
+    }
+}
+
 void OutPutGenerator::PrintCST(NodePtr &root) {
     ofstream output("Concrete_SyntaxTree_Output.txt");
     if (!output.is_open()) {
@@ -85,12 +123,14 @@ void OutPutGenerator::PrintSymbolTables(SymTblPtr &root) {
 
         root = root->GetNextTable();
     }
-    string last ="";
-    for (int i=0; i<prmLists.size();i++) {
+    string last = "";
+    for (int i = 0; i < prmLists.size(); i++) {
         cout << "--------------------------------------------" << endl;
-        if(last != prmLists.at(i)->procOrFuncName())
-            cout << endl << "PARAMETER LIST FOR: " << prmLists.at(i)->procOrFuncName() << endl;
-            cout << "--------------------------------------------" << endl;
+        if (last != prmLists.at(i)->procOrFuncName())
+            cout << endl
+                 << "PARAMETER LIST FOR: " << prmLists.at(i)->procOrFuncName()
+                 << endl;
+        cout << "--------------------------------------------" << endl;
         last = prmLists.at(i)->procOrFuncName();
         printParameterList(prmLists.at(i));
     }

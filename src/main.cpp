@@ -6,15 +6,15 @@
  *
  */
 
+#include "./AST/ASTParser.h"
 #include "./CST/Parser.h"
 #include "./CommentRemoval/fileAsArray.h"
-#include "./OutputCST/OutPutGenerator.h"
+#include "./OutputGenerator/OutPutGenerator.h"
 #include "./SymbolTable/SymbolTablesLinkedList.h"
 #include "./Token/Tokenizer.h"
 
+#include "./Node/Node.h"
 #include "./Token/Token.h"
-#include "./CST/Node.h"
-#include "./AST/AST.hpp"
 
 #include <fstream>
 #include <iostream>
@@ -46,11 +46,11 @@ int main(int argc, char *argv[]) {
 
     // Retrieve and print tokens
     vector<Token> tokens = tokenizer.getTokens();
-//        for (const auto &token : tokens) {
-//            token.print();
-//        }
+    //        for (const auto &token : tokens) {
+    //            token.print();
+    //        }
 
-//     Use the Parser to parse the tokenized input
+    //     Use the Parser to parse the tokenized input
     Parser parser(tokens);
     auto cstRoot = parser.parse(); // Root of the Concrete Syntax Tree
 
@@ -60,45 +60,48 @@ int main(int argc, char *argv[]) {
     // output.PrintCST(cstRoot);
 
     // Generate symbol tables from the CST
-    SymbolTablesLinkedList tables(cstRoot);
+    // SymbolTablesLinkedList tables(cstRoot);
 
-    auto symTableRoot =
-        tables.parse(); // Parse the CST to generate symbol tables
+    // auto symTableRoot =
+    //     tables.parse(); // Parse the CST to generate symbol tables
 
-    // Print the Symbol Tables
-    output.PrintSymbolTables(symTableRoot);
+    // // Print the Symbol Tables
+    // output.PrintSymbolTables(symTableRoot);
 
+    // Now, generate the AST from the CST
+    ASTParser astParser(cstRoot);
+    auto astRoot = astParser.parse();
 
+    // Optionally print the AST using a similar method
+    output.PrintAST(astRoot);
 
-
-// VERY HARD CODED INFIX to POSTFIX testing
-//    vector<Token> temp;
-//
-//    temp.push_back(Token(Token::Type::LParen, "0", 0));
-//    temp.push_back(Token(Token::Type::Identifier, "0", 0));
-//    temp.push_back(Token(Token::Type::Gt, "0", 0));
-//    temp.push_back(Token(Token::Type::Integer, "0", 0));
-//    temp.push_back(Token(Token::Type::RParen, "0", 0));
-//    temp.push_back(Token(Token::Type::BooleanAnd, "0", 0));
-//    temp.push_back(Token(Token::Type::BooleanNot, "0", 0));
-//    temp.push_back(Token(Token::Type::LParen, "0", 0));
-//    temp.push_back(Token(Token::Type::Identifier, "0", 0));
-//    temp.push_back(Token(Token::Type::Lt, "0", 0));
-//    temp.push_back(Token(Token::Type::Integer, "0", 0));
-//    temp.push_back(Token(Token::Type::RParen, "0", 0));
-//
-//    vector<Node> testIn;
-//
-//    for (int i = 0; i < temp.size(); ++i) {
-//        testIn.push_back(Node(temp[i]));
-//    }
-//
-//    auto testOut = inToPostFix(testIn);
-//
-//    for (int i = 0; i < testOut.size(); ++i) {
-//        cout << Token::typeToString(testOut[i].value.type()) << endl;
-//    }
-
+    // VERY HARD CODED INFIX to POSTFIX testing
+    //    vector<Token> temp;
+    //
+    //    temp.push_back(Token(Token::Type::LParen, "0", 0));
+    //    temp.push_back(Token(Token::Type::Identifier, "0", 0));
+    //    temp.push_back(Token(Token::Type::Gt, "0", 0));
+    //    temp.push_back(Token(Token::Type::Integer, "0", 0));
+    //    temp.push_back(Token(Token::Type::RParen, "0", 0));
+    //    temp.push_back(Token(Token::Type::BooleanAnd, "0", 0));
+    //    temp.push_back(Token(Token::Type::BooleanNot, "0", 0));
+    //    temp.push_back(Token(Token::Type::LParen, "0", 0));
+    //    temp.push_back(Token(Token::Type::Identifier, "0", 0));
+    //    temp.push_back(Token(Token::Type::Lt, "0", 0));
+    //    temp.push_back(Token(Token::Type::Integer, "0", 0));
+    //    temp.push_back(Token(Token::Type::RParen, "0", 0));
+    //
+    //    vector<Node> testIn;
+    //
+    //    for (int i = 0; i < temp.size(); ++i) {
+    //        testIn.push_back(Node(temp[i]));
+    //    }
+    //
+    //    auto testOut = inToPostFix(testIn);
+    //
+    //    for (int i = 0; i < testOut.size(); ++i) {
+    //        cout << Token::typeToString(testOut[i].value.type()) << endl;
+    //    }
 
     return 0;
 }

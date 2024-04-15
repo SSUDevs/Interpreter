@@ -1,14 +1,15 @@
 #ifndef OUTPUTGENERATOR_H
 #define OUTPUTGENERATOR_H
 #include "../CST/ConcreteSyntaxTree.h"
-#include <fstream>
 #include "../SymbolTable/SymbolTable.h"
+#include <fstream>
 class OutPutGenerator {
-public:
+  public:
     void PrintCST(NodePtr &);
+    void PrintAST(NodePtr &);
+    void PrintAST(const NodePtr &root);
+
     void PrintSymbolTables(SymTblPtr &root);
-
 };
-
 
 #endif // OUTPUTGENERATOR_H
