@@ -1,5 +1,5 @@
-#ifndef AST_HPP
-#define AST_HPP
+#ifndef AST_H
+#define AST_H
 #include "../Node/Node.h"
 #include <vector>
 
@@ -14,4 +14,4 @@ class AST {
     Node *root;
 };
 
-#endif // AST_HPP
+#endif // AST_H

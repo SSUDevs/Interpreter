@@ -19,12 +19,15 @@ NodePtr ASTParser::parse() {
         // Add as child or sibling based on the type
         if (type != Node::Type::OTHER) {
             addToAST(newNode, LeftChild);
-            // If false then must also determine if the nodes toden value is an identifier
-        } else if (currCstNode->Value().type() == Token::Type::Identifier) {
         }
 
-        // Move to the next node
-        currCstNode = getNextCSTNode();
+        // Move to the next important node
+        while (currCstNode->Right()) {
+            currCstNode = getNextCSTNode();
+        }
+
+        // Drop into the important node of the CST
+        currCstNode = currCstNode->Left();
     }
     return root;
 }
@@ -48,7 +51,7 @@ void ASTParser::addToAST(NodePtr node, InsertionMode mode) {
 }
 
 Node::Type ASTParser::determineSemanticNodeType(const std::string &value) {
-    if (value == "function" || value == "procedure") {
+    if (value == "function" || value == "procedure" || isDataType(value)) {
         return Node::Type::DECLARATION;
     } else if (value == "{") {
         return Node::Type::BEGIN_BLOCK;
@@ -68,6 +71,12 @@ Node::Type ASTParser::determineSemanticNodeType(const std::string &value) {
         return Node::Type::RETURN;
     }
     return Node::Type::OTHER; // Default type if none of the conditions match
+}
+
+bool ASTParser::isDataType(string id) {
+    if (id == "char" || id == "int" || id == "bool")
+        return true;
+    return false;
 }
 
 vector<Node> ASTParser::inToPostFix(const std::vector<Node> &inFix) {

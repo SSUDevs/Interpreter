@@ -26,6 +26,8 @@ class ASTParser {
     // The actual string value of the node
     std::string value;
 
+    bool isDataType(std::string value);
+
     // maps the semantics identifiers to the type defined in Node class
     Node::Type determineSemanticNodeType(const std::string &value);
 
