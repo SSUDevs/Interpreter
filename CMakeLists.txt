@@ -11,20 +11,22 @@ add_executable(Interpreter
         src/Token/Tokenizer.h
         src/CommentRemoval/fileAsArray.h
         src/CommentRemoval/fileAsArray.cpp
-        src/CST/Node.cpp
-        src/CST/Node.h
+        src/Node/Node.cpp
+        src/Node/Node.h
         src/CST/ConcreteSyntaxTree.cpp
         src/CST/ConcreteSyntaxTree.h
-        src/OutputCST/OutPutGenerator.cpp
-        src/OutputCST/OutPutGenerator.h
+        src/OutputGenerator/OutPutGenerator.cpp
+        src/OutputGenerator/OutPutGenerator.h
         src/CST/Parser.cpp
         src/SymbolTable/SymbolTable.cpp
         src/SymbolTable/SymbolTable.h
         src/SymbolTable/SymbolTablesLinkedList.h
         src/SymbolTable/SymbolTablesLinkedList.cpp
-        src/AST/AST_Node.cpp
-        src/AST/AST_Node.hpp
         src/AST/AST.cpp
-        src/AST/AST.hpp
+        src/AST/AST.h
+        src/AST/AST.cpp
+        src/AST/AST.h
+        src/AST/ASTParser.cpp
+        src/AST/ASTParser.cpp
 
 )

@@ -12,6 +12,7 @@ NodePtr ASTParser::parse() {
     while (currCstNode) {
         // Get the string token value stored in the cst node
         string cstNodeValue = currCstNode->Value().value();
+       // cout<<currCstNode->value.value()<<endl;
         // Determine the semantic type and set it while creating root node
         Node::Type type = determineSemanticNodeType(cstNodeValue);
         // Create a new node with the same value and updated "type"
@@ -20,15 +21,23 @@ NodePtr ASTParser::parse() {
         // Add as child or sibling based on the type
         if (type != Node::Type::OTHER) {
             addToAST(newNode, LeftChild);
+            if( type == Node::Type::IF || type == Node::Type::WHILE){
+                //parse if statements
+                parseIFsORWhiles(currCstNode);
+            }
+            //cout<<newNode->value.value()<<endl;
+
         } else if (currCstNode->Value().type() == Token::Type::Identifier) {
             // Must be an assignment op
 
-            // parseAssignment(currCstNode);
+            parseAssignment(currCstNode);
+            //cout<<currCstNode->value.value()<<endl;
         }
 
         // Move to the next important node
-        while (currCstNode->Right()) {
-            currCstNode = getNextCSTNode();
+        while (currCstNode->Right() != nullptr) {
+            currCstNode = currCstNode->Right();
+            //cout<<currCstNode->value.value()<<endl;
         }
 
         // Drop into the important node of the CST
@@ -37,23 +46,57 @@ NodePtr ASTParser::parse() {
     return root;
 }
 
-NodePtr ASTParser::parseAssignment(NodePtr currCstNode) {
+
+NodePtr ASTParser::parseIFsORWhiles(NodePtr& currCstNode) {
     // Store the line of nodes in this subtree as a vector
     // Pass it into the function and then add them all in the AST in that orde
     NodePtr rootSubTreeNode = currCstNode;
     std::vector<NodePtr> assignmentNodes;
 
-    while (currCstNode->Right()) {
+    currCstNode = currCstNode->Right();//skipping first '('
+    while (currCstNode->value.value() !=")") {
+        //cout<<currCstNode->value.value()<<endl;
         assignmentNodes.push_back(currCstNode);
-        currCstNode = getNextCSTNode();
+        currCstNode = currCstNode->Right();
+
     }
+
+    //cout<<currCstNode->value.value()<<endl;
     // Must parse the entire line in postFix notations
     assignmentNodes = inToPostFix(assignmentNodes);
 
     // Now for the size of the vector, add to the tree
     for (const auto &node : assignmentNodes) {
+        //cout<<node->value.value()<<endl;
         addToAST(node, RightSibling);
     }
+    //cout<<currCstNode->value.value()<<endl;
+    return rootSubTreeNode;
+}
+
+NodePtr ASTParser::parseAssignment(NodePtr& currCstNode) {
+    // Store the line of nodes in this subtree as a vector
+    // Pass it into the function and then add them all in the AST in that orde
+    NodePtr rootSubTreeNode = currCstNode;
+    std::vector<NodePtr> assignmentNodes;
+
+    while (currCstNode->Right() != nullptr) {
+        //cout<<currCstNode->value.value()<<endl;
+        assignmentNodes.push_back(currCstNode);
+        currCstNode = currCstNode->Right();
+
+    }
+
+    //cout<<currCstNode->value.value()<<endl;
+    // Must parse the entire line in postFix notations
+    assignmentNodes = inToPostFix(assignmentNodes);
+
+    // Now for the size of the vector, add to the tree
+    for (const auto &node : assignmentNodes) {
+       //cout<<node->value.value()<<endl;
+        addToAST(node, RightSibling);
+    }
+    //cout<<currCstNode->value.value()<<endl;
     return rootSubTreeNode;
 }
 
@@ -64,6 +107,7 @@ NodePtr ASTParser::getNextCSTNode() {
 }
 
 void ASTParser::addToAST(NodePtr node, InsertionMode mode) {
+    //cout<<node->value.value()<<endl;
     if (!root) {
         root = node;
     } else {
@@ -76,7 +120,7 @@ void ASTParser::addToAST(NodePtr node, InsertionMode mode) {
 }
 
 Node::Type ASTParser::determineSemanticNodeType(const std::string &value) {
-    if (value == "function" || value == "procedure" || isDataType(value)) {
+    if (value == "function" || value == "procedure" || isDataType(value) || value == "bool" || value == "int" ||value == "char") {
         return Node::Type::DECLARATION;
     } else if (value == "{") {
         return Node::Type::BEGIN_BLOCK;
