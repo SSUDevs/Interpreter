@@ -19,13 +19,18 @@ NodePtr ASTParser::parse() {
         auto newNode = make_shared<Node>(currCstNode->Value(), type);
 
         // Add as child or sibling based on the type
+        if(type == Node::Type::FOR){
+            addToAST(make_shared<Node>(currCstNode->Value(), Node::Type::ForExpression1), LeftChild);
+            parseFor(currCstNode);
+        }
         if (type != Node::Type::OTHER) {
 
             addToAST(newNode, LeftChild);
-            if( type == Node::Type::IF || type == Node::Type::WHILE|| type == Node::Type::FOR){
+            if( type == Node::Type::IF || type == Node::Type::WHILE){
                 //parse if statements
                 parseIFsORWhiles(currCstNode);
             }
+
 
             //cout<<newNode->value.value()<<endl;
 
@@ -50,6 +55,66 @@ NodePtr ASTParser::parse() {
     return root;
 }
 
+NodePtr ASTParser::parseFor(NodePtr& currCstNode) {
+    // Store the line of nodes in this subtree as a vector
+    // Pass it into the function and then add them all in the AST in that orde
+    NodePtr rootSubTreeNode = currCstNode;
+    std::vector<NodePtr> exp1,exp2,exp3;
+
+    currCstNode = currCstNode->Right();//skipping first '('
+    currCstNode = currCstNode->Right();
+
+    //parse the first expression
+    while (currCstNode->value.value() !=";") {
+        //cout<<currCstNode->value.value()<<endl;
+       exp1.push_back(currCstNode);
+        currCstNode = currCstNode->Right();
+    }
+    //change first expression to postfix
+    exp1 = inToPostFix(exp1);
+
+    //add first expression
+    for (const auto &node : exp1) {
+        //cout<<node->value.value()<<endl;
+        addToAST(node, RightSibling);
+    }
+
+    //parse the second expression
+    currCstNode = currCstNode->Right();
+    while (currCstNode->value.value() !=";") {
+        //cout<<currCstNode->value.value()<<endl;
+        exp2.push_back(currCstNode);
+        currCstNode = currCstNode->Right();
+    }
+    //change second expression to postfix
+    exp2 = inToPostFix(exp2);
+
+    //add second expressiont to AST
+    addToAST(make_shared<Node>(currCstNode->Value(), Node::Type::ForExpression2), LeftChild);
+    for (const auto &node : exp2) {
+        //cout<<node->value.value()<<endl;
+        addToAST(node, RightSibling);
+    }
+
+
+    //parse the third express
+    while (currCstNode->value.value() !=")") {
+        //cout<<currCstNode->value.value()<<endl;
+        exp3.push_back(currCstNode);
+        currCstNode = currCstNode->Right();
+    }
+
+    //change the third expression to postfix
+    exp3 = inToPostFix(exp3);
+    //add third to ast
+    addToAST(make_shared<Node>(currCstNode->Value(), Node::Type::ForExpression3), LeftChild);
+    for (const auto &node : exp3) {
+        //cout<<node->value.value()<<endl;
+        addToAST(node, RightSibling);
+    }
+
+    return rootSubTreeNode;
+}
 
 NodePtr ASTParser::parseIFsORWhiles(NodePtr& currCstNode) {
     // Store the line of nodes in this subtree as a vector
@@ -116,16 +181,16 @@ void ASTParser::addToAST(NodePtr node, InsertionMode mode) {
     node->leftChild = nullptr;
     node->rightSibling = nullptr;
     if (!root) {
-        cout<<"Root: "<<node->value.value()<<endl;
+        //cout<<"Root: "<<node->value.value()<<endl;
         root = node;
     } else {
         if (mode == LeftChild) {
-            cout<<"Left: "<<node->value.value()<<endl;
+           // cout<<"Left: "<<node->value.value()<<endl;
             lastASTNode->leftChild = node;
 
         }
         else {
-            cout<<"Right: "<<node->value.value()<<endl;
+           // cout<<"Right: "<<node->value.value()<<endl;
             lastASTNode->rightSibling = node;
         }
     }

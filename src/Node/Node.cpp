@@ -43,6 +43,12 @@ std::string Node::semanticTypeToString(Type type) {
         return "RETURN";
     case Type::OTHER:
         return "";
+    case Type::ForExpression1:
+        return "For_Expression_1";
+    case Type::ForExpression2:
+        return "For_Expression_2";
+    case Type::ForExpression3:
+        return "For_Expression_3";
     default:
         return "INVALID_TYPE";
     }
