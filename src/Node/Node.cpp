@@ -41,6 +41,8 @@ std::string Node::semanticTypeToString(Type type) {
         return "PRINTF";
     case Type::RETURN:
         return "RETURN";
+    case Type::CALL:
+        return "CALL";
     case Type::OTHER:
         return "";
     case Type::ForExpression1:

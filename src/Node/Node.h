@@ -29,6 +29,7 @@ class Node {
         WHILE,
         PRINTF,
         RETURN,
+        CALL,
         OTHER,
     };
     // Function to convert Type to a string

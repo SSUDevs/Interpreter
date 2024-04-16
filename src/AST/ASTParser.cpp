@@ -19,14 +19,6 @@ NodePtr ASTParser::parse() {
         auto newNode = make_shared<Node>(currCstNode->Value(), type);
 
         // Add as child or sibling based on the type
-        if (type == Node::Type::FOR) {
-            addToAST(make_shared<Node>(currCstNode->Value(),
-                                       Node::Type::ForExpression1),
-                     LeftChild);
-            parseFor(currCstNode);
-        }
-
-        // Add as child or sibling based on the type
         if (type != Node::Type::OTHER) {
 
             addToAST(newNode, LeftChild);
@@ -37,18 +29,50 @@ NodePtr ASTParser::parse() {
             } else if (type == Node::Type::PRINTF) {
                 currCstNode = currCstNode->Right();
                 parsePrintF(currCstNode);
+            } else if (type == Node::Type::RETURN) {
+                currCstNode = currCstNode->Right(); // skip return
+
+                while (currCstNode->value.value() != ";") {
+                    auto nodeCopy = make_shared<Node>(currCstNode->Value(),
+                                                      Node::Type::OTHER);
+                    addToAST(nodeCopy, RightSibling);
+                    currCstNode = currCstNode->Right();
+                }
+            } else if (type == Node::Type::FOR) {
+                addToAST(make_shared<Node>(currCstNode->Value(),
+                                           Node::Type::ForExpression1),
+                         LeftChild);
+                parseFor(currCstNode);
             }
 
             // cout<<newNode->value.value()<<endl;
 
         } else if (currCstNode->Value().type() == Token::Type::Identifier) {
-            // Must be an assignment op
+            // Check for function call
+            if (currCstNode->Right()->Value().value() == "(") {
+                // Create CALL node
+                addToAST(
+                    make_shared<Node>(currCstNode->Value(), Node::Type::CALL),
+                    LeftChild);
 
-            addToAST(
-                make_shared<Node>(currCstNode->Value(), Node::Type::ASSIGNMENT),
-                LeftChild);
-            parseAssignment(currCstNode);
-            // cout<<currCstNode->value.value()<<endl;
+                currCstNode = currCstNode->Right(); // skip (
+                currCstNode = currCstNode->Right(); // param
+
+                // Get Params
+                while (currCstNode->Value().type() == Token::Type::Identifier) {
+                    addToAST(make_shared<Node>(currCstNode->Value(),
+                                               Node::Type::OTHER),
+                             RightSibling);
+                    currCstNode = currCstNode->Right(); // skip , or )
+                }
+            } else {
+                // Must be an assignment op
+                addToAST(make_shared<Node>(currCstNode->Value(),
+                                           Node::Type::ASSIGNMENT),
+                         LeftChild);
+                parseAssignment(currCstNode);
+                // cout<<currCstNode->value.value()<<endl;
+            }
         }
 
         // Move to the next important node
@@ -63,61 +87,64 @@ NodePtr ASTParser::parse() {
     return root;
 }
 
-NodePtr ASTParser::parseFor(NodePtr& currCstNode) {
+NodePtr ASTParser::parseFor(NodePtr &currCstNode) {
     // Store the line of nodes in this subtree as a vector
     // Pass it into the function and then add them all in the AST in that orde
     NodePtr rootSubTreeNode = currCstNode;
-    std::vector<NodePtr> exp1,exp2,exp3;
+    std::vector<NodePtr> exp1, exp2, exp3;
 
-    currCstNode = currCstNode->Right();//skipping first '('
+    currCstNode = currCstNode->Right(); // skipping first '('
     currCstNode = currCstNode->Right();
 
-    //parse the first expression
-    while (currCstNode->value.value() !=";") {
-        //cout<<currCstNode->value.value()<<endl;
-       exp1.push_back(currCstNode);
+    // parse the first expression
+    while (currCstNode->value.value() != ";") {
+        // cout<<currCstNode->value.value()<<endl;
+        exp1.push_back(currCstNode);
         currCstNode = currCstNode->Right();
     }
-    //change first expression to postfix
+    // change first expression to postfix
     exp1 = inToPostFix(exp1);
 
-    //add first expression
+    // add first expression
     for (const auto &node : exp1) {
-        //cout<<node->value.value()<<endl;
+        // cout<<node->value.value()<<endl;
         addToAST(node, RightSibling);
     }
 
-    //parse the second expression
+    // parse the second expression
     currCstNode = currCstNode->Right();
-    while (currCstNode->value.value() !=";") {
-        //cout<<currCstNode->value.value()<<endl;
+    while (currCstNode->value.value() != ";") {
+        // cout<<currCstNode->value.value()<<endl;
         exp2.push_back(currCstNode);
         currCstNode = currCstNode->Right();
     }
-    //change second expression to postfix
+    // change second expression to postfix
     exp2 = inToPostFix(exp2);
 
-    //add second expressiont to AST
-    addToAST(make_shared<Node>(currCstNode->Value(), Node::Type::ForExpression2), LeftChild);
+    // add second expressiont to AST
+    addToAST(
+        make_shared<Node>(currCstNode->Value(), Node::Type::ForExpression2),
+        LeftChild);
     for (const auto &node : exp2) {
-        //cout<<node->value.value()<<endl;
+        // cout<<node->value.value()<<endl;
         addToAST(node, RightSibling);
     }
 
-
-    //parse the third express
-    while (currCstNode->value.value() !=")") {
-        //cout<<currCstNode->value.value()<<endl;
+    // parse the third express
+    while (currCstNode->value.value() != ")") {
+        // cout<<currCstNode->value.value()<<endl;
         exp3.push_back(currCstNode);
         currCstNode = currCstNode->Right();
     }
 
-    //change the third expression to postfix
+    // change the third expression to postfix
     exp3 = inToPostFix(exp3);
-    //add third to ast
-    addToAST(make_shared<Node>(currCstNode->Value(), Node::Type::ForExpression3), LeftChild);
+    // add third to ast
+    addToAST(
+        make_shared<Node>(currCstNode->Value(), Node::Type::ForExpression3),
+        LeftChild);
     for (const auto &node : exp3) {
-        //cout<<node->value.value()<<endl;
+        // cout<<node->value.value()<<endl;
         addToAST(node, RightSibling);
     }
 
@@ -204,15 +231,12 @@ void ASTParser::addToAST(NodePtr node, InsertionMode mode) {
     node->leftChild = nullptr;
     node->rightSibling = nullptr;
     if (!root) {
-        cout << "Root: " << node->value.value() << endl;
         root = node;
     } else {
         if (mode == LeftChild) {
-            cout << "Left: " << node->value.value() << endl;
             lastASTNode->leftChild = node;
 
         } else {
-            cout << "Right: " << node->value.value() << endl;
             lastASTNode->rightSibling = node;
         }
     }
