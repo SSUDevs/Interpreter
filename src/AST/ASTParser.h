@@ -33,6 +33,7 @@ class ASTParser {
     NodePtr parseIFsORWhiles(NodePtr &currCstNode);
     NodePtr parseFor(NodePtr &currCstNode);
     NodePtr parsePrintF(NodePtr &currCstNode);
+    NodePtr parseTypeDec(NodePtr &currCstNode);
     std::vector<NodePtr> inToPostFix(const std::vector<NodePtr> &infix);
 
     NodePtr getNextCSTNode();

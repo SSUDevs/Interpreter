@@ -37,6 +37,8 @@ NodePtr ASTParser::parse() {
             } else if (type == Node::Type::PRINTF) {
                 currCstNode = currCstNode->Right();
                 parsePrintF(currCstNode);
+            }else  if(isDataType( newNode->value.value())){
+                parseTypeDec(currCstNode);
             }
 
             // cout<<newNode->value.value()<<endl;
@@ -62,7 +64,19 @@ NodePtr ASTParser::parse() {
     }
     return root;
 }
+NodePtr ASTParser::parseTypeDec(NodePtr &currCstNode) {
+    NodePtr rootSubTreeNode = currCstNode;
 
+    currCstNode= currCstNode->Right();
+    while(currCstNode->value.value() != ";" ){
+
+        if(currCstNode->value.value() ==",")
+            addToAST(make_shared<Node>(currCstNode->Value(), Node::Type::DECLARATION), LeftChild);
+        currCstNode= currCstNode->Right();
+    }
+    return rootSubTreeNode;
+
+}
 NodePtr ASTParser::parseFor(NodePtr& currCstNode) {
     // Store the line of nodes in this subtree as a vector
     // Pass it into the function and then add them all in the AST in that orde
@@ -204,15 +218,15 @@ void ASTParser::addToAST(NodePtr node, InsertionMode mode) {
     node->leftChild = nullptr;
     node->rightSibling = nullptr;
     if (!root) {
-        cout << "Root: " << node->value.value() << endl;
+        //cout << "Root: " << node->value.value() << endl;
         root = node;
     } else {
         if (mode == LeftChild) {
-            cout << "Left: " << node->value.value() << endl;
+            //cout << "Left: " << node->value.value() << endl;
             lastASTNode->leftChild = node;
 
         } else {
-            cout << "Right: " << node->value.value() << endl;
+            //cout << "Right: " << node->value.value() << endl;
             lastASTNode->rightSibling = node;
         }
     }
