@@ -12,11 +12,19 @@ void OutPutGenerator::PrintAST(NodePtr &root) {
         return;
     }
     int spaces = 0;
-
+    int x=100;
     while (root != nullptr) {
+        if(root->getSemanticType()==Node::Type::OTHER){
+            cout<<root->value.value();
+        }
+
         cout << Node::semanticTypeToString(root->getSemanticType());
         spaces += Node::semanticTypeToString(root->getSemanticType()).length();
         if (root->Right() != nullptr) {
+            x--;
+            if(x==0){
+                break;
+            }
             cout << " --> ";
             spaces += 5;
             root = root->Right();
@@ -37,6 +45,7 @@ void OutPutGenerator::PrintAST(NodePtr &root) {
             cout << "\\/" << endl;
             root = root->Left();
             spaces = 0;
+
         } else {
             cout << " ---> nullptr";
             break;
