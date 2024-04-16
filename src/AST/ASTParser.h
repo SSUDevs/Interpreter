@@ -30,9 +30,10 @@ class ASTParser {
     // maps the semantics identifiers to the type defined in Node class
     Node::Type determineSemanticNodeType(const std::string &value);
     NodePtr parseAssignment(NodePtr &startOfAssignmentNode);
-    NodePtr parseIFsORWhiles(NodePtr& currCstNode);
-    NodePtr parsePrintF(NodePtr& currCstNode);
-    std::vector<NodePtr> inToPostFix(const std::vector<NodePtr>& infix);
+    NodePtr parseIFsORWhiles(NodePtr &currCstNode);
+    NodePtr parseFor(NodePtr &currCstNode);
+    NodePtr parsePrintF(NodePtr &currCstNode);
+    std::vector<NodePtr> inToPostFix(const std::vector<NodePtr> &infix);
 
     NodePtr getNextCSTNode();
     void addToAST(NodePtr node, InsertionMode);

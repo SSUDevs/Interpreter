@@ -9,44 +9,53 @@ ASTParser::ASTParser(const NodePtr &cstRoot)
     : currCstNode(cstRoot), root(nullptr), lastASTNode(nullptr) {}
 
 NodePtr ASTParser::parse() {
-    while (currCstNode ) {
+    while (currCstNode) {
         // Get the string token value stored in the cst node
         string cstNodeValue = currCstNode->Value().value();
-       // cout<<currCstNode->value.value()<<endl;
+        // cout<<currCstNode->value.value()<<endl;
         // Determine the semantic type and set it while creating root node
         Node::Type type = determineSemanticNodeType(cstNodeValue);
         // Create a new node with the same value and updated "type"
         auto newNode = make_shared<Node>(currCstNode->Value(), type);
 
         // Add as child or sibling based on the type
+        if (type == Node::Type::FOR) {
+            addToAST(make_shared<Node>(currCstNode->Value(),
+                                       Node::Type::ForExpression1),
+                     LeftChild);
+            parseFor(currCstNode);
+        }
+
+        // Add as child or sibling based on the type
         if (type != Node::Type::OTHER) {
 
             addToAST(newNode, LeftChild);
-            if( type == Node::Type::IF || type == Node::Type::WHILE|| type == Node::Type::FOR){
-                //parse if statements
+            if (type == Node::Type::IF || type == Node::Type::WHILE ||
+                type == Node::Type::FOR) {
+                // parse if statements
                 currCstNode = currCstNode->Right();
                 parseIFsORWhiles(currCstNode);
-            }
-            else if (type == Node::Type::PRINTF){
+            } else if (type == Node::Type::PRINTF) {
                 currCstNode = currCstNode->Right();
                 parsePrintF(currCstNode);
             }
 
-            //cout<<newNode->value.value()<<endl;
+            // cout<<newNode->value.value()<<endl;
 
         } else if (currCstNode->Value().type() == Token::Type::Identifier) {
             // Must be an assignment op
 
-            addToAST(make_shared<Node>(currCstNode->Value(), Node::Type::ASSIGNMENT), LeftChild);
+            addToAST(
+                make_shared<Node>(currCstNode->Value(), Node::Type::ASSIGNMENT),
+                LeftChild);
             parseAssignment(currCstNode);
-            //cout<<currCstNode->value.value()<<endl;
-
+            // cout<<currCstNode->value.value()<<endl;
         }
 
         // Move to the next important node
         while (currCstNode->Right() != nullptr) {
             currCstNode = currCstNode->Right();
-            //cout<<currCstNode->value.value()<<endl;
+            // cout<<currCstNode->value.value()<<endl;
         }
 
         // Drop into the important node of the CST
@@ -55,13 +64,75 @@ NodePtr ASTParser::parse() {
     return root;
 }
 
+NodePtr ASTParser::parseFor(NodePtr& currCstNode) {
+    // Store the line of nodes in this subtree as a vector
+    // Pass it into the function and then add them all in the AST in that orde
+    NodePtr rootSubTreeNode = currCstNode;
+    std::vector<NodePtr> exp1,exp2,exp3;
+
+    currCstNode = currCstNode->Right();//skipping first '('
+    currCstNode = currCstNode->Right();
+
+    //parse the first expression
+    while (currCstNode->value.value() !=";") {
+        //cout<<currCstNode->value.value()<<endl;
+       exp1.push_back(currCstNode);
+        currCstNode = currCstNode->Right();
+    }
+    //change first expression to postfix
+    exp1 = inToPostFix(exp1);
+
+    //add first expression
+    for (const auto &node : exp1) {
+        //cout<<node->value.value()<<endl;
+        addToAST(node, RightSibling);
+    }
+
+    //parse the second expression
+    currCstNode = currCstNode->Right();
+    while (currCstNode->value.value() !=";") {
+        //cout<<currCstNode->value.value()<<endl;
+        exp2.push_back(currCstNode);
+        currCstNode = currCstNode->Right();
+    }
+    //change second expression to postfix
+    exp2 = inToPostFix(exp2);
+
+    //add second expressiont to AST
+    addToAST(make_shared<Node>(currCstNode->Value(), Node::Type::ForExpression2), LeftChild);
+    for (const auto &node : exp2) {
+        //cout<<node->value.value()<<endl;
+        addToAST(node, RightSibling);
+    }
+
+
+    //parse the third express
+    while (currCstNode->value.value() !=")") {
+        //cout<<currCstNode->value.value()<<endl;
+        exp3.push_back(currCstNode);
+        currCstNode = currCstNode->Right();
+    }
+
+    //change the third expression to postfix
+    exp3 = inToPostFix(exp3);
+    //add third to ast
+    addToAST(make_shared<Node>(currCstNode->Value(), Node::Type::ForExpression3), LeftChild);
+    for (const auto &node : exp3) {
+        //cout<<node->value.value()<<endl;
+        addToAST(node, RightSibling);
+    }
+
+    return rootSubTreeNode;
+}
+
 NodePtr ASTParser::parsePrintF(NodePtr &currCstNode) {
     NodePtr rootSubTreeNode = currCstNode;
     currCstNode = currCstNode->Right(); // skip first '('
 
-    while (currCstNode->value.value() !=")") {
-        if (currCstNode->value.value() != ","){
-            auto nodeCopy = make_shared<Node>(currCstNode->Value(), Node::Type::OTHER);
+    while (currCstNode->value.value() != ")") {
+        if (currCstNode->value.value() != ",") {
+            auto nodeCopy =
+                make_shared<Node>(currCstNode->Value(), Node::Type::OTHER);
             addToAST(nodeCopy, RightSibling);
         }
 
@@ -71,58 +142,55 @@ NodePtr ASTParser::parsePrintF(NodePtr &currCstNode) {
     return currCstNode;
 }
 
-
-NodePtr ASTParser::parseIFsORWhiles(NodePtr& currCstNode) {
+NodePtr ASTParser::parseIFsORWhiles(NodePtr &currCstNode) {
     // Store the line of nodes in this subtree as a vector
     // Pass it into the function and then add them all in the AST in that orde
     NodePtr rootSubTreeNode = currCstNode;
     std::vector<NodePtr> assignmentNodes;
 
-    currCstNode = currCstNode->Right();//skipping first '('
-    while (currCstNode->value.value() !=")") {
-        //cout<<currCstNode->value.value()<<endl;
+    currCstNode = currCstNode->Right(); // skipping first '('
+    while (currCstNode->value.value() != ")") {
+        // cout<<currCstNode->value.value()<<endl;
         assignmentNodes.push_back(currCstNode);
         currCstNode = currCstNode->Right();
-
     }
 
-    //cout<<currCstNode->value.value()<<endl;
-    // Must parse the entire line in postFix notations
+    // cout<<currCstNode->value.value()<<endl;
+    //  Must parse the entire line in postFix notations
     assignmentNodes = inToPostFix(assignmentNodes);
 
     // Now for the size of the vector, add to the tree
     for (const auto &node : assignmentNodes) {
-        //cout<<node->value.value()<<endl;
+        // cout<<node->value.value()<<endl;
         addToAST(node, RightSibling);
     }
 
-    //cout<<currCstNode->value.value()<<endl;
+    // cout<<currCstNode->value.value()<<endl;
     return rootSubTreeNode;
 }
 
-NodePtr ASTParser::parseAssignment(NodePtr& currCstNode) {
+NodePtr ASTParser::parseAssignment(NodePtr &currCstNode) {
     // Store the line of nodes in this subtree as a vector
     // Pass it into the function and then add them all in the AST in that orde
     NodePtr rootSubTreeNode = currCstNode;
     std::vector<NodePtr> assignmentNodes;
 
     while (currCstNode->Value().type() != Token::Type::Semicolon) {
-        //cout<<currCstNode->value.value()<<endl;
+        // cout<<currCstNode->value.value()<<endl;
         assignmentNodes.push_back(currCstNode);
         currCstNode = currCstNode->Right();
-
     }
 
-    //cout<<currCstNode->value.value()<<endl;
-    // Must parse the entire line in postFix notations
+    // cout<<currCstNode->value.value()<<endl;
+    //  Must parse the entire line in postFix notations
     assignmentNodes = inToPostFix(assignmentNodes);
 
     // Now for the size of the vector, add to the tree
     for (const auto &node : assignmentNodes) {
-       //cout<<node->value.value()<<endl;
+        // cout<<node->value.value()<<endl;
         addToAST(node, RightSibling);
     }
-    //cout<<currCstNode->value.value()<<endl;
+    // cout<<currCstNode->value.value()<<endl;
     return rootSubTreeNode;
 }
 
@@ -133,20 +201,19 @@ NodePtr ASTParser::getNextCSTNode() {
 }
 
 void ASTParser::addToAST(NodePtr node, InsertionMode mode) {
-    //cout<<node->value.value()<<endl;
+    // cout<<node->value.value()<<endl;
     node->leftChild = nullptr;
     node->rightSibling = nullptr;
     if (!root) {
-        cout<<"Root: "<<node->value.value()<<endl;
+        cout << "Root: " << node->value.value() << endl;
         root = node;
     } else {
         if (mode == LeftChild) {
-            cout<<"Left: "<<node->value.value()<<endl;
+            cout << "Left: " << node->value.value() << endl;
             lastASTNode->leftChild = node;
 
-        }
-        else {
-            cout<<"Right: "<<node->value.value()<<endl;
+        } else {
+            cout << "Right: " << node->value.value() << endl;
             lastASTNode->rightSibling = node;
         }
     }
@@ -154,7 +221,8 @@ void ASTParser::addToAST(NodePtr node, InsertionMode mode) {
 }
 
 Node::Type ASTParser::determineSemanticNodeType(const std::string &value) {
-    if (value == "function" || value == "procedure" || isDataType(value) || value == "bool" || value == "int" ||value == "char") {
+    if (value == "function" || value == "procedure" || isDataType(value) ||
+        value == "bool" || value == "int" || value == "char") {
         return Node::Type::DECLARATION;
     } else if (value == "{") {
         return Node::Type::BEGIN_BLOCK;
@@ -192,7 +260,7 @@ std::vector<NodePtr> ASTParser::inToPostFix(const std::vector<NodePtr> &inFix) {
         if (tokType == Token::Type::Integer ||
             tokType == Token::Type::Identifier ||
             tokType == Token::Type::SingleQuotedString ||
-            tokType == Token::Type::DoubleQuotedString ) {
+            tokType == Token::Type::DoubleQuotedString) {
             postFix.push_back(inFix[i]); // display token
         } else {
             if (tokType == Token::Type::LParen) {
@@ -211,13 +279,14 @@ std::vector<NodePtr> ASTParser::inToPostFix(const std::vector<NodePtr> &inFix) {
                         }
                     }
                     // INSERTING BRACKET CHECKS
-                } else if (tokType == Token::Type::LBracket){
+                } else if (tokType == Token::Type::LBracket) {
                     postFix.push_back(inFix[i]); // display it and
-                    stack.push_back(inFix[i]); // put on stack
+                    stack.push_back(inFix[i]);   // put on stack
                 } else if (tokType == Token::Type::RBracket) {
                     bool finished = false;
                     while (!finished) {
-                        if (stack.back()->value.type() == Token::Type::LBracket) {
+                        if (stack.back()->value.type() ==
+                            Token::Type::LBracket) {
                             stack.pop_back();
                             finished = true;
                         } else {
@@ -280,14 +349,18 @@ std::vector<NodePtr> ASTParser::inToPostFix(const std::vector<NodePtr> &inFix) {
                                         bool finished = false;
                                         while (!finished) {
                                             if (!stack.empty()) {
-                                                if (stack.back()->value.type() ==
+                                                if (stack.back()
+                                                            ->value.type() ==
                                                         Token::Type::
                                                             BooleanNot ||
-                                                    stack.back()->value.type() ==
+                                                    stack.back()
+                                                            ->value.type() ==
                                                         Token::Type::Asterisk ||
-                                                    stack.back()->value.type() ==
+                                                    stack.back()
+                                                            ->value.type() ==
                                                         Token::Type::Slash ||
-                                                    stack.back()->value.type() ==
+                                                    stack.back()
+                                                            ->value.type() ==
                                                         Token::Type::Modulo) {
                                                     postFix.push_back(
                                                         stack
@@ -316,26 +389,32 @@ std::vector<NodePtr> ASTParser::inToPostFix(const std::vector<NodePtr> &inFix) {
                                             while (!finished) {
                                                 if (!stack.empty()) {
                                                     if (stack.back()
-                                                                ->value.type() ==
+                                                                ->value
+                                                                .type() ==
                                                             Token::Type::
                                                                 BooleanNot ||
                                                         stack.back()
-                                                                ->value.type() ==
+                                                                ->value
+                                                                .type() ==
                                                             Token::Type::
                                                                 Asterisk ||
                                                         stack.back()
-                                                                ->value.type() ==
+                                                                ->value
+                                                                .type() ==
                                                             Token::Type::
                                                                 Slash ||
                                                         stack.back()
-                                                                ->value.type() ==
+                                                                ->value
+                                                                .type() ==
                                                             Token::Type::
                                                                 Modulo ||
                                                         stack.back()
-                                                                ->value.type() ==
+                                                                ->value
+                                                                .type() ==
                                                             Token::Type::Plus ||
                                                         stack.back()
-                                                                ->value.type() ==
+                                                                ->value
+                                                                .type() ==
                                                             Token::Type::
                                                                 Minus) {
                                                         postFix.push_back(
