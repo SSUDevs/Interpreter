@@ -158,9 +158,7 @@ std::vector<NodePtr> ASTParser::inToPostFix(const std::vector<NodePtr> &inFix) {
         if (tokType == Token::Type::Integer ||
             tokType == Token::Type::Identifier ||
             tokType == Token::Type::SingleQuotedString ||
-            tokType == Token::Type::DoubleQuotedString ||
-            tokType == Token::Type::LBracket ||
-            tokType == Token::Type::RBracket) {
+            tokType == Token::Type::DoubleQuotedString ) {
             postFix.push_back(inFix[i]); // display token
         } else {
             if (tokType == Token::Type::LParen) {
@@ -178,6 +176,23 @@ std::vector<NodePtr> ASTParser::inToPostFix(const std::vector<NodePtr> &inFix) {
                             stack.pop_back();
                         }
                     }
+                    // INSERTING BRACKET CHECKS
+                } else if (tokType == Token::Type::LBracket){
+                    postFix.push_back(inFix[i]); // display it and
+                    stack.push_back(inFix[i]); // put on stack
+                } else if (tokType == Token::Type::RBracket) {
+                    bool finished = false;
+                    while (!finished) {
+                        if (stack.back()->value.type() == Token::Type::LBracket) {
+                            stack.pop_back();
+                            finished = true;
+                        } else {
+                            postFix.push_back(
+                                stack.back()); // display token at top of stack
+                            stack.pop_back();
+                        }
+                    }
+                    postFix.push_back(inFix[i]); // display the right bracket
                 } else {
                     if (tokType == Token::Type::AssignmentOperator ||
                         tokType == Token::Type::BooleanEqual ||

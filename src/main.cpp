@@ -75,9 +75,17 @@ int main(int argc, char *argv[]) {
     // Optionally print the AST using a similar method
     output.PrintAST(astRoot);
 
-    // VERY HARD CODED INFIX to POSTFIX testing
-        vector<Token> temp;
-
+//    // VERY HARD CODED INFIX to POSTFIX testing
+//        using NodePtr = std::shared_ptr<Node>;
+//        vector<Token> temp;
+//
+//        temp.push_back(Token(Token::Type::Identifier, "0", 0));
+//        temp.push_back(Token(Token::Type::LBracket, "0", 0));
+//        temp.push_back(Token(Token::Type::Integer, "0", 0));
+//        temp.push_back(Token(Token::Type::Plus, "0", 0));
+//        temp.push_back(Token(Token::Type::Identifier, "0", 0));
+//        temp.push_back(Token(Token::Type::RBracket, "0", 0));
+//        temp.push_back(Token(Token::Type::AssignmentOperator, "0", 0));
 //        temp.push_back(Token(Token::Type::LParen, "0", 0));
 //        temp.push_back(Token(Token::Type::Identifier, "0", 0));
 //        temp.push_back(Token(Token::Type::Gt, "0", 0));
@@ -91,16 +99,16 @@ int main(int argc, char *argv[]) {
 //        temp.push_back(Token(Token::Type::Integer, "0", 0));
 //        temp.push_back(Token(Token::Type::RParen, "0", 0));
 //
-//        vector<Node> testIn;
+//        vector<NodePtr> testIn;
 //
 //        for (int i = 0; i < temp.size(); ++i) {
-//            testIn.push_back(Node(temp[i]));
+//            testIn.push_back(make_shared<Node>(temp[i]));
 //        }
 //
-////        auto testOut = inToPostFix(testIn);
+//        auto testOut = inToPostFix(testIn);
 //
 //        for (int i = 0; i < testOut.size(); ++i) {
-//            cout << Token::typeToString(testOut[i].value.type()) << endl;
+//            cout << Token::typeToString(testOut[i]->value.type()) << endl;
 //        }
 
     return 0;
