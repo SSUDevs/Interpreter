@@ -17,7 +17,7 @@ LFLAGS =
 LIBS = 
 
 # define the C source files
-SRCS = ./src/main.cpp ./src/CommentRemoval/fileAsArray.cpp ./src/Token/Tokenizer.cpp ./src/Token/Token.cpp ./src/CST/ConcreteSyntaxTree.cpp ./src/Node/Node.cpp ./src/CST/Parser.cpp ./src/OutPutGenerator/OutPutGenerator.cpp ./src/SymbolTable/SymbolTable.cpp ./src/SymbolTable/SymbolTablesLinkedList.cpp ./src/AST/AST.cpp  ./src/AST/ASTParser.cpp
+SRCS = ./src/main.cpp ./src/CommentRemoval/fileAsArray.cpp ./src/Token/Tokenizer.cpp ./src/Token/Token.cpp ./src/CST/ConcreteSyntaxTree.cpp ./src/Node/Node.cpp ./src/CST/Parser.cpp ./src/OutputGenerator/OutPutGenerator.cpp ./src/SymbolTable/SymbolTable.cpp ./src/SymbolTable/SymbolTablesLinkedList.cpp ./src/AST/AST.cpp  ./src/AST/ASTParser.cpp
 
 # define the C object files 
 #
