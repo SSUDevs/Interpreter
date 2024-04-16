@@ -175,10 +175,22 @@ NodePtr ASTParser::parseIFsORWhiles(NodePtr &currCstNode) {
     std::vector<NodePtr> assignmentNodes;
 
     currCstNode = currCstNode->Right(); // skipping first '('
-    while (currCstNode->value.value() != ")") {
-        // cout<<currCstNode->value.value()<<endl;
-        assignmentNodes.push_back(currCstNode);
-        currCstNode = currCstNode->Right();
+
+    cout << "Current Node is starting the loop is: ";
+    cout << currCstNode->value.value() << endl;
+
+    // Keep track of nested braces
+    int OuterBraces = 1; // Start at one becuase we removed on above
+
+    while (OuterBraces > 0) {
+        OuterBraces += (currCstNode->Value().value() == "(")   ? 1
+                       : (currCstNode->Value().value() == ")") ? -1
+                                                               : 0;
+
+        if (OuterBraces > 0) {
+            assignmentNodes.push_back(currCstNode);
+            currCstNode = currCstNode->Right();
+        }
     }
 
     // cout<<currCstNode->value.value()<<endl;
