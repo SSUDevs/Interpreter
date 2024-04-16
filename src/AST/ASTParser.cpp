@@ -9,7 +9,7 @@ ASTParser::ASTParser(const NodePtr &cstRoot)
     : currCstNode(cstRoot), root(nullptr), lastASTNode(nullptr) {}
 
 NodePtr ASTParser::parse() {
-    while (currCstNode) {
+    while (currCstNode ) {
         // Get the string token value stored in the cst node
         string cstNodeValue = currCstNode->Value().value();
        // cout<<currCstNode->value.value()<<endl;
@@ -20,18 +20,22 @@ NodePtr ASTParser::parse() {
 
         // Add as child or sibling based on the type
         if (type != Node::Type::OTHER) {
+
             addToAST(newNode, LeftChild);
             if( type == Node::Type::IF || type == Node::Type::WHILE){
                 //parse if statements
                 parseIFsORWhiles(currCstNode);
             }
+
             //cout<<newNode->value.value()<<endl;
 
         } else if (currCstNode->Value().type() == Token::Type::Identifier) {
             // Must be an assignment op
 
+            addToAST(make_shared<Node>(currCstNode->Value(), Node::Type::ASSIGNMENT), LeftChild);
             parseAssignment(currCstNode);
             //cout<<currCstNode->value.value()<<endl;
+
         }
 
         // Move to the next important node
@@ -70,6 +74,7 @@ NodePtr ASTParser::parseIFsORWhiles(NodePtr& currCstNode) {
         //cout<<node->value.value()<<endl;
         addToAST(node, RightSibling);
     }
+
     //cout<<currCstNode->value.value()<<endl;
     return rootSubTreeNode;
 }
@@ -80,7 +85,7 @@ NodePtr ASTParser::parseAssignment(NodePtr& currCstNode) {
     NodePtr rootSubTreeNode = currCstNode;
     std::vector<NodePtr> assignmentNodes;
 
-    while (currCstNode->Right() != nullptr) {
+    while (currCstNode->Value().type() != Token::Type::Semicolon) {
         //cout<<currCstNode->value.value()<<endl;
         assignmentNodes.push_back(currCstNode);
         currCstNode = currCstNode->Right();
@@ -109,12 +114,18 @@ NodePtr ASTParser::getNextCSTNode() {
 void ASTParser::addToAST(NodePtr node, InsertionMode mode) {
     //cout<<node->value.value()<<endl;
     if (!root) {
+        cout<<"Root: "<<node->value.value()<<endl;
         root = node;
     } else {
-        if (mode == LeftChild)
+        if (mode == LeftChild) {
+            cout<<"Left: "<<node->value.value()<<endl;
             lastASTNode->leftChild = node;
-        else
+
+        }
+        else {
+            cout<<"Right: "<<node->value.value()<<endl;
             lastASTNode->rightSibling = node;
+        }
     }
     lastASTNode = node;
 }

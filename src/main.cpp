@@ -75,6 +75,8 @@ int main(int argc, char *argv[]) {
     // Optionally print the AST using a similar method
     output.PrintAST(astRoot);
 
+
+
 //    // VERY HARD CODED INFIX to POSTFIX testing
 //        using NodePtr = std::shared_ptr<Node>;
 //        vector<Token> temp;
