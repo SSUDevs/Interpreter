@@ -31,7 +31,7 @@ class ASTParser {
     Node::Type determineSemanticNodeType(const std::string &value);
     NodePtr parseAssignment(NodePtr &startOfAssignmentNode);
     NodePtr parseIFsORWhiles(NodePtr& currCstNode);
-    NodePtr parseFor(NodePtr& currCstNode);
+    NodePtr parsePrintF(NodePtr& currCstNode);
     std::vector<NodePtr> inToPostFix(const std::vector<NodePtr>& infix);
 
     NodePtr getNextCSTNode();

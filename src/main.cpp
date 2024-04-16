@@ -57,7 +57,7 @@ int main(int argc, char *argv[]) {
     OutPutGenerator output;
 
     // Method to print or inspect CST
-    // output.PrintCST(cstRoot);
+    //output.PrintCST(cstRoot);
 
     // Generate symbol tables from the CST
     // SymbolTablesLinkedList tables(cstRoot);
