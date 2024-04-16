@@ -22,6 +22,9 @@ NodePtr ASTParser::parse() {
         if (type != Node::Type::OTHER) {
 
             addToAST(newNode, LeftChild);
+            if(isDataType( newNode->value.value())){
+                parseTypeDec(currCstNode);
+            }
             if (type == Node::Type::IF || type == Node::Type::WHILE) {
                 // parse if statements
                 currCstNode = currCstNode->Right();
@@ -85,6 +88,20 @@ NodePtr ASTParser::parse() {
         currCstNode = currCstNode->Left();
     }
     return root;
+}
+
+NodePtr ASTParser::parseTypeDec(NodePtr &currCstNode) {
+    NodePtr rootSubTreeNode = currCstNode;
+
+    currCstNode= currCstNode->Right();
+    while(currCstNode->value.value() != ";" ){
+
+        if(currCstNode->value.value() ==",")
+            addToAST(make_shared<Node>(currCstNode->Value(), Node::Type::DECLARATION), LeftChild);
+        currCstNode= currCstNode->Right();
+    }
+    return rootSubTreeNode;
+
 }
 
 NodePtr ASTParser::parseFor(NodePtr &currCstNode) {
