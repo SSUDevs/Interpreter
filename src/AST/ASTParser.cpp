@@ -2,14 +2,14 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include "../OutputGenerator/OutPutGenerator.h"
+
 using namespace std;
 
 ASTParser::ASTParser(const NodePtr &cstRoot)
     : currCstNode(cstRoot), root(nullptr), lastASTNode(nullptr) {}
 
 NodePtr ASTParser::parse() {
-    while (currCstNode) {
+    while (currCstNode ) {
         // Get the string token value stored in the cst node
         string cstNodeValue = currCstNode->Value().value();
        // cout<<currCstNode->value.value()<<endl;
@@ -22,9 +22,8 @@ NodePtr ASTParser::parse() {
         if (type != Node::Type::OTHER) {
 
             addToAST(newNode, LeftChild);
-            if( type == Node::Type::IF || type == Node::Type::WHILE){
+            if( type == Node::Type::IF || type == Node::Type::WHILE|| type == Node::Type::FOR){
                 //parse if statements
-                currCstNode = currCstNode->Right(); // already added if so progress
                 parseIFsORWhiles(currCstNode);
             }
 
@@ -114,24 +113,19 @@ NodePtr ASTParser::getNextCSTNode() {
 
 void ASTParser::addToAST(NodePtr node, InsertionMode mode) {
     //cout<<node->value.value()<<endl;
-
-    // reset child and sibling of this node
     node->leftChild = nullptr;
     node->rightSibling = nullptr;
-
-    OutPutGenerator output;
     if (!root) {
-        //cout<<"Root: "<<node->value.value()<<endl;
+        cout<<"Root: "<<node->value.value()<<endl;
         root = node;
-
     } else {
         if (mode == LeftChild) {
-            //cout<<"Left: "<<node->value.value()<<endl;
+            cout<<"Left: "<<node->value.value()<<endl;
             lastASTNode->leftChild = node;
 
         }
         else {
-            //cout<<"Right: "<<node->value.value()<<endl;
+            cout<<"Right: "<<node->value.value()<<endl;
             lastASTNode->rightSibling = node;
         }
     }
