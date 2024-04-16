@@ -30,8 +30,7 @@ NodePtr ASTParser::parse() {
         if (type != Node::Type::OTHER) {
 
             addToAST(newNode, LeftChild);
-            if (type == Node::Type::IF || type == Node::Type::WHILE ||
-                type == Node::Type::FOR) {
+            if (type == Node::Type::IF || type == Node::Type::WHILE) {
                 // parse if statements
                 currCstNode = currCstNode->Right();
                 parseIFsORWhiles(currCstNode);
