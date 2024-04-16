@@ -10,7 +10,9 @@ bool Tokenizer::isOperator(Token t) {
     std::string value = t.value();
 
     if (value == "+" || value == "-" || value == "*" || value == "/" ||
-        value == "%" || value == "^" || value == "=")
+        value == "%" || value == "^" || value == "=" || value =="<" ||
+        value =="<=" || value ==">" || value ==">=" || value =="!" ||
+        value =="&&" || value =="||" || value =="==" || value =="!=")
         return true;
     return false;
 }
@@ -18,7 +20,8 @@ bool Tokenizer::isOperator(Token t) {
 bool Tokenizer::isOperator(char value) {
 
     if (value == '+' || value == '-' || value == '*' || value == '/' ||
-        value == '%' || value == '^' || value == '=')
+        value == '%' || value == '^' || value == '=' || value =='<' ||
+        value =='>'  || value =='!' || value =='&' || value =='|')
         return true;
     return false;
 }

@@ -34,13 +34,8 @@ NodePtr ASTParser::parse() {
                 parsePrintF(currCstNode);
             } else if (type == Node::Type::RETURN) {
                 currCstNode = currCstNode->Right(); // skip return
+                parseAssignment(currCstNode);   // will grab expression and turn it into postfix
 
-                while (currCstNode->value.value() != ";") {
-                    auto nodeCopy = make_shared<Node>(currCstNode->Value(),
-                                                      Node::Type::OTHER);
-                    addToAST(nodeCopy, RightSibling);
-                    currCstNode = currCstNode->Right();
-                }
             } else if (type == Node::Type::FOR) {
                 addToAST(make_shared<Node>(currCstNode->Value(),
                                            Node::Type::ForExpression1),
@@ -191,26 +186,12 @@ NodePtr ASTParser::parseIFsORWhiles(NodePtr &currCstNode) {
     NodePtr rootSubTreeNode = currCstNode;
     std::vector<NodePtr> assignmentNodes;
 
-    currCstNode = currCstNode->Right(); // skipping first '('
-
-    cout << "Current Node is starting the loop is: ";
-    cout << currCstNode->value.value() << endl;
-
-    // Keep track of nested braces
-    int OuterBraces = 1; // Start at one becuase we removed on above
-
-    while (OuterBraces > 0) {
-        OuterBraces += (currCstNode->Value().value() == "(")   ? 1
-                       : (currCstNode->Value().value() == ")") ? -1
-                                                               : 0;
-
-        if (OuterBraces > 0) {
-            assignmentNodes.push_back(currCstNode);
-            currCstNode = currCstNode->Right();
-        }
+    while (currCstNode->Right() != nullptr) {
+        assignmentNodes.push_back(currCstNode);
+        currCstNode = currCstNode->Right();
     }
+    assignmentNodes.push_back(currCstNode); // add the last ')' to vector
 
-    // cout<<currCstNode->value.value()<<endl;
     //  Must parse the entire line in postFix notations
     assignmentNodes = inToPostFix(assignmentNodes);
 
@@ -311,6 +292,8 @@ std::vector<NodePtr> ASTParser::inToPostFix(const std::vector<NodePtr> &inFix) {
 
         if (tokType == Token::Type::Integer ||
             tokType == Token::Type::Identifier ||
+            tokType == Token::Type::BooleanTrue ||
+            tokType == Token::Type::BooleanFalse ||
             tokType == Token::Type::SingleQuotedString ||
             tokType == Token::Type::DoubleQuotedString) {
             postFix.push_back(inFix[i]); // display token
