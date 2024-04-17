@@ -1,4 +1,6 @@
 #include "OutPutGenerator.h"
+#include "../ErrorHandler/ErrorHandler.h"
+
 #include <iomanip>
 
 void printFormattedLine(const std::string &label, const std::string &value) {
@@ -53,8 +55,8 @@ void OutPutGenerator::PrintAST(NodePtr &root) {
 void OutPutGenerator::PrintCST(NodePtr &root) {
     ofstream output("Concrete_SyntaxTree_Output.txt");
     if (!output.is_open()) {
-        cerr << "Cant open Concrete Output File " << endl;
-        exit(26); // Exit if there's an error
+                _globalErrorHandler.handle(26, 0);
+
     }
     if (root == nullptr) {
         cout << "Tree is empty." << endl;

@@ -32,12 +32,12 @@
 
 ### 7. **Procedure or Function declared without identifier**
 - **Description:** Errors related to the incorrect declaration of procedures or functions, including missing names or invalid syntax.
-- Line Number: 228, 291
+- Line Number: 228, 255
 - **File:** `Parser.cpp`
 
 ### 8. **Function without specified return type**
 - **Description:** Specifying an invalid return type for a function.
-- **Line Number:** 280
+- **Line Number:** 240
 - **File:** `Parser.cpp`
 
 ### 9. **Parameter declared without data type**
@@ -57,7 +57,7 @@
 
 ### 12. **Missing '(' or ')'**
 - **Description:** Fails to include opening or closing parenthesis where needed
-- **Line Number:** 406
+- **Line Number:** 353
 - **File:** `Parser.cpp`
 
 ### 13. **Invalid statement declaration**

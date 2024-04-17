@@ -1,4 +1,5 @@
 #include "fileAsArray.h"
+#include "../ErrorHandler/ErrorHandler.h"
 
 fileAsArray::fileAsArray(std::string fileName) {
     inputStream.open(fileName, std::ios::in);
@@ -7,25 +8,16 @@ fileAsArray::fileAsArray(std::string fileName) {
 }
 
 void fileAsArray::readFile() {
-
     if (!inputStream.is_open()) {
-        std::cout
-            << "Tokenizer::getToken() called with a stream that is not open."
-            << std::endl;
-        std::cout << "Make sure that " << inputFileName
-                  << " exists and is readable. Terminating.";
-        exit(1);
+        _globalErrorHandler.handle(1, errorLineNumber);
     }
-
     char c;
 
     while (inputStream.get(c) && !inputStream.eof()) {
         // std::cout << c;
         file.push_back(c);
     }
-
     inputStream.close();
-    // std::cout << "Done reading File" << std::endl;
 }
 
 /*
@@ -84,11 +76,12 @@ void fileAsArray::File_w_no_comments() {
                     // here
                 } else {
                     // Handle as previously, including potential error reporting
-                    throw std::runtime_error("ERROR: Program contains C-style, "
-                                             "Block comment not started on line " +
-                                             std::to_string(lineNumber));
+                    throw std::runtime_error(
+                        "ERROR: Program contains C-style, "
+                        "Block comment not started on line " +
+                        std::to_string(lineNumber));
                 }
-            } 
+            }
             break;
 
         case SLASH:
@@ -157,7 +150,7 @@ void fileAsArray::File_w_no_comments() {
             if (file[i] == '\'') {
                 state = START; // Move back to the START state after finding end
                                // quote
-            } 
+            }
             break;
 
         case DOUBLE_QUOTE:
@@ -166,7 +159,7 @@ void fileAsArray::File_w_no_comments() {
             if (file[i] == '"') {
                 state = START; // Move back to the START state after finding end
                                // quote
-            } 
+            }
             break;
         }
     }
@@ -187,7 +180,9 @@ std::pair<bool, int> fileAsArray::isMultiplication(int index) {
     while (index < length && isspace(file[index])) { // Skip the whitespace
         index++;
     }
-    if (index < length && (isdigit(file[index]) || isalpha(file[index]) || file[index] == '(')) { // If next is digit or opening parenth
+    if (index < length &&
+        (isdigit(file[index]) || isalpha(file[index]) ||
+         file[index] == '(')) { // If next is digit or opening parenth
         return std::make_pair(true, index + 1); // Return true, and must be mult
     }
     return std::make_pair(false, index); // Not a mult thus error
@@ -204,7 +199,9 @@ std::pair<bool, int> fileAsArray::isDivision(int index) {
         if (isspace(file[index])) {
             continue;
         }
-        if (isdigit(file[index]) || file[index] == '(' || isalpha(file[index])) {             // check if next is a number or open parenthesis
+        if (isdigit(file[index]) || file[index] == '(' ||
+            isalpha(
+                file[index])) { // check if next is a number or open parenthesis
             return std::make_pair(true, index); // Return true if Division Op.
         } else
             return std::make_pair(false, index);

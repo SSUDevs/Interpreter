@@ -1,4 +1,5 @@
 #include "SymbolTablesLinkedList.h"
+#include "../ErrorHandler/ErrorHandler.h"
 
 SymbolTablesLinkedList::SymbolTablesLinkedList(const NodePtr CST_root)
     : curCstNode(CST_root), scopeCount(0), currentScope(0) {
@@ -13,8 +14,7 @@ NodePtr SymbolTablesLinkedList::getNextCstNode() {
     } else if (curCstNode->leftChild != nullptr) {
         curCstNode = curCstNode->leftChild;
     } else {
-        cerr << "Unexpected end of CST." << endl;
-        exit(27);
+        _globalErrorHandler.handle(27, 0);
     }
 
     return curCstNode;
@@ -33,8 +33,8 @@ NodePtr SymbolTablesLinkedList::peekNextCstNode() {
 
 string SymbolTablesLinkedList::nodeValue(const NodePtr &node) const {
     if (!node) {
-        cerr << "Can't get value of a nullptr" << endl;
-        exit(28);
+        string message = "Can't get value of a nullptr in the symbol table";
+        _globalErrorHandler.handle(28, 0, message);
     }
 
     return node->Value().value();
@@ -51,21 +51,12 @@ void SymbolTablesLinkedList::addToSymTable(const SymTblPtr &s) {
     lastTable = s;
 }
 
-void SymbolTablesLinkedList::reportError(const string &message, int lineNumber,
-                                         int errorCode) const {
-    cerr << "Error on line " << lineNumber << ": " << message << endl;
-    exit(errorCode);
-}
-
 // Checks for redeclaration of a function or procedure name
 void SymbolTablesLinkedList::checkFuncProcRedeclaration(const string &name,
                                                         const string &type) {
     for (const auto &existingName : funcProcNames) {
         if (existingName == name) {
-            std::cerr << "Error: \"" << name
-                      << "\" is already defined globally as a " << type
-                      << std::endl;
-            exit(31);
+            _globalErrorHandler.handle(31, 0, name, type);
         }
     }
     funcProcNames.push_back(name); // Add the name to the list
@@ -78,26 +69,15 @@ bool SymbolTablesLinkedList::checkVariableRedeclaration(const string &varName,
         if (var.first == varName) {
             // Existing variable is global (scope 0) and the same name.
             if (var.second == 0) {
-                cerr << "Error on line " << lineNumber << ": variable \""
-                     << varName << "\" is already defined globally!" << endl;
-                exit(29);
+                _globalErrorHandler.handle(29, lineNumber, varName);
             }
             // If the existing variable has the same scope as the current
             else if (var.second == scope) {
-                cerr << "Error on line " << lineNumber << ": variable \""
-                     << varName
-                     << "\" is already defined locally in the same scope!!"
-                     << endl;
-                exit(30);
+                _globalErrorHandler.handle(30, lineNumber, varName);
             }
             // If trying to define a global variable that's already defined
             if (scope == 0) {
-                cerr << "Error on line " << lineNumber << ": variable \""
-                     << varName
-                     << "\" trying to define a global variable that is already "
-                        "defined elsewhere!!!"
-                     << endl;
-                exit(31);
+                _globalErrorHandler.handle(31, lineNumber, varName);
             }
         }
     }
@@ -219,9 +199,9 @@ void SymbolTablesLinkedList::functionTable() {
     if (nodeValue(peekNextCstNode()) == "{") {
         getNextCstNode(); // Move past '{' to start processing the body
     } else {
-        std::cerr << "Expected '{' at the start of the procedure body. Found: "
-                  << nodeValue(peekNextCstNode()) << std::endl;
-        return;
+        int lineNumber = peekNextCstNode()->Value().lineNum();
+        string name = nodeValue(peekNextCstNode());
+        _globalErrorHandler.handle(6, lineNumber, name);
     }
     while (nodeValue(peekNextCstNode()) !=
            "}") { // Check fot the '}' that marks the end of the procedure body.
@@ -252,8 +232,9 @@ void SymbolTablesLinkedList::procedureTable() {
     if (nodeValue(peekNextCstNode()) == "(") {
         getNextCstNode(); // Move past '(' to start processing the params
     } else {
-        std::cerr << "Expected '(' at the start of the procedure body. Found: "
-                  << nodeValue(peekNextCstNode()) << std::endl;
+        int lineNumber = peekNextCstNode()->Value().lineNum();
+        string name = nodeValue(peekNextCstNode());
+        _globalErrorHandler.handle(12, lineNumber, name);
         return;
     }
     // Parse parameters creating its own symbol table
@@ -265,9 +246,9 @@ void SymbolTablesLinkedList::procedureTable() {
     if (nodeValue(peekNextCstNode()) == "{") {
         getNextCstNode(); // Move past '{' to start processing the body
     } else {
-        std::cerr << "Expected '{' at the start of the procedure body. Found: "
-                  << nodeValue(peekNextCstNode()) << std::endl;
-        return;
+        int lineNumber = peekNextCstNode()->Value().lineNum();
+        string name = nodeValue(peekNextCstNode());
+        _globalErrorHandler.handle(6, lineNumber, name);
     }
     while (nodeValue(peekNextCstNode()) !=
            "}") { // Check fot the '}' that marks the end of the procedure body.

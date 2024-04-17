@@ -35,7 +35,6 @@ class ASTParser {
     NodePtr parsePrintF(NodePtr &currCstNode);
     std::vector<NodePtr> inToPostFix(const std::vector<NodePtr> &infix);
     NodePtr parseTypeDec(NodePtr &currCstNode);
-        NodePtr getNextCSTNode();
     void addToAST(NodePtr node, InsertionMode);
 };
 

@@ -1,8 +1,8 @@
 #ifndef SYMBOLTABLESLINKEDLIST_H
 #define SYMBOLTABLESLINKEDLIST_H
 
-#include "../Node/Node.h" 
 #include "../CST/Parser.h"
+#include "../Node/Node.h"
 #include "SymbolTable.h"
 #include <utility>
 #include <vector>
@@ -17,7 +17,6 @@ class SymbolTablesLinkedList {
     SymbolTablesLinkedList(const NodePtr CST_root);
 
     SymTblPtr parse();
-    void parseRootNode();
 
     NodePtr getNextCstNode();
     NodePtr peekNextCstNode();
@@ -33,10 +32,7 @@ class SymbolTablesLinkedList {
     void parseParameters(const string &procOrFuncName);
 
     // Helper methods for error handling and declaration checks
-    void reportError(const string &message, int lineNumber,
-                     int errorCode) const;
     void checkFuncProcRedeclaration(const string &name, const string &type);
-  
     bool checkVariableRedeclaration(const string &varName, int scope,
                                     int lineNumber);
     pair<bool, int> parseArrayDeclaration();
