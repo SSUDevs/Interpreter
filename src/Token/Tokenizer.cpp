@@ -1,4 +1,5 @@
 #include "Tokenizer.h"
+#include "../ErrorHandler/ErrorHandler.h"
 #include <iostream>
 #include <sstream>
 
