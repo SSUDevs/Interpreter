@@ -6,6 +6,7 @@
  *
  */
 
+#include "./Interpreter/Interpreter.h"
 #include "./AST/ASTParser.h"
 #include "./CST/Parser.h"
 #include "./CommentRemoval/fileAsArray.h"
@@ -15,8 +16,6 @@
 
 #include "./Node/Node.h"
 #include "./Token/Token.h"
-
-
 
 #include <fstream>
 #include <iostream>
@@ -58,16 +57,16 @@ int main(int argc, char *argv[]) {
     Parser parser(tokens);
     auto cstRoot = parser.parse(); // Root of the Concrete Syntax Tree
 
-    OutPutGenerator output;
+    // OutPutGenerator output;
 
     // Method to print or inspect CST
     // output.PrintCST(cstRoot);
 
     // Generate symbol tables from the CST
-    // SymbolTablesLinkedList tables(cstRoot);
+    SymbolTablesLinkedList tables(cstRoot);
 
-    // auto symTableRoot =
-    //     tables.parse(); // Parse the CST to generate symbol tables
+    auto symTableRoot =
+        tables.parse(); // Parse the CST to generate symbol tables
 
     // // Print the Symbol Tables
     // output.PrintSymbolTables(symTableRoot);
@@ -77,6 +76,10 @@ int main(int argc, char *argv[]) {
     auto astRoot = astParser.parse();
 
     // Optionally print the AST using a similar method
-    output.PrintAST(astRoot);
+    // output.PrintAST(astRoot);
+
+    // Using the AST & Symbol Table roots, interpret the file
+    Interpreter interpret(astRoot, symTableRoot);
+    
     return 0;
 }

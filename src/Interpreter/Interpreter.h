@@ -4,30 +4,36 @@
 #ifndef INTERPRETER_H
 #define INTERPRETER_H
 
-#include <stack>
+#include "../AST/ASTParser.h"
 #include "../Node/Node.h"
 #include "../SymbolTable/SymbolTablesLinkedList.h"
-#include "../AST/ASTParser.h"
+#include <stack>
 
 using namespace std;
 
 class Interpreter {
   public:
-    Interpreter (const NodePtr &astRoot, const SymTblPtr &symTblRoot); // not implemented
+    Interpreter(const NodePtr &astRoot, const SymTblPtr &symTblRoot);
 
+    NodePtr iteratePC();
+    NodePtr peekNext();
 
-    NodePtr iteratePC();    // not implemented
-    NodePtr peekNext();     // not implemented
+    NodePtr findMain(const NodePtr &astroot, const SymTblPtr &symroot);
+    void executeAssignment(NodePtr node);
+    int evaluateExpression(NodePtr exprRoot);
+    void updateSymbolTable(const string &name, int value);
+
+    bool isOperand();
+    bool isOperator(Token t);
+    int applyOperator(Token::Type op, int left, int right);
 
   private:
-
     SymTblPtr rootTable;
     NodePtr astRoot;
 
     NodePtr PC;
     stack<NodePtr> pc_stack;
     stack<NodePtr> arithmetic_stack;
-
 };
 
 #endif // INTERPRETER_H
