@@ -34,6 +34,9 @@ class Interpreter {
 
 
     NodePtr PC;
+
+    string printF_buffer;
+
     stack<NodePtr> pc_stack;
     stack<NodePtr> arithmetic_stack;
 };

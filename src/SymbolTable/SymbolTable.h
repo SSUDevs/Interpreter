@@ -35,6 +35,7 @@ class SymbolTable {
           _procOrFuncName(procOrFuncName) {}
 
     void SetNextTable(const SymTblPtr &next);
+    void setDeclared(const bool dec) {_isDeclared = dec;}
 
     string GetName() const { return _idName; }
     string GetDataType() const { return _dataType; }
@@ -77,6 +78,7 @@ class SymbolTable {
   private:
     string _idName, _dataType, _procOrFuncName;
     IDType _idtype;
+    bool _isDeclared = false;
     bool _isArray;
     int _arraySize, _scope;
 

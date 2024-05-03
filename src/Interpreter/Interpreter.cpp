@@ -12,6 +12,10 @@ Interpreter::Interpreter(const NodePtr &astRoot, const SymTblPtr &symTblRoot) {
     this->PC = findMain(astRoot, rootTable);
     cout << "MAIN FOUND AT LINE NUM: " << this->PC->Value().lineNum() << endl;
 
+    // start execution of program
+    while (PC != nullptr) {
+        iteratePC();
+    }
 
 
 }
@@ -53,14 +57,25 @@ NodePtr Interpreter::iteratePC() {
         case Node::Type::BEGIN_BLOCK:
             break;
         case Node::Type::END_BLOCK: // return to last PC in stack
-            if (!pc_stack.empty())
+            if (!pc_stack.empty()) {
                 this->PC = pc_stack.top();
                 pc_stack.pop();
+            }
             break;
-        case Node::Type::DECLARATION:
-            // Handle declarations
+        case Node::Type::DECLARATION: {
+            SymTblPtr currTable = rootTable;
+            while (currTable->GetName() != PC->Value().value()) {
+                currTable = currTable->GetNextTable();
+                if (currTable == nullptr) {
+                    throw std::runtime_error("No Symbol Table for " +
+                                             PC->Value().value());
+                }
+            }
+            currTable->setDeclared(true);
+        }
             break;
         case Node::Type::ASSIGNMENT:
+
             // Execute an assignment statement
             executeAssignment(PC);
             break;
@@ -114,7 +129,7 @@ int Interpreter::evaluateExpression(NodePtr exprRoot) {
     // Current stack being evaluated
     stack<int> evalStack;
 
-    // Use the root of the exporession
+    // Use the root of the expression
     NodePtr currentNode = exprRoot;
 
     while (currentNode) {
