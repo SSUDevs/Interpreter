@@ -10,8 +10,10 @@ Interpreter::Interpreter(const NodePtr &astRoot, const SymTblPtr &symTblRoot) {
 
     // locate main in AST
     this->PC = findMain(astRoot, rootTable);
-    cout << "MAIN FOUND: " << endl
-         << "PC LineNum: " << this->PC->Value().lineNum() << endl;
+    cout << "MAIN FOUND AT LINE NUM: " << this->PC->Value().lineNum() << endl;
+
+
+
 }
 
 // Traverse AST until DECLARATION is found then look in Symbol table that
@@ -22,19 +24,19 @@ NodePtr Interpreter::findMain(const NodePtr &astroot,
     SymTblPtr currTable = symroot;
 
     while (currAst) {
-        cout << "CURRENT NODE VALUE: " << currAst->Value().value() << endl;
         cout << "CURRENT NODE TYPE: "
              << currAst->semanticTypeToString(currAst->getSemanticType())
              << endl;
+        cout << "CURRENT NODE VALUE: " << currAst->Value().value() << endl;
         if (currAst->getSemanticType() == Node::Type::DECLARATION) {
             // Get next symbol table for each declaration found in AST
-            currTable = currTable->GetNextTable();
             cout << "FOUND DECLARATION WITH NAME: " << currTable->GetName()
                  << endl;
 
             if (currTable->GetName() == "main") {
                 return currAst;
             }
+            currTable = currTable->GetNextTable();
         }
         currAst = currAst->Right() ? currAst->Right() : currAst->Left();
     }
@@ -48,22 +50,30 @@ NodePtr Interpreter::iteratePC() {
 
     // Handling different types of nodes
     switch (PC->getSemanticType()) {
-    case Node::Type::DECLARATION:
-        // Handle declarations
-        break;
-    case Node::Type::ASSIGNMENT:
-        // Execute an assignment statement
-        executeAssignment(PC);
-        break;
-    case Node::Type::IF:
-    case Node::Type::ELSE:
-    case Node::Type::FOR:
-    case Node::Type::WHILE:
-        // Control flow handling
-        // handleControlFlow(PC);
-        break;
-    default:
-        break;
+        case Node::Type::BEGIN_BLOCK:
+            break;
+        case Node::Type::END_BLOCK: // return to last PC in stack
+            if (!pc_stack.empty())
+                this->PC = pc_stack.top();
+                pc_stack.pop();
+            break;
+        case Node::Type::DECLARATION:
+            // Handle declarations
+            break;
+        case Node::Type::ASSIGNMENT:
+            // Execute an assignment statement
+            executeAssignment(PC);
+            break;
+        case Node::Type::IF:
+        case Node::Type::ELSE:
+        case Node::Type::FOR:
+        case Node::Type::WHILE:
+            // Control flow handling
+            // shouldn't call iteratePC until complete
+            // handleControlFlow(PC);
+            break;
+        default:
+            break;
     }
 
     // Move to next node by default (override in control flow handling)

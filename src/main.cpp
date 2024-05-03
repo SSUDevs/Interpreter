@@ -57,7 +57,7 @@ int main(int argc, char *argv[]) {
     Parser parser(tokens);
     auto cstRoot = parser.parse(); // Root of the Concrete Syntax Tree
 
-    // OutPutGenerator output;
+    OutPutGenerator output;
 
     // Method to print or inspect CST
     // output.PrintCST(cstRoot);
@@ -69,17 +69,17 @@ int main(int argc, char *argv[]) {
         tables.parse(); // Parse the CST to generate symbol tables
 
     // // Print the Symbol Tables
-    // output.PrintSymbolTables(symTableRoot);
+    //output.PrintSymbolTables(symTableRoot);
 
     // Now, generate the AST from the CST
     ASTParser astParser(cstRoot);
     auto astRoot = astParser.parse();
 
     // Optionally print the AST using a similar method
-    // output.PrintAST(astRoot);
+    output.PrintAST(astRoot);
 
     // Using the AST & Symbol Table roots, interpret the file
-    Interpreter interpret(astRoot, symTableRoot);
+    //Interpreter interpret(astRoot, symTableRoot);
     
     return 0;
 }

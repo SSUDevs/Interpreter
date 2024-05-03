@@ -27,7 +27,10 @@ add_executable(Interpreter
         src/AST/AST.cpp
         src/AST/AST.h
         src/AST/ASTParser.cpp
+        src/AST/ASTParser.h
         src/Interpreter/Interpreter.cpp
+        src/Interpreter/Interpreter.h
         src/ErrorHandler/ErrorHandler.cpp
+        src/ErrorHandler/ErrorHandler.h
 
 )

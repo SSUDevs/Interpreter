@@ -27,9 +27,11 @@ class Interpreter {
     bool isOperator(Token t);
     int applyOperator(Token::Type op, int left, int right);
 
+
   private:
     SymTblPtr rootTable;
     NodePtr astRoot;
+
 
     NodePtr PC;
     stack<NodePtr> pc_stack;
