@@ -40,11 +40,13 @@ class SymbolTable {
     string GetName() const { return _idName; }
     string GetDataType() const { return _dataType; }
     string GetIsArray() const { return _isArray ? "yes" : "no"; }
-    variant<vector<any>, any> GetValue() {return _value;}
+    variant<vector<any>, any> &GetValue() {return _value;}
     int GetArraySize() const { return _arraySize; }
     int GetScope() const { return _scope; }
     SymTblPtr GetNextTable() const { return nextTable; }
     std::string procOrFuncName() { return _procOrFuncName; }
+
+
 
     string GetStringIdType() const {
         switch (_idtype) {
