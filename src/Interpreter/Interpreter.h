@@ -26,7 +26,7 @@ class Interpreter {
     bool isOperand();
     bool isOperator(Token t);
     int applyOperator(Token::Type op, int left, int right);
-
+    bool ParseSymbolTables(SymTblPtr root,const string &name,int value);
 
   private:
     SymTblPtr rootTable;

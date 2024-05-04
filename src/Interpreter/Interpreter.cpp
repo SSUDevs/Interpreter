@@ -176,4 +176,18 @@ bool Interpreter::isOperator(Token t) {
 void Interpreter::updateSymbolTable(const string &name, int value) {
     // Needs logic to update the symbol table entry for 'name' with 'value'
     // Will be used in assignments
+    SymTblPtr tempRoot = rootTable;
+
+}
+
+bool Interpreter::ParseSymbolTables(SymTblPtr root,const string &name,int value){
+    if(root ==nullptr){
+        return false;
+    }
+    if(root->GetName()==name){
+        root->GetValue()=value;
+        return true;
+    }
+    return ParseSymbolTables(root->GetNextTable(),name,value);
+
 }
