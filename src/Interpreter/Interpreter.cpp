@@ -178,6 +178,14 @@ void Interpreter::updateSymbolTable(const string &name, int value) {
     // Will be used in assignments
     SymTblPtr tempRoot = rootTable;
 
+      if(ParseSymbolTables(tempRoot, name, value)){
+        return;
+    }
+    else{
+        cout<<"failed to update symbol table value with name ("<<name<<") to value ("<<value<<")"<<endl;
+        exit(377);
+    }
+
 }
 
 bool Interpreter::ParseSymbolTables(SymTblPtr root,const string &name,int value){
