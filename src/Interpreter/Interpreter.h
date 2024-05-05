@@ -16,12 +16,14 @@ class Interpreter {
     Interpreter(const NodePtr &astRoot, const SymTblPtr &symTblRoot);
 
     NodePtr iteratePC();
-    NodePtr peekNext();
+    NodePtr peekNext(NodePtr node);
 
     NodePtr findMain(const NodePtr &astroot, const SymTblPtr &symroot);
     void executeAssignment(NodePtr node);
     int evaluateExpression(NodePtr exprRoot);
     void updateSymbolTable(const string &name, int value);
+
+    void executeIF();
 
     bool isOperand();
     bool isOperator(Token t);

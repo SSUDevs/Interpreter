@@ -12,6 +12,7 @@ Interpreter::Interpreter(const NodePtr &astRoot, const SymTblPtr &symTblRoot) {
     this->PC = findMain(astRoot, rootTable);
     cout << "MAIN FOUND AT LINE NUM: " << this->PC->Value().lineNum() << endl;
 
+    PC = peekNext(PC);
     // start execution of program
     while (PC != nullptr) {
         iteratePC();
@@ -40,14 +41,21 @@ NodePtr Interpreter::findMain(const NodePtr &astroot,
             if (currTable->GetName() == "main") {
                 return currAst;
             }
+
             currTable = currTable->GetNextTable();
+
+            //iterate past tables formed by params
+            while (currTable->GetIdType()== SymbolTable::IDType::parameterList)
+                currTable = currTable->GetNextTable();
         }
-        currAst = currAst->Right() ? currAst->Right() : currAst->Left();
+        currAst = peekNext(currAst);
     }
     throw std::runtime_error("Main function not found.");
 }
 
 NodePtr Interpreter::iteratePC() {
+
+    cout << "Iterating" << " " << PC->Value().value()  << endl;
 
     if (!PC)
         return nullptr; // Safety check
@@ -61,6 +69,7 @@ NodePtr Interpreter::iteratePC() {
                 this->PC = pc_stack.top();
                 pc_stack.pop();
             }
+
             break;
         case Node::Type::DECLARATION: {
             SymTblPtr currTable = rootTable;
@@ -72,6 +81,11 @@ NodePtr Interpreter::iteratePC() {
                 }
             }
             currTable->setDeclared(true);
+
+            // if an array set value to an array of the declared size
+            if (currTable->isArray()) {
+                currTable->setValueToVector(vector<any>(currTable->GetArraySize()));
+            }
         }
             break;
         case Node::Type::ASSIGNMENT:
@@ -79,12 +93,12 @@ NodePtr Interpreter::iteratePC() {
             // Execute an assignment statement
             executeAssignment(PC);
             break;
-        case Node::Type::IF:
-        case Node::Type::ELSE:
+        case Node::Type::IF:    // also handles else
+            executeIF();
+            break;
         case Node::Type::FOR:
         case Node::Type::WHILE:
             // Control flow handling
-            // shouldn't call iteratePC until complete
             // handleControlFlow(PC);
             break;
         default:
@@ -97,12 +111,11 @@ NodePtr Interpreter::iteratePC() {
     return PC;
 }
 
-NodePtr Interpreter::peekNext() {
-    if (!PC)
+NodePtr Interpreter::peekNext(NodePtr node) {
+    if (!node)
         return nullptr;
 
-    // Peek without changing the PC
-    return PC->Right() ? PC->Right() : PC->Left();
+    return node->Right() ? node->Right() : node->Left();
 }
 
 void Interpreter::executeAssignment(NodePtr node) {
@@ -172,6 +185,60 @@ bool Interpreter::isOperator(Token t) {
         return true;
     return false;
 }
+
+void Interpreter::executeIF() {
+
+    bool choseIf = false;
+
+    PC = PC->Right();
+
+    // evaluate expression
+    int result = evaluateExpression(PC);
+
+
+    if (result != 0) {      // execute if block and skip the else (if it exists)
+
+        cout << "entering if" << endl;
+
+        choseIf = true;
+        while (PC->getSemanticType() != Node::Type::END_BLOCK){
+            iteratePC();
+        }
+        PC = peekNext(PC);  // skip end block
+
+
+        if (PC->getSemanticType() == Node::Type::ELSE) {
+            cout << "skip else" << endl;
+            // skip over else block
+            while (PC->getSemanticType() != Node::Type::END_BLOCK) {
+                PC = peekNext(PC);
+            }
+            //step past end block of else
+            PC = peekNext(PC);
+        }
+
+    }
+    else {      // skip if block and execute else block (if it exists)
+
+        cout << "skip if" << endl;
+        // skip over if block
+        while (PC->getSemanticType() != Node::Type::END_BLOCK) {
+            PC = peekNext(PC);
+        }
+        //step past end block of if
+        PC = peekNext(PC);
+
+        //look for else
+        if (PC->getSemanticType() == Node::Type::ELSE) {
+            cout << "entering else" << endl;
+            while (PC->getSemanticType() != Node::Type::END_BLOCK){
+                iteratePC();
+            }
+        }
+    }
+
+}
+
 
 void Interpreter::updateSymbolTable(const string &name, int value) {
     // Needs logic to update the symbol table entry for 'name' with 'value'

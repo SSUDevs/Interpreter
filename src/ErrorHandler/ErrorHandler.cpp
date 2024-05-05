@@ -155,4 +155,8 @@ void ErrorHandler::initializeErrorHandlers() {
         logError(line, "Error 31: Global declaration of globally defined variable, function or procedure", msg1, msg2);
         exit(31);
     };
+    errorHandlers[32] = [this](int line, const std::string& msg1, const std::string& msg2) {
+        logError(line, "Error 32: Expected semicolon or comma", msg1, msg2);
+        exit(31);
+    };
 }

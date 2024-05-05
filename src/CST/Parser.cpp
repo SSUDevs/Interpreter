@@ -78,7 +78,7 @@ void Parser::parseDeclaration() {
         // semicolon check and add
         currToken = getToken();
         if (!match(Token::Type::Semicolon, currToken)) { // ERROR reserved name
-            _globalErrorHandler.handle(3, currToken.lineNum());
+            _globalErrorHandler.handle(32, currToken.lineNum());
         }
         addToCST(createNodePtr(currToken), RightSibling); // add name id to CST
     }

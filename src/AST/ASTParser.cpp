@@ -19,27 +19,29 @@ NodePtr ASTParser::parse() {
 
         // Add as child or sibling based on the type
         if (type != Node::Type::OTHER) {
-            addToAST(newNode, LeftChild);
             if (isDataType(newNode->value.value())) {
                 parseTypeDec(currCstNode);
             }
-            if (type == Node::Type::IF || type == Node::Type::WHILE) {
-                // parse if statements
-                currCstNode = currCstNode->Right();
-                parseIFsORWhiles(currCstNode);
-            } else if (type == Node::Type::PRINTF) {
-                currCstNode = currCstNode->Right();
-                parsePrintF(currCstNode);
-            } else if (type == Node::Type::RETURN) {
-                currCstNode = currCstNode->Right(); // skip return
-                parseAssignment(currCstNode); // will grab expression and turn
-                                              // it into postfix
+            else {
+                addToAST(newNode, LeftChild);
+                if (type == Node::Type::IF || type == Node::Type::WHILE) {
+                    // parse if statements
+                    currCstNode = currCstNode->Right();
+                    parseIFsORWhiles(currCstNode);
+                } else if (type == Node::Type::PRINTF) {
+                    currCstNode = currCstNode->Right();
+                    parsePrintF(currCstNode);
+                } else if (type == Node::Type::RETURN) {
+                    currCstNode = currCstNode->Right(); // skip return
+                    parseAssignment(currCstNode); // will grab expression and turn
+                                                        // it into postfix
 
-            } else if (type == Node::Type::FOR) {
-                addToAST(make_shared<Node>(currCstNode->Value(),
-                                           Node::Type::ForExpression1),
-                         LeftChild);
-                parseFor(currCstNode);
+                } else if (type == Node::Type::FOR) {
+                    addToAST(make_shared<Node>(currCstNode->Value(),
+                                               Node::Type::ForExpression1),
+                             LeftChild);
+                    parseFor(currCstNode);
+                }
             }
         } else if (currCstNode->Value().type() == Token::Type::Identifier) {
             // Check for function call
@@ -82,11 +84,16 @@ NodePtr ASTParser::parseTypeDec(NodePtr &currCstNode) {
     NodePtr rootSubTreeNode = currCstNode;
 
     currCstNode = currCstNode->Right();
+
+    // add node of first identifier
+    addToAST(make_shared<Node>(currCstNode->Value(),Node::Type::DECLARATION),LeftChild);
+
     while (currCstNode->value.value() != ";") {
-        if (currCstNode->value.value() == ",")
-            addToAST(make_shared<Node>(currCstNode->Value(),
+        if (currCstNode->value.value() == ",") {
+            addToAST(make_shared<Node>(peekNext(currCstNode)->Value(),
                                        Node::Type::DECLARATION),
                      LeftChild);
+        }
         currCstNode = currCstNode->Right();
     }
     return rootSubTreeNode;

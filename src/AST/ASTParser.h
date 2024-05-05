@@ -14,6 +14,13 @@ class ASTParser {
 
     enum InsertionMode { LeftChild, RightSibling };
 
+    NodePtr peekNext(NodePtr node) {
+        if (!node)
+            return nullptr;
+
+        return node->Right() ? node->Right() : node->Left();
+    }
+
     NodePtr parse();
     // std::vector<Node> inToPostFix(const std::vector<Node> &infix);
 
