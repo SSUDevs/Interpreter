@@ -64,7 +64,9 @@ NodePtr Interpreter::iteratePC() {
             break;
         case Node::Type::DECLARATION: {
             SymTblPtr currTable = rootTable;
+
             while (currTable->GetName() != PC->Value().value()) {
+                cout<<currTable->GetName()<<endl;
                 currTable = currTable->GetNextTable();
                 if (currTable == nullptr) {
                     throw std::runtime_error("No Symbol Table for " +
@@ -197,5 +199,11 @@ bool Interpreter::ParseSymbolTables(SymTblPtr root,const string &name,int value)
         return true;
     }
     return ParseSymbolTables(root->GetNextTable(),name,value);
+
+}
+NodePtr Interpreter::HandleIF(const NodePtr &node) {
+
+
+    return NodePtr();
 
 }

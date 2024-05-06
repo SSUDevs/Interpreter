@@ -22,6 +22,7 @@ class Interpreter {
     void executeAssignment(NodePtr node);
     int evaluateExpression(NodePtr exprRoot);
     void updateSymbolTable(const string &name, int value);
+    NodePtr HandleIF(const NodePtr &node);
 
     bool isOperand();
     bool isOperator(Token t);

@@ -19,7 +19,10 @@ NodePtr ASTParser::parse() {
 
         // Add as child or sibling based on the type
         if (type != Node::Type::OTHER) {
+
+            if (!isDataType(newNode->value.value())) {
             addToAST(newNode, LeftChild);
+            }
             if (isDataType(newNode->value.value())) {
                 parseTypeDec(currCstNode);
             }
@@ -80,13 +83,15 @@ NodePtr ASTParser::parse() {
 }
 NodePtr ASTParser::parseTypeDec(NodePtr &currCstNode) {
     NodePtr rootSubTreeNode = currCstNode;
+    currCstNode= currCstNode->Right();
+//    cout<<"In Type Dec "<<currCstNode->Value().value()<<endl;
+    //currCstNode = currCstNode->Right();
 
-    currCstNode = currCstNode->Right();
     while (currCstNode->value.value() != ";") {
-        if (currCstNode->value.value() == ",")
-            addToAST(make_shared<Node>(currCstNode->Value(),
-                                       Node::Type::DECLARATION),
-                     LeftChild);
+//        cout<<"Adding variable with value: "<<currCstNode->Value().value()<<endl;
+        if (currCstNode->value.value() != ",") {
+        addToAST(make_shared<Node>(currCstNode->Value(),Node::Type::DECLARATION),LeftChild);
+        }
         currCstNode = currCstNode->Right();
     }
     return rootSubTreeNode;
@@ -209,6 +214,7 @@ NodePtr ASTParser::parseAssignment(NodePtr &currCstNode) {
 }
 
 void ASTParser::addToAST(NodePtr node, InsertionMode mode) {
+
     node->leftChild = nullptr;
     node->rightSibling = nullptr;
     if (!root) {

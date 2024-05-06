@@ -76,10 +76,19 @@ int main(int argc, char *argv[]) {
     auto astRoot = astParser.parse();
 
     // Optionally print the AST using a similar method
-    output.PrintAST(astRoot);
+    //output.PrintAST(astRoot);
+
+//    while(astRoot != nullptr){
+//        cout<<astRoot->Value().value();
+//        if(astRoot->Right() !=nullptr){
+//            astRoot =astRoot->Right();
+//        }
+//        else{astRoot = astRoot->Left();
+//        cout<<endl;}
+//    }
 
     // Using the AST & Symbol Table roots, interpret the file
-    //Interpreter interpret(astRoot, symTableRoot);
+    Interpreter interpret(astRoot, symTableRoot);
     
     return 0;
 }
