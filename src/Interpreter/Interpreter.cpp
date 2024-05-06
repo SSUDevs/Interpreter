@@ -375,6 +375,8 @@ int Interpreter::getSymbolTableValue (const string &name, int index /*default 0*
         }
     }
 
+
+
     return currTable->GetValue()[index];
 }
 
@@ -383,7 +385,7 @@ void Interpreter::updateSymbolTable(const string &name, int value, int index /*d
     // Will be used in assignments
     SymTblPtr tempRoot = rootTable;
 
-    if(ParseSymbolTables(tempRoot, name, value, index)){
+    if(UpdateTable(tempRoot, name, value, index)){
         return;
     }
     else{
@@ -393,7 +395,7 @@ void Interpreter::updateSymbolTable(const string &name, int value, int index /*d
 
 }
 
-bool Interpreter::ParseSymbolTables(SymTblPtr root,const string &name,int value, int index){
+bool Interpreter::UpdateTable(SymTblPtr root,const string &name,int value, int index){
     if(root ==nullptr){
         return false;
     }
@@ -401,6 +403,104 @@ bool Interpreter::ParseSymbolTables(SymTblPtr root,const string &name,int value,
         root->setValue(value, index);
         return true;
     }
-    return ParseSymbolTables(root->GetNextTable(),name,value,index);
+    return UpdateTable(root->GetNextTable(),name,value,index);
 
 }
+
+void Interpreter::ExecutePrintF(NodePtr Node) {
+    cout<<"Executing printf ..."<<endl;
+    //copy of original node
+    NodePtr currNode = Node;
+
+    //first node should be printf so the next one will contain the string
+    currNode = currNode ->Right();
+
+    //obtain the string value from the node
+    string printStatement = currNode->Value().value();
+
+    //move the currnode to either a nullptr or first argument
+    currNode = currNode ->Right();
+
+    vector<string> arguments;
+    int arg_Index=0;
+
+    //go until the end of the printf statement
+    while(currNode!=nullptr){
+
+        //if the value is a string argument add the to the corresponding vector
+        if(currNode->Value().type() == Token::Type::Identifier){
+            arguments.push_back(currNode->Value().value());
+        }
+        //if the value is a int argument add the to the corresponding vector
+
+        currNode = currNode->Right();
+    }
+
+    //if both vectors are empty then no arguments were used so just print the string and exit function
+    if(arguments.empty()){
+        cout<<printStatement<<endl;
+        return;
+    }
+
+    //we do have arguments passed so parse the print statement printing character by character
+    //if we come across a % check the next character to print the right argument
+    //if we see a \ then check for an n to add space character
+    for(int i=0;i < printStatement.size();i++){
+        if(printStatement.at(i) =='%'){
+            i++;
+            if(printStatement.at(i) =='d'){
+                cout<<getSymbolTableValue(arguments.at(arg_Index))<<" ";
+                arg_Index++;
+            }
+            if(printStatement.at(i) =='s'){
+                SymTblPtr currTable = rootTable;
+                while (currTable->GetName() != arguments.at(arg_Index)) {
+                    currTable = currTable->GetNextTable();
+                    if (currTable == nullptr) {
+                        throw std::runtime_error("No Symbol Table for " +
+                                                 arguments.at(arg_Index));
+                    }
+                }
+
+                vector<int> astring= currTable->GetValue();
+                for(int i=0;i<astring.size();i++){
+                    if(astring.at(i)=='\\'){
+                        i++;
+                        if(astring.at(i)=='x'){
+                            i++;
+                            if(astring.at(i)=='0'){
+                                break;
+                            }
+                        }
+                    }
+                    cout<<astring.at(i);
+                }
+                arg_Index++;
+
+
+            }else{
+                exit(411);
+            }
+
+        }
+        if(printStatement.at(i) =='\\'){
+            i++;
+            if(printStatement.at(i) =='n'){
+                cout<<" ";
+            }else{
+                exit(412);
+            }
+
+        }
+        else{
+            cout<<printStatement[i];
+        }
+    }
+    cout<<endl;
+
+    cout<<"Done executing printf"<<endl;
+    return;
+
+}
+
+
