@@ -25,6 +25,9 @@ class Interpreter {
     int getSymbolTableValue(const string &name, int index = 0);
     SymTblPtr getSymbolTable(const string &name);
 
+    NodePtr findFunct (const string name);
+    int findNumParamsOfFunct(const string name);
+
     void executeIF();
 
     bool isOperand(Token t);

@@ -125,6 +125,21 @@ NodePtr Interpreter::peekNext(NodePtr node) {
     return node->Right() ? node->Right() : node->Left();
 }
 
+int Interpreter::findNumParamsOfFunct(const string name) {
+    SymTblPtr currTable = rootTable;
+    int count = 0;
+    while (currTable) {
+        currTable = currTable->GetNextTable();
+        if (currTable->GetIdType() == SymbolTable::IDType::parameterList) {
+            if (currTable->procOrFuncName() == name) {
+                count++;
+            }
+        }
+    }
+
+    return count;
+}
+
 void Interpreter::executeAssignment(NodePtr node) {
     cout << "Executing Assignment" << endl;
 
@@ -270,8 +285,16 @@ int Interpreter::evaluateExpression(NodePtr exprRoot, const NodePtr endCase /*de
                 }
                 else {
                     string id = currentNode->Value().value();
-                    evalStack.push(getSymbolTableValue(id));
+                    SymTblPtr table = getSymbolTable(id);
 
+                    if (table->GetIdType() == SymbolTable::IDType::function) {
+                        int numParams = findNumParamsOfFunct(id);
+
+
+                    }
+                    else {
+                        evalStack.push(getSymbolTableValue(id));
+                    }
                 }
             }
             else {
@@ -282,11 +305,15 @@ int Interpreter::evaluateExpression(NodePtr exprRoot, const NodePtr endCase /*de
                 else if (currentNode->Value().type() == Token::Type::BooleanFalse) {
                     evalStack.push(0);
                 }
-//                else if (currentNode->Value().type() == Token::Type::SingleQuotedString ||
-//                         currentNode->Value().type() == Token::Type::DoubleQuotedString) {
-//                    if (currentNode->Value().value().size() != 3)
-//                        _globalErrorHandler.handle(36, currentNode->Value().lineNum());
-//                }
+                else if (currentNode->Value().type() == Token::Type::SingleQuotedString ||
+                         currentNode->Value().type() == Token::Type::DoubleQuotedString) {
+                    // check that is a single char (string of size 1 + quotes)
+                    if (currentNode->Value().value().size() != 3)
+                        _globalErrorHandler.handle(36, currentNode->Value().lineNum());
+
+                    int ascii = currentNode->Value().value()[1];
+                    evalStack.push(ascii);
+                }
                 else {
                     evalStack.push(stoi(currentNode->Value().value()));
                 }
@@ -532,7 +559,6 @@ void Interpreter::executePrintF(NodePtr Node) {
     //if we come across a % check the next character to print the right argument
     //if we see a \ then check for an n to add space character
     for(int i=0;i < printStatement.size();i++){
-
         if(printStatement.at(i) =='%'){
             i++;
             if(printStatement.at(i) =='d'){
@@ -581,7 +607,7 @@ void Interpreter::executePrintF(NodePtr Node) {
         }
         else{
             if(printStatement[i] !='"')
-            cout<<printStatement[i];
+                cout<<printStatement[i];
         }
     }
     cout<<endl;
