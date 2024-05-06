@@ -532,13 +532,14 @@ void Interpreter::executePrintF(NodePtr Node) {
     //if we come across a % check the next character to print the right argument
     //if we see a \ then check for an n to add space character
     for(int i=0;i < printStatement.size();i++){
+
         if(printStatement.at(i) =='%'){
             i++;
             if(printStatement.at(i) =='d'){
                 cout<<getSymbolTableValue(arguments.at(arg_Index))<<" ";
                 arg_Index++;
             }
-            if(printStatement.at(i) =='s'){
+            else if(printStatement.at(i) =='s'){
                 SymTblPtr currTable = rootTable;
                 while (currTable->GetName() != arguments.at(arg_Index)) {
                     currTable = currTable->GetNextTable();
@@ -569,7 +570,7 @@ void Interpreter::executePrintF(NodePtr Node) {
             }
 
         }
-        if(printStatement.at(i) =='\\'){
+        else if(printStatement.at(i) =='\\'){
             i++;
             if(printStatement.at(i) =='n'){
                 cout<<" ";
@@ -579,6 +580,7 @@ void Interpreter::executePrintF(NodePtr Node) {
 
         }
         else{
+            if(printStatement[i] !='"')
             cout<<printStatement[i];
         }
     }
