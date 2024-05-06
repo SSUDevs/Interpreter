@@ -87,6 +87,9 @@ NodePtr Interpreter::iteratePC() {
             if (currTable->isArray()) {
                 currTable->setValueSize(currTable->GetArraySize());
             }
+            else {
+                currTable->setValueSize(1);
+            }
         }
             break;
         case Node::Type::ASSIGNMENT:
@@ -185,17 +188,17 @@ int Interpreter::evaluateExpression(NodePtr exprRoot, const NodePtr endCase /*de
         if (isOperand(currentNode->Value())) {
             if (currentNode->Value().type() == Token::Type::Identifier) {
                 // handle array access cases
-                if (peekNext(currentNode)->Value().type() == Token::Type::LBracket) {
+                if (currentNode->Right()->Value().type() == Token::Type::LBracket) {
                     string id = currentNode->Value().value();
 
                     // set current node to beginning of inside []
-                    currentNode = peekNext(peekNext(currentNode));
+                    currentNode = currentNode->Right()->Right();
 
                     NodePtr temp = currentNode;
 
                     // skip to end bracket
                     while (currentNode->Value().type() != Token::Type::RBracket) {
-                        currentNode = peekNext(currentNode);
+                        currentNode = currentNode->Right();
                     }
 
                     int arrayIdx = evaluateExpression(temp, currentNode);
@@ -204,7 +207,7 @@ int Interpreter::evaluateExpression(NodePtr exprRoot, const NodePtr endCase /*de
                     evalStack.push(getSymbolTableValue(id, arrayIdx));
 
                     // start on next part of expression
-                    currentNode = peekNext(currentNode);
+                    currentNode = currentNode->Right();
                 }
                 else {
                     if (currentNode->Value().type() == Token::Type::Identifier) {
