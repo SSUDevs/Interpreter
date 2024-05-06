@@ -20,7 +20,7 @@ class Interpreter {
 
     NodePtr findMain(const NodePtr &astroot, const SymTblPtr &symroot);
     void executeAssignment(NodePtr node);
-    int evaluateExpression(NodePtr exprRoot, NodePtr endCase = nullptr);
+    int evaluateExpression(NodePtr exprRoot, NodePtr endCase = nullptr, bool inAssignment = false);
     void updateSymbolTable(const string &name, int value, int index = 0);
     int getSymbolTableValue(const string &name, int index = 0);
 
@@ -28,7 +28,7 @@ class Interpreter {
 
     bool isOperand(Token t);
     bool isOperator(Token t);
-    int applyOperator(Token::Type op, int left, int right);
+    int applyOperator(Token::Type op, int left, int right, bool inAssignment = false);
     bool ParseSymbolTables(SymTblPtr root,const string &name,int value, int index);
 
     int getValue(string id, int elementNum = 0);
@@ -37,7 +37,6 @@ class Interpreter {
     SymTblPtr rootTable;
     NodePtr astRoot;
 
-    bool inAssignmnet = false;
 
     NodePtr PC;
 

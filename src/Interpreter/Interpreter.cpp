@@ -123,16 +123,14 @@ NodePtr Interpreter::peekNext(NodePtr node) {
 
 void Interpreter::executeAssignment(NodePtr node) {
     cout << "Executing Assignment" << endl;
-    inAssignmnet = true;
     auto variableName = node->Value().value();
     auto expression = node->Right();
-    int result = evaluateExpression(expression);
+    int result = evaluateExpression(expression, nullptr,true);
     updateSymbolTable(variableName, result);
-    inAssignmnet = false;
 }
 
 // Applying the Add/Sub operators based on Token Type
-int Interpreter::applyOperator(Token::Type op, int left, int right) {
+int Interpreter::applyOperator(Token::Type op, int left, int right, bool inAssignment /*default false*/) {
     switch (op) {
     case Token::Type::Plus:
         return left + right;
@@ -163,7 +161,7 @@ int Interpreter::applyOperator(Token::Type op, int left, int right) {
     case Token::Type::GtEqual:
         return left >= right;
     case Token::Type::AssignmentOperator:
-        if (!inAssignmnet){
+        if (!inAssignment){
             _globalErrorHandler.handle(33, PC->Value().lineNum());
         }
         // just return the right side of the equals, then evalExp will return it too
@@ -174,7 +172,8 @@ int Interpreter::applyOperator(Token::Type op, int left, int right) {
     }
 }
 
-int Interpreter::evaluateExpression(NodePtr exprRoot, const NodePtr endCase /*default is nullptr*/) {
+int Interpreter::evaluateExpression(NodePtr exprRoot, const NodePtr endCase /*default is nullptr*/, const bool inAssignment/*default is false*/)
+{
 
     cout << "Evaluating Expression" << endl;
     // Current stack being evaluated
@@ -182,6 +181,34 @@ int Interpreter::evaluateExpression(NodePtr exprRoot, const NodePtr endCase /*de
 
     // Use the root of the expression
     NodePtr currentNode = exprRoot;
+
+    // add first identifier to stack separately in case of assignment
+    // it will be added as 0, as evalExp doesn't handle actual assigning
+    if (inAssignment) {
+        if (currentNode->Value().type() != Token::Type::Identifier) {
+            _globalErrorHandler.handle(34, currentNode->Value().lineNum());
+        }
+        if (currentNode->Right()->Value().type() == Token::Type::LBracket) {
+            string id = currentNode->Value().value();
+
+            // set current node to beginning of inside []
+            currentNode = currentNode->Right()->Right();
+
+            // skip to end bracket
+            while (currentNode->Value().type() != Token::Type::RBracket) {
+                currentNode = currentNode->Right();
+            }
+
+
+            // push array access
+            evalStack.push(0);
+
+            // start on next part of expression
+            currentNode = currentNode->Right();
+        }
+        else
+            evalStack.push(0);
+    }
 
     while (currentNode != endCase) {
         cout << "Parsing" << " " << currentNode->Value().value()  << endl;
@@ -201,6 +228,7 @@ int Interpreter::evaluateExpression(NodePtr exprRoot, const NodePtr endCase /*de
                         currentNode = currentNode->Right();
                     }
 
+
                     int arrayIdx = evaluateExpression(temp, currentNode);
 
                     // push array access
@@ -210,13 +238,9 @@ int Interpreter::evaluateExpression(NodePtr exprRoot, const NodePtr endCase /*de
                     currentNode = currentNode->Right();
                 }
                 else {
-                    if (currentNode->Value().type() == Token::Type::Identifier) {
-                        string id = currentNode->Value().value();
-                        getSymbolTableValue(id);
-                    }
-                    else {
-                        evalStack.push(stoi(currentNode->Value().value()));
-                    }
+                    string id = currentNode->Value().value();
+                    evalStack.push(getSymbolTableValue(id));
+
                 }
             }
             else {
@@ -226,6 +250,9 @@ int Interpreter::evaluateExpression(NodePtr exprRoot, const NodePtr endCase /*de
                 }
                 else if (currentNode->Value().type() == Token::Type::BooleanFalse) {
                     evalStack.push(0);
+                }
+                else {
+                    evalStack.push(stoi(currentNode->Value().value()));
                 }
             }
 
@@ -245,7 +272,7 @@ int Interpreter::evaluateExpression(NodePtr exprRoot, const NodePtr endCase /*de
                 int left = evalStack.top();
                 evalStack.pop();
                 int result =
-                    applyOperator(op, left, right);
+                    applyOperator(op, left, right, inAssignment);
                 evalStack.push(result);
             }
         }
@@ -263,16 +290,23 @@ bool Interpreter::isOperand(Token t) {
 }
 
 bool Interpreter::isOperator(Token t) {
-    if (t.type() == Token::Type::Plus || t.type() == Token::Type::Minus
-        || t.type() == Token::Type::Slash || t.type() ==
-        Token::Type::Asterisk || t.type() == Token::Type::Modulo || t.type()
-         == Token::Type::Caret || t.type() == Token::Type::Lt || t.type() ==
-         Token::Type::Gt || t.type() == Token::Type::LtEqual || t.type() ==
-         Token::Type::GtEqual || t.type() == Token::Type::BooleanAnd ||
-         t.type() == Token::Type::BooleanOr ||
-         t.type() == Token::Type::BooleanNot ||
-         t.type() == Token::Type::BooleanEqual ||
-         t.type() == Token::Type::BooleanNotEqual
+    if (
+            t.type() == Token::Type::Plus ||
+            t.type() == Token::Type::Minus||
+            t.type() == Token::Type::Slash ||
+            t.type() == Token::Type::Asterisk ||
+            t.type() == Token::Type::Modulo ||
+            t.type() == Token::Type::Caret ||
+            t.type() == Token::Type::Lt ||
+            t.type() == Token::Type::Gt ||
+            t.type() == Token::Type::LtEqual ||
+            t.type() == Token::Type::GtEqual ||
+            t.type() == Token::Type::BooleanAnd ||
+            t.type() == Token::Type::BooleanOr ||
+            t.type() == Token::Type::BooleanNot ||
+            t.type() == Token::Type::BooleanEqual ||
+            t.type() == Token::Type::BooleanNotEqual ||
+            t.type() == Token::Type::AssignmentOperator
         )
         return true;
     return false;

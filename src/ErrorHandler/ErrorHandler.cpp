@@ -163,4 +163,8 @@ void ErrorHandler::initializeErrorHandlers() {
         logError(line, "Error 33: Can only do assignments in assignment statements", msg1, msg2);
         exit(33);
     };
+    errorHandlers[34] = [this](int line, const std::string& msg1, const std::string& msg2) {
+        logError(line, "Error 34: Expected identifier for start of assignment", msg1, msg2);
+        exit(34);
+    };
 }
