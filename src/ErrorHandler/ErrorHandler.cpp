@@ -171,4 +171,8 @@ void ErrorHandler::initializeErrorHandlers() {
         logError(line, "Error 35: Expected string literal for assignment", msg1, msg2);
         exit(35);
     };
+    errorHandlers[36] = [this](int line, const std::string& msg1, const std::string& msg2) {
+        logError(line, "Error 36: Expected string literal of size 1", msg1, msg2);
+        exit(36);
+    };
 }

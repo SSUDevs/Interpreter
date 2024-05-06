@@ -105,6 +105,9 @@ NodePtr Interpreter::iteratePC() {
         case Node::Type::WHILE:
             executeWhile();
             break;
+        case Node::Type::PRINTF:
+            executePrintF(PC);
+            break;
         default:
             break;
     }
@@ -124,10 +127,34 @@ NodePtr Interpreter::peekNext(NodePtr node) {
 
 void Interpreter::executeAssignment(NodePtr node) {
     cout << "Executing Assignment" << endl;
+
+    bool stringMode = false;
     auto variableName = node->Value().value();
-    auto expression = node->Right();
-    int result = evaluateExpression(expression, nullptr,true);
-    updateSymbolTable(variableName, result);
+
+    SymTblPtr table = getSymbolTable(node->Value().value());
+
+    if (table->isArray() && table->GetDataType() == "char")
+        stringMode = true;
+
+    NodePtr nextNode = node->Right()->Right();
+
+    // handle string assignment manually
+    if (stringMode) {
+        if (nextNode->Value().type() != Token::Type::DoubleQuotedString &&
+            nextNode->Value().type() != Token::Type::SingleQuotedString)
+            _globalErrorHandler.handle(35, nextNode->Value().lineNum());
+
+        // update symbol table and ignore quotes
+        for (int i = 1; i < nextNode->Value().value().size() - 1; ++i) {
+            updateSymbolTable(variableName, nextNode->Value().value()[i], i);
+        }
+
+    }
+    else {
+        auto expression = node->Right();
+        int result = evaluateExpression(expression, nullptr,true);
+        updateSymbolTable(variableName, result);
+    }
 }
 
 // Applying the Add/Sub operators based on Token Type
@@ -177,6 +204,7 @@ int Interpreter::evaluateExpression(NodePtr exprRoot, const NodePtr endCase /*de
 {
 
     cout << "Evaluating Expression" << endl;
+
     // Current stack being evaluated
     stack<int> evalStack;
 
@@ -207,8 +235,10 @@ int Interpreter::evaluateExpression(NodePtr exprRoot, const NodePtr endCase /*de
             // start on next part of expression
             currentNode = currentNode->Right();
         }
-        else
+        else {
             evalStack.push(0);
+        }
+
     }
 
     while (currentNode != endCase) {
@@ -252,6 +282,11 @@ int Interpreter::evaluateExpression(NodePtr exprRoot, const NodePtr endCase /*de
                 else if (currentNode->Value().type() == Token::Type::BooleanFalse) {
                     evalStack.push(0);
                 }
+//                else if (currentNode->Value().type() == Token::Type::SingleQuotedString ||
+//                         currentNode->Value().type() == Token::Type::DoubleQuotedString) {
+//                    if (currentNode->Value().value().size() != 3)
+//                        _globalErrorHandler.handle(36, currentNode->Value().lineNum());
+//                }
                 else {
                     evalStack.push(stoi(currentNode->Value().value()));
                 }
@@ -458,7 +493,7 @@ void Interpreter::executeWhile() {
 }
 
 
-void Interpreter::ExecutePrintF(NodePtr Node) {
+void Interpreter::executePrintF(NodePtr Node) {
     cout<<"Executing printf ..."<<endl;
     //copy of original node
     NodePtr currNode = Node;
@@ -554,4 +589,15 @@ void Interpreter::ExecutePrintF(NodePtr Node) {
 
 }
 
+SymTblPtr Interpreter::getSymbolTable(const std::string &name) {
+    SymTblPtr currTable = rootTable;
+    while (currTable->GetName() != name) {
+        currTable = currTable->GetNextTable();
+        if (currTable == nullptr) {
+            throw std::runtime_error("No Symbol Table for " +
+                                     name);
+        }
+    }
 
+    return currTable;
+}
