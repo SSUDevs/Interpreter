@@ -49,9 +49,9 @@ int main(int argc, char *argv[]) {
 
     // Retrieve and print tokens
     vector<Token> tokens = tokenizer.getTokens();
-    //        for (const auto &token : tokens) {
-    //            token.print();
-    //        }
+//            for (const auto &token : tokens) {
+//                token.print();
+//            }
 
     //     Use the Parser to parse the tokenized input
     Parser parser(tokens);
@@ -78,8 +78,17 @@ int main(int argc, char *argv[]) {
     // Optionally print the AST using a similar method
     //output.PrintAST(astRoot);
 
+//    while (astRoot != nullptr){
+//        cout<<astRoot->Value().value()<<" ";
+//        if(astRoot->Right()!=nullptr){
+//            astRoot = astRoot->Right();
+//        }else{
+//            cout<<endl;
+//            astRoot= astRoot->Left();
+//        }
+//    }
     // Using the AST & Symbol Table roots, interpret the file
-    Interpreter interpret(astRoot, symTableRoot);
+    //Interpreter interpret(astRoot, symTableRoot);
     
     return 0;
 }

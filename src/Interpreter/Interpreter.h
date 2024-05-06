@@ -29,8 +29,8 @@ class Interpreter {
     bool isOperand(Token t);
     bool isOperator(Token t);
     int applyOperator(Token::Type op, int left, int right, bool inAssignment = false);
-    bool ParseSymbolTables(SymTblPtr root,const string &name,int value, int index);
-
+    bool UpdateTable(SymTblPtr root,const string &name,int value, int index);
+    void ExecutePrintF(NodePtr Node);
     int getValue(string id, int elementNum = 0);
 
   private:
