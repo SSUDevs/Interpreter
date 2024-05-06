@@ -2,6 +2,8 @@
 // Created by Evan on 4/24/2024.
 //
 #include "Interpreter.h"
+#include "../ErrorHandler/ErrorHandler.h"
+#include <cmath>
 
 Interpreter::Interpreter(const NodePtr &astRoot, const SymTblPtr &symTblRoot) {
     // rootTable = symTblRoot;
@@ -18,6 +20,7 @@ Interpreter::Interpreter(const NodePtr &astRoot, const SymTblPtr &symTblRoot) {
         iteratePC();
     }
 
+    cout << "Finished Execution" << endl;
 
 }
 
@@ -55,8 +58,6 @@ NodePtr Interpreter::findMain(const NodePtr &astroot,
 
 NodePtr Interpreter::iteratePC() {
 
-    cout << "Iterating" << " " << PC->Value().value()  << endl;
-
     if (!PC)
         return nullptr; // Safety check
 
@@ -84,12 +85,11 @@ NodePtr Interpreter::iteratePC() {
 
             // if an array set value to an array of the declared size
             if (currTable->isArray()) {
-                currTable->setValueToVector(vector<any>(currTable->GetArraySize()));
+                currTable->setValueSize(currTable->GetArraySize());
             }
         }
             break;
         case Node::Type::ASSIGNMENT:
-
             // Execute an assignment statement
             executeAssignment(PC);
             break;
@@ -119,10 +119,13 @@ NodePtr Interpreter::peekNext(NodePtr node) {
 }
 
 void Interpreter::executeAssignment(NodePtr node) {
-    auto variableName = node->Left()->Value().value();
+    cout << "Executing Assignment" << endl;
+    inAssignmnet = true;
+    auto variableName = node->Value().value();
     auto expression = node->Right();
     int result = evaluateExpression(expression);
     updateSymbolTable(variableName, result);
+    inAssignmnet = false;
 }
 
 // Applying the Add/Sub operators based on Token Type
@@ -132,31 +135,116 @@ int Interpreter::applyOperator(Token::Type op, int left, int right) {
         return left + right;
     case Token::Type::Minus:
         return left - right;
-    // Add other operators
+    case Token::Type::Asterisk:
+        return left * right;
+    case Token::Type::Slash:
+        return left / right;
+    case Token::Type::Modulo:
+        return left % right;
+    case Token::Type::Caret:
+        return pow(left, right);
+    case Token::Type::BooleanAnd:
+        return left && right;
+    case Token::Type::BooleanOr:
+        return left || right;
+    case Token::Type::BooleanEqual:
+        return left == right;
+    case Token::Type::BooleanNotEqual:
+        return left != right;
+    case Token::Type::Lt:
+        return left < right;
+    case Token::Type::Gt:
+        return left > right;
+    case Token::Type::LtEqual:
+        return left <= right;
+    case Token::Type::GtEqual:
+        return left >= right;
+    case Token::Type::AssignmentOperator:
+        if (!inAssignmnet){
+            _globalErrorHandler.handle(33, PC->Value().lineNum());
+        }
+        // just return the right side of the equals, then evalExp will return it too
+        return right;
+
     default:
         throw std::runtime_error("Unsupported operator");
     }
 }
 
-int Interpreter::evaluateExpression(NodePtr exprRoot) {
+int Interpreter::evaluateExpression(NodePtr exprRoot, const NodePtr endCase /*default is nullptr*/) {
+
+    cout << "Evaluating Expression" << endl;
     // Current stack being evaluated
     stack<int> evalStack;
 
     // Use the root of the expression
     NodePtr currentNode = exprRoot;
 
-    while (currentNode) {
-        if (isOperator(currentNode->Value())) {
-            evalStack.push(stoi(currentNode->Value().value()));
+    while (currentNode != endCase) {
+        cout << "Parsing" << " " << currentNode->Value().value()  << endl;
+        if (isOperand(currentNode->Value())) {
+            if (currentNode->Value().type() == Token::Type::Identifier) {
+                // handle array access cases
+                if (peekNext(currentNode)->Value().type() == Token::Type::LBracket) {
+                    string id = currentNode->Value().value();
+
+                    // set current node to beginning of inside []
+                    currentNode = peekNext(peekNext(currentNode));
+
+                    NodePtr temp = currentNode;
+
+                    // skip to end bracket
+                    while (currentNode->Value().type() != Token::Type::RBracket) {
+                        currentNode = peekNext(currentNode);
+                    }
+
+                    int arrayIdx = evaluateExpression(temp, currentNode);
+
+                    // push array access
+                    evalStack.push(getSymbolTableValue(id, arrayIdx));
+
+                    // start on next part of expression
+                    currentNode = peekNext(currentNode);
+                }
+                else {
+                    if (currentNode->Value().type() == Token::Type::Identifier) {
+                        string id = currentNode->Value().value();
+                        getSymbolTableValue(id);
+                    }
+                    else {
+                        evalStack.push(stoi(currentNode->Value().value()));
+                    }
+                }
+            }
+            else {
+                // push token values, with true/false mapping
+                if (currentNode->Value().type() == Token::Type::BooleanTrue) {
+                    evalStack.push(1);
+                }
+                else if (currentNode->Value().type() == Token::Type::BooleanFalse) {
+                    evalStack.push(0);
+                }
+            }
+
         } else {
-            // In postfix order first get right then left
-            int right = evalStack.top();
-            evalStack.pop();
-            int left = evalStack.top();
-            evalStack.pop();
-            int result =
-                applyOperator(currentNode->Value().type(), left, right);
-            evalStack.push(result);
+
+            Token::Type op = currentNode->Value().type();
+
+            if (op == Token::Type::BooleanNot) {    // only unary case
+                int operand = evalStack.top();
+                evalStack.pop();
+                evalStack.push(!operand);
+            }
+            else {
+                // In postfix order first get right then left
+                int right = evalStack.top();
+                evalStack.pop();
+                int left = evalStack.top();
+                evalStack.pop();
+                int result =
+                    applyOperator(op, left, right);
+                evalStack.push(result);
+            }
         }
 
         currentNode = currentNode->Right();
@@ -166,22 +254,23 @@ int Interpreter::evaluateExpression(NodePtr exprRoot) {
 }
 
 // Determine if the node represents an operand
-bool Interpreter::isOperand() {
-    return isOperator(this->astRoot->Value());
+bool Interpreter::isOperand(Token t) {
+    return !isOperator(t);
     // Just lookin for plus and minus right now for simplicty
 }
 
 bool Interpreter::isOperator(Token t) {
-    if (t.type() == Token::Type::Plus || t.type() == Token::Type::Minus)
-        // || t.type() == Token::Type::Slash || t.type() ==
-        // Token::Type::Asterisk || t.type() == Token::Type::Modulo || t.type()
-        // == Token::Type::Caret || t.type() == Token::Type::Lt || t.type() ==
-        // Token::Type::Gt || t.type() == Token::Type::LtEqual || t.type() ==
-        // Token::Type::GtEqual || t.type() == Token::Type::BooleanAnd ||
-        // t.type() == Token::Type::BooleanOr ||
-        // t.type() == Token::Type::BooleanNot ||
-        // t.type() == Token::Type::BooleanEqual ||
-        // t.type() == Token::Type::BooleanNotEqual)
+    if (t.type() == Token::Type::Plus || t.type() == Token::Type::Minus
+        || t.type() == Token::Type::Slash || t.type() ==
+        Token::Type::Asterisk || t.type() == Token::Type::Modulo || t.type()
+         == Token::Type::Caret || t.type() == Token::Type::Lt || t.type() ==
+         Token::Type::Gt || t.type() == Token::Type::LtEqual || t.type() ==
+         Token::Type::GtEqual || t.type() == Token::Type::BooleanAnd ||
+         t.type() == Token::Type::BooleanOr ||
+         t.type() == Token::Type::BooleanNot ||
+         t.type() == Token::Type::BooleanEqual ||
+         t.type() == Token::Type::BooleanNotEqual
+        )
         return true;
     return false;
 }
@@ -239,13 +328,25 @@ void Interpreter::executeIF() {
 
 }
 
+int Interpreter::getSymbolTableValue (const string &name, int index /*default 0*/) {
+    SymTblPtr currTable = rootTable;
+    while (currTable->GetName() != name) {
+        currTable = currTable->GetNextTable();
+        if (currTable == nullptr) {
+            throw std::runtime_error("No Symbol Table for " +
+                                     name);
+        }
+    }
 
-void Interpreter::updateSymbolTable(const string &name, int value) {
+    return currTable->GetValue()[index];
+}
+
+void Interpreter::updateSymbolTable(const string &name, int value, int index /*default 0*/) {
     // Needs logic to update the symbol table entry for 'name' with 'value'
     // Will be used in assignments
     SymTblPtr tempRoot = rootTable;
 
-      if(ParseSymbolTables(tempRoot, name, value)){
+    if(ParseSymbolTables(tempRoot, name, value, index)){
         return;
     }
     else{
@@ -255,14 +356,14 @@ void Interpreter::updateSymbolTable(const string &name, int value) {
 
 }
 
-bool Interpreter::ParseSymbolTables(SymTblPtr root,const string &name,int value){
+bool Interpreter::ParseSymbolTables(SymTblPtr root,const string &name,int value, int index){
     if(root ==nullptr){
         return false;
     }
     if(root->GetName()==name){
-        root->GetValue()=value;
+        root->setValue(value, index);
         return true;
     }
-    return ParseSymbolTables(root->GetNextTable(),name,value);
+    return ParseSymbolTables(root->GetNextTable(),name,value,index);
 
 }

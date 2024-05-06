@@ -646,14 +646,8 @@ void Parser::parseAssignmentStatement() {
         token.type() == Token::Type::DoubleQuotedString) {
         token = getToken();
         addToCST(createNodePtr(token), RightSibling);
-    } else if (token.type() == Token::Type::Integer ||
-               token.type() == Token::Type::WholeNumber ||
-               token.type() == Token::Type::HexDigit ||
-               token.type() == Token::Type::Digit) {
-        token = getToken();
-        addToCST(createNodePtr(token), RightSibling);
-
-    } else {
+    }
+    else {
         parseExpression();
     }
 

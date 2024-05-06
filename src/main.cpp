@@ -76,10 +76,10 @@ int main(int argc, char *argv[]) {
     auto astRoot = astParser.parse();
 
     // Optionally print the AST using a similar method
-    output.PrintAST(astRoot);
+    //output.PrintAST(astRoot);
 
     // Using the AST & Symbol Table roots, interpret the file
-    //Interpreter interpret(astRoot, symTableRoot);
+    Interpreter interpret(astRoot, symTableRoot);
     
     return 0;
 }

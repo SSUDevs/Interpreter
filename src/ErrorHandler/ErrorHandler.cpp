@@ -157,6 +157,10 @@ void ErrorHandler::initializeErrorHandlers() {
     };
     errorHandlers[32] = [this](int line, const std::string& msg1, const std::string& msg2) {
         logError(line, "Error 32: Expected semicolon or comma", msg1, msg2);
-        exit(31);
+        exit(32);
+    };
+    errorHandlers[33] = [this](int line, const std::string& msg1, const std::string& msg2) {
+        logError(line, "Error 33: Can only do assignments in assignment statements", msg1, msg2);
+        exit(33);
     };
 }

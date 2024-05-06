@@ -20,20 +20,24 @@ class Interpreter {
 
     NodePtr findMain(const NodePtr &astroot, const SymTblPtr &symroot);
     void executeAssignment(NodePtr node);
-    int evaluateExpression(NodePtr exprRoot);
-    void updateSymbolTable(const string &name, int value);
+    int evaluateExpression(NodePtr exprRoot, NodePtr endCase = nullptr);
+    void updateSymbolTable(const string &name, int value, int index = 0);
+    int getSymbolTableValue(const string &name, int index = 0);
 
     void executeIF();
 
-    bool isOperand();
+    bool isOperand(Token t);
     bool isOperator(Token t);
     int applyOperator(Token::Type op, int left, int right);
-    bool ParseSymbolTables(SymTblPtr root,const string &name,int value);
+    bool ParseSymbolTables(SymTblPtr root,const string &name,int value, int index);
+
+    int getValue(string id, int elementNum = 0);
 
   private:
     SymTblPtr rootTable;
     NodePtr astRoot;
 
+    bool inAssignmnet = false;
 
     NodePtr PC;
 
