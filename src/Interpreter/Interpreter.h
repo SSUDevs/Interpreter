@@ -33,6 +33,9 @@ class Interpreter {
     void ExecutePrintF(NodePtr Node);
     int getValue(string id, int elementNum = 0);
 
+    void executeFor();
+    void executeWhile();
+
   private:
     SymTblPtr rootTable;
     NodePtr astRoot;

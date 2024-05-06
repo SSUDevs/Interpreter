@@ -100,9 +100,10 @@ NodePtr Interpreter::iteratePC() {
             executeIF();
             break;
         case Node::Type::FOR:
+            executeFor();
+            break;
         case Node::Type::WHILE:
-            // Control flow handling
-            // handleControlFlow(PC);
+            executeWhile();
             break;
         default:
             break;
@@ -406,6 +407,56 @@ bool Interpreter::UpdateTable(SymTblPtr root,const string &name,int value, int i
     return UpdateTable(root->GetNextTable(),name,value,index);
 
 }
+
+void Interpreter::executeFor() {
+    NodePtr initStmt = PC->Left();
+    NodePtr condition = initStmt->Right();
+    NodePtr updateStmt = condition->Right();
+    NodePtr body = updateStmt->Right();
+
+    executeAssignment(initStmt);
+
+    while (true) {
+        // Evaluate the condition
+        int conditionResult = evaluateExpression(condition);
+        if (!conditionResult) break;
+
+        // Execute the body
+        NodePtr current = body;
+        while (current->getSemanticType() != Node::Type::END_BLOCK) {
+            iteratePC();
+            current = peekNext(current);
+        }
+
+        executeAssignment(updateStmt);
+    }
+
+    // Set PC to the node after END_BLOCK of for loop
+    PC = peekNext(body);
+}
+
+void Interpreter::executeWhile() {
+    NodePtr condition = PC->Right();
+    NodePtr body = condition->Right();
+
+
+    while (true) {
+        // Evaluate the condition
+        int conditionResult = evaluateExpression(condition);
+        if (!conditionResult) break;
+
+        // Execute the body
+        NodePtr current = body;
+        while (current->getSemanticType() != Node::Type::END_BLOCK) {
+            iteratePC();
+            current = peekNext(current);
+        }
+    }
+
+    // Set PC to the node after END_BLOCK of while loop
+    PC = peekNext(body);
+}
+
 
 void Interpreter::ExecutePrintF(NodePtr Node) {
     cout<<"Executing printf ..."<<endl;
