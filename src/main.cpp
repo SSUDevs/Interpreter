@@ -88,7 +88,7 @@ int main(int argc, char *argv[]) {
 //        }
 //    }
     // Using the AST & Symbol Table roots, interpret the file
-    //Interpreter interpret(astRoot, symTableRoot);
+    Interpreter interpret(astRoot, symTableRoot);
     
     return 0;
 }

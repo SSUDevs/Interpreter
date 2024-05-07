@@ -35,13 +35,13 @@ class SymbolTable {
     void setValue(int newVal , int index = 0) {
         if (_dataType == "bool") {
             if (newVal != 0) {
-                _value[index] = 1;
+                _value.at(index) = 1;
             }
             else {
-                _value[index] = 0;
+                _value.at(index) = 0;
             }
         }
-            _value[index] = newVal;
+            _value.at(index) = newVal;
     }
 
     string GetName() const { return _idName; }
@@ -52,6 +52,7 @@ class SymbolTable {
     int GetArraySize() const { return _arraySize; }
     int GetScope() const { return _scope; }
     SymTblPtr GetNextTable() const { return nextTable; }
+    bool GetIsDeclared() const {return _isDeclared; }
     std::string procOrFuncName() { return _procOrFuncName; }
 
 

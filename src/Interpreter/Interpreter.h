@@ -23,6 +23,12 @@ class Interpreter {
     int evaluateExpression(NodePtr exprRoot, NodePtr endCase = nullptr, bool inAssignment = false);
     void updateSymbolTable(const string &name, int value, int index = 0);
     int getSymbolTableValue(const string &name, int index = 0);
+    SymTblPtr getSymbolTable(const string &name);
+    SymTblPtr getSymbolTableByScope(const int scope);
+
+    NodePtr findFunctOrProcStart (const string name);
+    int findNumParamsOfFunctOrProc(const string name);
+    SymTblPtr getNthParamOfFuntOrProc (const string name, int num);
 
     void executeIF();
 
@@ -30,16 +36,20 @@ class Interpreter {
     bool isOperator(Token t);
     int applyOperator(Token::Type op, int left, int right, bool inAssignment = false);
     bool UpdateTable(SymTblPtr root,const string &name,int value, int index);
-    void ExecutePrintF(NodePtr Node);
-    int getValue(string id, int elementNum = 0);
+    void executePrintF(NodePtr Node);
+    void executeFunctionOrProcedureCall();
 
     void executeFor();
     void executeWhile();
+
+    void executeDeclaration(string variable);
+    void executeReturn ();
 
   private:
     SymTblPtr rootTable;
     NodePtr astRoot;
 
+    stack<int> scopeStack;
 
     NodePtr PC;
 

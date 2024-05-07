@@ -388,7 +388,14 @@ void Parser::parseFunctionArguments() {
                     expectToken(Token::Type::RBracket, "Expected ']'");
                 addToCST(rBracketNode, RightSibling);
             }
-        } else {
+        }
+        else if (argToken.type() == Token::Type::Integer ||
+                 argToken.type() == Token::Type::SingleQuotedString ||
+                 argToken.type() == Token::Type::DoubleQuotedString) {
+            // Add the literal
+            addToCST(createNodePtr(getToken()), RightSibling);
+        }
+        else {
             _globalErrorHandler.handle(7, argToken.lineNum());
         }
 
