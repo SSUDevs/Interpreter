@@ -80,6 +80,7 @@ void Interpreter::executeDeclaration(string variable) {
 
 NodePtr Interpreter::iteratePC() {
 
+
     if (!PC)
         return nullptr; // Safety check
 
@@ -471,10 +472,13 @@ void Interpreter::executeIF() {
         while (PC->getSemanticType() != Node::Type::END_BLOCK){
             iteratePC();
         }
-        PC = peekNext(PC);  // skip end block
 
 
-        if (PC->getSemanticType() == Node::Type::ELSE) {
+
+        if (peekNext(PC)->getSemanticType() == Node::Type::ELSE) {
+
+            PC = peekNext(PC);  // skip end block
+
             cout << "skip else" << endl;
             // skip over else block
             while (PC->getSemanticType() != Node::Type::END_BLOCK) {
@@ -483,7 +487,6 @@ void Interpreter::executeIF() {
 
 
             //step past end block of else
-            PC = peekNext(PC);
         }
 
 
@@ -495,11 +498,13 @@ void Interpreter::executeIF() {
         while (PC->getSemanticType() != Node::Type::END_BLOCK) {
             PC = peekNext(PC);
         }
-        //step past end block of if
-        PC = peekNext(PC);
+
 
         //look for else
-        if (PC->getSemanticType() == Node::Type::ELSE) {
+        if (peekNext(PC)->getSemanticType() == Node::Type::ELSE) {
+            //step past end block of if
+            PC = peekNext(PC);
+
             cout << "entering else" << endl;
             while (PC->getSemanticType() != Node::Type::END_BLOCK){
                 iteratePC();
@@ -773,11 +778,19 @@ void Interpreter::executeFunctionOrProcedureCall() {
     while (scopeCheck == scopeStack.top()) {
         iteratePC();
     }
+
 }
 
 void Interpreter::executeReturn() {
     cout << "Executing return" << endl;
-    int retValue = stoi(PC->Right()->Value().value());
+    int retValue;
+
+    if (PC->Right()->Value().type() == Token::Type::Identifier){
+        retValue = getSymbolTableValue(PC->Right()->Value().value());
+    }
+    else {
+        retValue = stoi(PC->Right()->Value().value());
+    }
 
     string tblID = getSymbolTableByScope(scopeStack.top())->GetName();
 
