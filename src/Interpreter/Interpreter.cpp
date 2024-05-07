@@ -123,6 +123,7 @@ NodePtr Interpreter::iteratePC() {
             break;
     }
 
+
     // Move to next node by default (override in control flow handling)
     PC = PC->Right() ? PC->Right() : PC->Left();
 
@@ -202,6 +203,7 @@ void Interpreter::executeAssignment(NodePtr node) {
                 }
             }
 
+
             updateSymbolTable(variableName, nextNode->Value().value().at(i), i-1);
         }
 
@@ -214,6 +216,7 @@ void Interpreter::executeAssignment(NodePtr node) {
             expression = node->Right();
         int result = evaluateExpression(expression, nullptr,true);
         updateSymbolTable(variableName, result);
+
     }
 }
 
@@ -372,15 +375,19 @@ int Interpreter::evaluateExpression(NodePtr exprRoot, const NodePtr endCase /*de
 
                                     // skip argIndex
                                     currentNode = currentNode->Right();
-                                    // skip ] to next node
-                                    currentNode = currentNode->Right();
 
                                     updateSymbolTable(currParamTbl->GetName(),
                                                       getSymbolTableValue(identifier->Value().value(), argIndex));
+
+
                                 }
-                                else
+                                else{
                                     updateSymbolTable(currParamTbl->GetName(),
-                                                  getSymbolTableValue(currentNode->Value().value(), argIndex));
+                                                      getSymbolTableValue(currentNode->Value().value(), argIndex));
+                                }
+
+
+
 
                             }
                             else {
@@ -402,7 +409,6 @@ int Interpreter::evaluateExpression(NodePtr exprRoot, const NodePtr endCase /*de
                         // exec function
                         executeFunctionOrProcedureCall();
                         currentNode = PC;
-
 
                     }
                     evalStack.push(getSymbolTableValue(id));
@@ -498,6 +504,10 @@ void Interpreter::executeIF() {
 
     if (result != 0) {      // execute if block and skip the else (if it exists)
 
+        while (PC->getSemanticType() != Node::Type::BEGIN_BLOCK){
+            PC = peekNext(PC);
+        }
+
         cout << "entering if" << endl;
 
         choseIf = true;
@@ -546,6 +556,7 @@ void Interpreter::executeIF() {
 
 
     cout << "exiting if" << endl;
+
 }
 
 int Interpreter::getSymbolTableValue (const string &name, int index /*default 0*/) {
@@ -560,7 +571,7 @@ int Interpreter::getSymbolTableValue (const string &name, int index /*default 0*
 
 
 
-    return currTable->GetValue()[index];
+    return currTable->GetValue().at(index);
 }
 
 void Interpreter::updateSymbolTable(const string &name, int value, int index /*default 0*/) {
@@ -851,7 +862,11 @@ void Interpreter::executeReturn() {
         retValue = stoi(PC->Right()->Value().value());
     }
 
+
+
     string tblID = getSTofFuncOrProcByScope(scopeStack.top())->GetName();
+
+
 
     // store return value in value of func/proc
     executeDeclaration(tblID);
