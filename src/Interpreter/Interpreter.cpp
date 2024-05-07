@@ -419,43 +419,53 @@ void Interpreter::executeFor() {
     while (true) {
         // Evaluate the condition
         int conditionResult = evaluateExpression(condition);
-        if (!conditionResult) break;
+        if (conditionResult == 0) break;
 
         // Execute the body
         NodePtr current = body;
-        while (current->getSemanticType() != Node::Type::END_BLOCK) {
+        pc_stack.push(PC);
+        while (current != nullptr && current->getSemanticType() != Node::Type::END_BLOCK) {
+            PC = current;
             iteratePC();
             current = peekNext(current);
         }
+        PC = pc_stack.top();
+        pc_stack.pop();
 
+        // Execute the update statement at the end of each loop iteration
         executeAssignment(updateStmt);
     }
 
-    // Set PC to the node after END_BLOCK of for loop
-    PC = peekNext(body);
+    // Move PC past the for loop
+    PC = peekNext(body->Right());  // Assuming body->Right() is END_BLOCK
 }
+
 
 void Interpreter::executeWhile() {
     NodePtr condition = PC->Right();
     NodePtr body = condition->Right();
 
-
     while (true) {
         // Evaluate the condition
         int conditionResult = evaluateExpression(condition);
-        if (!conditionResult) break;
+        if (conditionResult == 0) break;
 
         // Execute the body
         NodePtr current = body;
-        while (current->getSemanticType() != Node::Type::END_BLOCK) {
+        pc_stack.push(PC);  // Save the current location
+        while (current != nullptr && current->getSemanticType() != Node::Type::END_BLOCK) {
+            PC = current;
             iteratePC();
             current = peekNext(current);
         }
+        PC = pc_stack.top();  // Restore PC to the start of the loop
+        pc_stack.pop();
     }
 
-    // Set PC to the node after END_BLOCK of while loop
-    PC = peekNext(body);
+    // Move PC past the while loop
+    PC = peekNext(body->Right());
 }
+
 
 
 void Interpreter::ExecutePrintF(NodePtr Node) {
