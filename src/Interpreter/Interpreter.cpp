@@ -12,7 +12,7 @@ Interpreter::Interpreter(const NodePtr &astRoot, const SymTblPtr &symTblRoot) {
     scopeStack.push(0);
 
     // locate main in AST
-    this->PC = findMain(astRoot, rootTable);
+    this->PC = findFunctOrProcStart("main");
     cout << "MAIN FOUND AT LINE NUM: " << this->PC->Value().lineNum() << endl;
 
     PC = peekNext(PC);
