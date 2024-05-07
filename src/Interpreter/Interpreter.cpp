@@ -17,7 +17,7 @@ Interpreter::Interpreter(const NodePtr &astRoot, const SymTblPtr &symTblRoot) {
 
     PC = peekNext(PC);
     // start execution of program
-    while (PC != nullptr) {
+    while (peekNext(PC) != nullptr) {
         iteratePC();
     }
 
@@ -94,7 +94,6 @@ NodePtr Interpreter::iteratePC() {
                 pc_stack.pop();
                 scopeStack.pop();
             }
-
             break;
         case Node::Type::DECLARATION:
             executeDeclaration(PC->Value().value());
@@ -566,7 +565,6 @@ void Interpreter::executeIF() {
         }
     }
 
-
     cout << "exiting if" << endl;
 
 }
@@ -647,7 +645,7 @@ void Interpreter::executeFor() {
     executeAssignment(initStmt);
 
 
-    while (evaluateExpression(condition)) {
+    while (evaluateExpression(condition) ) {
 
         PC = body;
 
@@ -661,9 +659,12 @@ void Interpreter::executeFor() {
 
 
     // Move PC past the for loop
-    PC = peekNext(PC);  // Assuming body->Right() is END_BLOCK
+    //PC = peekNext(PC);  // Assuming body->Right() is END_BLOCK
+
+    cout << "!!!!!: " << PC->Value().value() << " " << PC->Value().lineNum()<< endl;
 
     cout << "Exiting For" << endl;
+
 }
 
 void Interpreter::executeWhile() {
@@ -879,7 +880,7 @@ void Interpreter::executeFunctionOrProcedureCall() {
     while (scopeCheck == scopeStack.top()) {
         iteratePC();
     }
-
+    cout << "Finished function/procedure" << endl;
 }
 
 void Interpreter::executeReturn() {
