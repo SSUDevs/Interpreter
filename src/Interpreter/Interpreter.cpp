@@ -197,7 +197,11 @@ void Interpreter::executeAssignment(NodePtr node) {
 
     }
     else {
-        auto expression = node->Right();
+
+        NodePtr expression = node;
+
+        if (node->getSemanticType() == Node::Type::ASSIGNMENT)
+            expression = node->Right();
         int result = evaluateExpression(expression, nullptr,true);
         updateSymbolTable(variableName, result);
     }
@@ -341,13 +345,31 @@ int Interpreter::evaluateExpression(NodePtr exprRoot, const NodePtr endCase /*de
                                     if (currentNode->Right()->Value().type() != Token::Type::LBracket){
                                         _globalErrorHandler.handle(38, currentNode->Value().lineNum());
                                     }
+
+                                    // save identifier
+                                    NodePtr identifier = currentNode;
+                                    // pass identifier
+                                    currentNode = currentNode->Right();
                                     // pass [
                                     currentNode = currentNode->Right();
-                                    argIndex = stoi(currentNode->Value().value());
+
+                                    if (currentNode->Value().type() == Token::Type::Identifier){
+                                        argIndex = getSymbolTableValue(currentNode->Value().value());
+                                    }
+                                    else {
+                                        argIndex = stoi(currentNode->Value().value());
+                                    }
+
+                                    // skip argIndex
+                                    currentNode = currentNode->Right();
                                     // skip ] to next node
                                     currentNode = currentNode->Right();
+
+                                    updateSymbolTable(currParamTbl->GetName(),
+                                                      getSymbolTableValue(identifier->Value().value(), argIndex));
                                 }
-                                updateSymbolTable(currParamTbl->GetName(),
+                                else
+                                    updateSymbolTable(currParamTbl->GetName(),
                                                   getSymbolTableValue(currentNode->Value().value(), argIndex));
 
                             }
@@ -559,35 +581,56 @@ bool Interpreter::UpdateTable(SymTblPtr root,const string &name,int value, int i
 }
 
 void Interpreter::executeFor() {
-    NodePtr initStmt = PC->Left();
-    NodePtr condition = initStmt->Right();
-    NodePtr updateStmt = condition->Right();
-    NodePtr body = updateStmt->Right();
+
+    cout << "Entering For" << endl;
+    PC = peekNext(PC);
+
+    // grab initial statement
+    NodePtr initStmt = peekNext(PC);  // skip to var name
+
+
+    // skip to condition
+    while (PC->Right()){
+        PC = PC->Right();
+    }
+
+
+    NodePtr condition = PC->Left()->Right();
+    PC = condition;
+
+    // skip to update statement
+    while (PC->Right())
+        PC = PC->Right();
+    NodePtr updateStmt = PC->Left()->Right();
+
+
+    // skip to body
+    while (peekNext(PC)->getSemanticType() != Node::Type::BEGIN_BLOCK) {
+        PC = peekNext(PC);
+    }
+
+    NodePtr body = peekNext(PC);
 
     executeAssignment(initStmt);
 
-    while (true) {
-        // Evaluate the condition
-        int conditionResult = evaluateExpression(condition);
-        if (conditionResult == 0) break;
 
-        // Execute the body
-        NodePtr current = body;
-        pc_stack.push(PC);
-        while (current != nullptr && current->getSemanticType() != Node::Type::END_BLOCK) {
-            PC = current;
+    while (evaluateExpression(condition)) {
+
+        cout << getSymbolTableValue("i") << endl;
+
+        PC = body;
+
+        while (peekNext(PC)->getSemanticType() != Node::Type::END_BLOCK) {
             iteratePC();
-            current = peekNext(current);
         }
-        PC = pc_stack.top();
-        pc_stack.pop();
 
-        // Execute the update statement at the end of each loop iteration
         executeAssignment(updateStmt);
+
     }
 
+
     // Move PC past the for loop
-    PC = peekNext(body->Right());  // Assuming body->Right() is END_BLOCK
+    PC = peekNext(PC);  // Assuming body->Right() is END_BLOCK
 }
 
 void Interpreter::executeWhile() {
@@ -657,7 +700,7 @@ void Interpreter::executePrintF(NodePtr Node) {
         if(printStatement.at(i) =='%'){
             i++;
             if(printStatement.at(i) =='d'){
-                cout<<getSymbolTableValue(arguments.at(arg_Index))<<" ";
+                cout<<getSymbolTableValue(arguments.at(arg_Index));
                 arg_Index++;
             }
             else if(printStatement.at(i) =='s'){
