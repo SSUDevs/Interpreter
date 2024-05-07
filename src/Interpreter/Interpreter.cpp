@@ -89,6 +89,7 @@ NodePtr Interpreter::iteratePC() {
         case Node::Type::BEGIN_BLOCK:
             break;
         case Node::Type::END_BLOCK: // return to last PC in stack
+            cout << PC->Value().value() << PC->Value().lineNum() << endl;
             if (!pc_stack.empty()) {
                 this->PC = pc_stack.top();
                 pc_stack.pop();
@@ -494,6 +495,10 @@ bool Interpreter::isOperator(Token t) {
 
 void Interpreter::executeIF() {
 
+    cout << "EXECUTING IF" << endl;
+
+    int bCount = 0;
+
     bool choseIf = false;
 
     PC = PC->Right();
@@ -523,7 +528,11 @@ void Interpreter::executeIF() {
 
             cout << "skip else" << endl;
             // skip over else block
-            while (PC->getSemanticType() != Node::Type::END_BLOCK) {
+            while (!(PC->getSemanticType() == Node::Type::END_BLOCK && bCount == 0)) {
+                if (PC->getSemanticType() == Node::Type::BEGIN_BLOCK)
+                    bCount++;
+                if (PC->getSemanticType() == Node::Type::END_BLOCK)
+                    bCount--;
                 PC = peekNext(PC);
             }
 
@@ -537,7 +546,11 @@ void Interpreter::executeIF() {
 
         cout << "skip if" << endl;
         // skip over if block
-        while (PC->getSemanticType() != Node::Type::END_BLOCK) {
+        while (!(PC->getSemanticType() == Node::Type::END_BLOCK && bCount == 0)) {
+            if (PC->getSemanticType() == Node::Type::BEGIN_BLOCK)
+                bCount++;
+            if (PC->getSemanticType() == Node::Type::END_BLOCK)
+                bCount--;
             PC = peekNext(PC);
         }
 
