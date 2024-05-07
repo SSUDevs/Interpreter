@@ -270,7 +270,7 @@ Token Tokenizer::getToken() {
                     currentChar)) { // Keep appending as long as its a number
                 tokenValue += currentChar;
             } else if (!(isOperator(currentChar) || isspace(currentChar) ||
-                         currentChar == ';' || currentChar == ')' || currentChar ==']') ||
+                         currentChar == ';' || currentChar == ')' || currentChar ==']' || currentChar ==',') ||
                        isalpha(currentChar)) {
                 std::cerr << "Syntax error on line " << _lineNum
                           << ": invalid Integer\n";

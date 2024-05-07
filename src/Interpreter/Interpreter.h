@@ -24,9 +24,11 @@ class Interpreter {
     void updateSymbolTable(const string &name, int value, int index = 0);
     int getSymbolTableValue(const string &name, int index = 0);
     SymTblPtr getSymbolTable(const string &name);
+    SymTblPtr getSymbolTableByScope(const int scope);
 
-    NodePtr findFunct (const string name);
-    int findNumParamsOfFunct(const string name);
+    NodePtr findFunctOrProcStart (const string name);
+    int findNumParamsOfFunctOrProc(const string name);
+    SymTblPtr getNthParamOfFuntOrProc (const string name, int num);
 
     void executeIF();
 
@@ -35,14 +37,19 @@ class Interpreter {
     int applyOperator(Token::Type op, int left, int right, bool inAssignment = false);
     bool UpdateTable(SymTblPtr root,const string &name,int value, int index);
     void executePrintF(NodePtr Node);
+    void executeFunctionOrProcedureCall();
 
     void executeFor();
     void executeWhile();
+
+    void executeDeclaration(string variable);
+    void executeReturn ();
 
   private:
     SymTblPtr rootTable;
     NodePtr astRoot;
 
+    stack<int> scopeStack;
 
     NodePtr PC;
 

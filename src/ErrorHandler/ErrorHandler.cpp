@@ -175,4 +175,12 @@ void ErrorHandler::initializeErrorHandlers() {
         logError(line, "Error 36: Expected string literal of size 1", msg1, msg2);
         exit(36);
     };
+    errorHandlers[37] = [this](int line, const std::string& msg1, const std::string& msg2) {
+        logError(line, "Error 37: Couldn't find parameter for function or procedure call", msg1, msg2);
+        exit(37);
+    };
+    errorHandlers[38] = [this](int line, const std::string& msg1, const std::string& msg2) {
+        logError(line, "Error 38: Expected array access", msg1, msg2);
+        exit(38);
+    };
 }
