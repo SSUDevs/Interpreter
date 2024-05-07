@@ -23,6 +23,7 @@ Interpreter::Interpreter(const NodePtr &astRoot, const SymTblPtr &symTblRoot) {
     // locate main in AST
     this->PC = findFunctOrProcStart("main");
     debug << "MAIN FOUND AT LINE NUM: " << this->PC->Value().lineNum() << endl;
+    scopeStack.push(getSymbolTable("main", 0, true)->GetScope());
 
     PC = peekNext(PC);
     // start execution of program
@@ -219,7 +220,7 @@ int Interpreter::findNumParamsOfFunctOrProc(const string name) {
     return count;
 }
 
-SymTblPtr Interpreter::getNthParamOfFuntOrProc(const string name, int num) {
+SymTblPtr Interpreter::getNthParamOfFuntOrProc(const string name, int num, int scope) {
     SymTblPtr currTable = rootTable;
     int count = 0;
 
@@ -246,7 +247,7 @@ void Interpreter::executeAssignment(NodePtr node) {
     bool stringMode = false;
     auto variableName = node->Value().value();
 
-    SymTblPtr table = getSymbolTable(node->Value().value());
+    SymTblPtr table = getSymbolTable(node->Value().value(), scopeStack.top());
 
     if (table->isArray() && table->GetDataType() == "char")
         stringMode = true;
@@ -271,8 +272,7 @@ void Interpreter::executeAssignment(NodePtr node) {
                 }
             }
 
-            updateSymbolTable(variableName, nextNode->Value().value().at(i),
-                              i - 1);
+            updateSymbolTable(variableName, nextNode->Value().value().at(i), i - 1, scopeStack.top());
         }
 
     } else {
@@ -289,7 +289,7 @@ void Interpreter::executeAssignment(NodePtr node) {
         debug << "Updating symbol table for variableName: " << variableName
              << " and result:  " << result << endl
              << endl;
-        updateSymbolTable(variableName, result);
+        updateSymbolTable(variableName, result, 0, scopeStack.top());
     }
 }
 
@@ -401,13 +401,13 @@ int Interpreter::evaluateExpression(
                     int arrayIdx = evaluateExpression(temp, currentNode);
 
                     // push array access
-                    evalStack.push(getSymbolTableValue(id, arrayIdx));
+                    evalStack.push(getSymbolTableValue(id, arrayIdx, scopeStack.top()));
 
                     // start on next part of expression
                     currentNode = currentNode->Right();
                 } else {
                     string id = currentNode->Value().value();
-                    SymTblPtr table = getSymbolTable(id);
+                    SymTblPtr table = getSymbolTable(id, scopeStack.top());
 
                     if (table->GetIdType() == SymbolTable::IDType::function) {
 
@@ -420,7 +420,7 @@ int Interpreter::evaluateExpression(
                         for (int i = 1; i <= numParams; ++i) {
 
                             SymTblPtr currParamTbl =
-                                getNthParamOfFuntOrProc(id, i);
+                                getNthParamOfFuntOrProc(id, i, scopeStack.top());
 
                             if (!currParamTbl->GetIsDeclared()) {
                                 executeDeclaration(currParamTbl->GetName());
@@ -430,7 +430,7 @@ int Interpreter::evaluateExpression(
                             if (currentNode->Value().type() ==
                                 Token::Type::Identifier) {
                                 SymTblPtr currArgTable = getSymbolTable(
-                                    currentNode->Value().value());
+                                    currentNode->Value().value(), scopeStack.top());
                                 int argIndex = 0;
 
                                 if (currArgTable->isArray()) {
@@ -450,7 +450,7 @@ int Interpreter::evaluateExpression(
                                     if (currentNode->Value().type() ==
                                         Token::Type::Identifier) {
                                         argIndex = getSymbolTableValue(
-                                            currentNode->Value().value());
+                                            currentNode->Value().value(), 0, scopeStack.top());
                                     } else {
                                         argIndex =
                                             stoi(currentNode->Value().value());
@@ -461,22 +461,18 @@ int Interpreter::evaluateExpression(
 
                                     updateSymbolTable(
                                         currParamTbl->GetName(),
-                                        getSymbolTableValue(
-                                            identifier->Value().value(),
-                                            argIndex));
+                                        getSymbolTableValue(identifier->Value().value(),scopeStack.top(),argIndex ), scopeStack.top());
 
                                 } else {
                                     updateSymbolTable(
                                         currParamTbl->GetName(),
-                                        getSymbolTableValue(
-                                            currentNode->Value().value(),
-                                            argIndex));
+                                        getSymbolTableValue(currentNode->Value().value(),scopeStack.top(),argIndex), scopeStack.top());
                                 }
 
                             } else {
                                 updateSymbolTable(
                                     currParamTbl->GetName(),
-                                    stoi(currentNode->Value().value()));
+                                    stoi(currentNode->Value().value()), scopeStack.top());
                             }
 
                             currentNode =
@@ -495,7 +491,7 @@ int Interpreter::evaluateExpression(
                         PC = findFunctOrProcStart(id);
 
                         // change scope
-                        scopeStack.push(getSymbolTable(id)->GetScope());
+                        scopeStack.push(getSymbolTable(id, scopeStack.top(), true)->GetScope());
 
                         // exec function
                         executeFunctionOrProcedureCall();
@@ -508,7 +504,7 @@ int Interpreter::evaluateExpression(
                         }
                         currentNode = PC;
                     }
-                    evalStack.push(getSymbolTableValue(id));
+                    evalStack.push(getSymbolTableValue(id, scopeStack.top()));
                 }
             } else {
                 // push token values, with true/false mapping
@@ -660,10 +656,11 @@ void Interpreter::executeIF() {
         PC = peekNext(PC); // Move past the last END_BLOCK
 }
 
-int Interpreter::getSymbolTableValue(const string &name,
-                                     int index /*default 0*/) {
+int Interpreter::getSymbolTableValue(const string &name,int index /*default 0*/, int scope) {
     SymTblPtr currTable = rootTable;
-    while (currTable->GetName() != name) {
+
+
+    while (currTable->GetName() != name || (currTable->GetScope() != scope && currTable->GetScope() != 0)) {
         currTable = currTable->GetNextTable();
         if (currTable == nullptr) {
             throw std::runtime_error("No Symbol Table for " + name);
@@ -674,12 +671,12 @@ int Interpreter::getSymbolTableValue(const string &name,
 }
 
 void Interpreter::updateSymbolTable(const string &name, int value,
-                                    int index /*default 0*/) {
+                                    int index /*default 0*/, int scope) {
     // Needs logic to update the symbol table entry for 'name' with 'value'
     // Will be used in assignments
     SymTblPtr tempRoot = rootTable;
 
-    if (UpdateTable(tempRoot, name, value, index)) {
+    if (UpdateTable(tempRoot, name, value, index, scope)) {
         return;
     } else {
         debug << "failed to update symbol table value with name (" << name
@@ -689,15 +686,15 @@ void Interpreter::updateSymbolTable(const string &name, int value,
 }
 
 bool Interpreter::UpdateTable(SymTblPtr root, const string &name, int value,
-                              int index) {
+                              int index, int scope) {
     if (root == nullptr) {
         return false;
     }
-    if (root->GetName() == name) {
+    if (root->GetName() == name && (root->GetScope() == scope || root->GetScope() == 0)) {
         root->setValue(value, index);
         return true;
     }
-    return UpdateTable(root->GetNextTable(), name, value, index);
+    return UpdateTable(root->GetNextTable(), name, value, index, scope);
 }
 
 void Interpreter::executeFor() {
@@ -858,7 +855,7 @@ void Interpreter::executePrintF(NodePtr Node) {
         if (printStatement.at(i) == '%') {
             i++;
             if (printStatement.at(i) == 'd') {
-                cout << getSymbolTableValue(arguments.at(arg_Index));
+                cout << getSymbolTableValue(arguments.at(arg_Index), scopeStack.top());
                 arg_Index++;
             } else if (printStatement.at(i) == 's') {
                 SymTblPtr currTable = rootTable;
@@ -881,7 +878,8 @@ void Interpreter::executePrintF(NodePtr Node) {
                             }
                         }
                     }
-                    cout << astring.at(i);
+                    if (astring.at(i) != 0)
+                        cout << static_cast<char>(astring.at(i));
                 }
                 arg_Index++;
 
@@ -944,9 +942,25 @@ NodePtr Interpreter::findFunctOrProcStart(const string name) {
     throw std::runtime_error("Function or Procedure not found.");
 }
 
-SymTblPtr Interpreter::getSymbolTable(const std::string &name) {
+SymTblPtr Interpreter::getSymbolTable(const std::string &name, int scope, bool isProOrFun) {
     SymTblPtr currTable = rootTable;
-    while (currTable->GetName() != name) {
+
+    cout << "HERERER " << name <<" " << scope << endl;
+
+    if (isProOrFun){
+        while (currTable->GetName() != name ||
+               (currTable->GetIdType() != SymbolTable::IDType::procedure && currTable->GetIdType() != SymbolTable::IDType::function))
+        {
+            currTable = currTable->GetNextTable();
+            if (currTable == nullptr) {
+                throw std::runtime_error("No Symbol Table for " + name);
+            }
+        }
+
+        return currTable;
+    }
+
+    while (currTable->GetName() != name || (currTable->GetScope() != scope && currTable->GetScope() != 0)) {
         currTable = currTable->GetNextTable();
         if (currTable == nullptr) {
             throw std::runtime_error("No Symbol Table for " + name);
@@ -1006,7 +1020,8 @@ void Interpreter::executeReturn() {
     int retValue;
 
     if (PC->Right()->Value().type() == Token::Type::Identifier) {
-        retValue = getSymbolTableValue(PC->Right()->Value().value());
+
+        retValue = getSymbolTableValue(PC->Right()->Value().value(), scopeStack.top());
     } else {
         retValue = stoi(PC->Right()->Value().value());
     }

@@ -18,24 +18,24 @@ class Interpreter {
     NodePtr iteratePC();
     NodePtr peekNext(NodePtr node);
 
-    NodePtr findMain(const NodePtr &astroot, const SymTblPtr &symroot);
     void executeAssignment(NodePtr node);
     int evaluateExpression(NodePtr exprRoot, NodePtr endCase = nullptr, bool inAssignment = false);
-    void updateSymbolTable(const string &name, int value, int index = 0);
-    int getSymbolTableValue(const string &name, int index = 0);
-    SymTblPtr getSymbolTable(const string &name);
+
+    void updateSymbolTable(const string &name, int value, int scope, int index = 0);
+    int getSymbolTableValue(const string &name, int scope, int index = 0);
+    SymTblPtr getSymbolTable(const string &name, int scope, bool isProOrFun = false);
     SymTblPtr getSTofFuncOrProcByScope(const int scope);
+    SymTblPtr getNthParamOfFuntOrProc (const string name, int num, int scope);
 
     NodePtr findFunctOrProcStart (const string name);
     int findNumParamsOfFunctOrProc(const string name);
-    SymTblPtr getNthParamOfFuntOrProc (const string name, int num);
 
     void executeIF();
 
     bool isOperand(Token t);
     bool isOperator(Token t);
     int applyOperator(Token::Type op, int left, int right, bool inAssignment = false);
-    bool UpdateTable(SymTblPtr root,const string &name,int value, int index);
+    bool UpdateTable(SymTblPtr root,const string &name,int value, int index, int scope);
     void executePrintF(NodePtr Node);
     void executeFunctionOrProcedureCall();
 
