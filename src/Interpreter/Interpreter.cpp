@@ -17,45 +17,16 @@ Interpreter::Interpreter(const NodePtr &astRoot, const SymTblPtr &symTblRoot) {
 
     PC = peekNext(PC);
     // start execution of program
-    while (peekNext(PC) != nullptr) {
+
+    while (PC != nullptr) {
+        cout << "START with value of: " << PC->Value().value()
+             << " and line number: " << PC->Value().lineNum() << endl
+             << endl;
+
         iteratePC();
     }
 
     cout << "Finished Execution" << endl;
-
-}
-
-// Traverse AST until DECLARATION is found then look in Symbol table that
-// IDENTIFIER_NAME == "main" from token value
-NodePtr Interpreter::findMain(const NodePtr &astroot,
-                              const SymTblPtr &symroot) {
-    NodePtr currAst = astroot;
-    SymTblPtr currTable = symroot;
-
-    while (currAst) {
-        cout << "CURRENT NODE TYPE: "
-             << currAst->semanticTypeToString(currAst->getSemanticType())
-             << endl;
-        cout << "CURRENT NODE VALUE: " << currAst->Value().value() << endl;
-        if (currAst->getSemanticType() == Node::Type::DECLARATION) {
-            // Get next symbol table for each declaration found in AST
-            cout << "FOUND DECLARATION WITH NAME: " << currTable->GetName()
-                 << endl;
-
-            if (currTable->GetName() == "main") {
-                scopeStack.push(currTable->GetScope());
-                return currAst;
-            }
-
-            currTable = currTable->GetNextTable();
-
-            //iterate past tables formed by params
-            while (currTable->GetIdType()== SymbolTable::IDType::parameterList)
-                currTable = currTable->GetNextTable();
-        }
-        currAst = peekNext(currAst);
-    }
-    throw std::runtime_error("Main function not found.");
 }
 
 void Interpreter::executeDeclaration(string variable) {
@@ -63,8 +34,7 @@ void Interpreter::executeDeclaration(string variable) {
     while (currTable->GetName() != variable) {
         currTable = currTable->GetNextTable();
         if (currTable == nullptr) {
-            throw std::runtime_error("No Symbol Table for " +
-                                     variable);
+            throw std::runtime_error("No Symbol Table for " + variable);
         }
     }
     currTable->setDeclared(true);
@@ -72,60 +42,149 @@ void Interpreter::executeDeclaration(string variable) {
     // if an array set value to an array of the declared size
     if (currTable->isArray()) {
         currTable->setValueSize(currTable->GetArraySize());
-    }
-    else {
+    } else {
         currTable->setValueSize(1);
     }
 }
 
 NodePtr Interpreter::iteratePC() {
+    cout << "Iterator " << PC->Value().value() << " " << PC->Value().lineNum()
+         << endl;
+    cout << "Type " << PC->semanticTypeToString(PC->getSemanticType()) << endl;
 
+    if (PC->getSemanticType() == Node::Type::END_BLOCK &&
+        PC->Left() == nullptr) {
+        cout << "! Within iterate PC and if block with PC value of: "
+             << PC->Value().value()
+             << " and line number : " << PC->Value().lineNum() << endl;
+        cout << "!!! Semantic type is: "
+             << PC->semanticTypeToString(PC->getSemanticType()) << endl;
 
-    if (!PC)
-        return nullptr; // Safety check
+        PC = nullptr;
+        return PC;
+    }
+
+    if (!PC) {
+        cout << "NullPTR" << endl;
+        return nullptr;
+    }
 
     // Handling different types of nodes
     switch (PC->getSemanticType()) {
-        case Node::Type::BEGIN_BLOCK:
-            break;
-        case Node::Type::END_BLOCK: // return to last PC in stack
-            if (!pc_stack.empty()) {
-                this->PC = pc_stack.top();
-                pc_stack.pop();
-                scopeStack.pop();
-            }
-            break;
-        case Node::Type::DECLARATION:
-            executeDeclaration(PC->Value().value());
-            break;
-        case Node::Type::ASSIGNMENT:
-            // Execute an assignment statement
-            executeAssignment(PC);
-            break;
-        case Node::Type::IF:    // also handles else
-            executeIF();
-            break;
-        case Node::Type::FOR:
-            executeFor();
-            break;
-        case Node::Type::WHILE:
-            executeWhile();
-            break;
-        case Node::Type::PRINTF:
-            executePrintF(PC);
-            break;
-        case Node::Type::RETURN:
-            executeReturn();
-            scopeStack.pop();
-            break;
-        default:
-            break;
+    case Node::Type::BEGIN_BLOCK:
+        break;
+    case Node::Type::END_BLOCK: // return to last PC in stack
+        cout << endl
+             << endl
+             << "!!!!!! STACK !!!!!!The PC tack is currently: "
+             << pc_stack.top() << endl
+             << endl;
+        if (!pc_stack.empty()) {
+            PC = pc_stack.top();
+            pc_stack.pop();
+            cout << "Returning to previous block, current PC restored to "
+                 << PC->Value().value() << endl;
+        } else {
+            cout << "No more blocks to return to, finishing execution." << endl;
+            PC = nullptr; // Make sure to set PC to nullptr to stop the program
+            return nullptr;
+        }
+        break;
+    case Node::Type::DECLARATION:
+        cout << endl << endl << "Within DECLARATION case" << endl << endl;
+        executeDeclaration(PC->Value().value());
+        cout << endl << endl << "Out of the DECLARATION case" << endl << endl;
+        if (!PC)
+            return nullptr;
+
+        break;
+    case Node::Type::ASSIGNMENT:
+        // Execute an assignment statements
+        cout << endl << endl << "Within ASSIGNMENT case" << endl << endl;
+        executeAssignment(PC);
+        cout << "Out of the ASSIGNMENT case" << endl << endl;
+        if (!PC)
+            return nullptr;
+
+        break;
+    case Node::Type::IF: // also handles else
+        cout << endl << endl << "Within IF case" << endl << endl;
+        executeIF();
+        cout << endl << endl << "Out of the IF case" << endl << endl;
+        if (!PC)
+            return nullptr;
+
+        break;
+    case Node::Type::FOR:
+        cout << endl << endl << "Within FOR case" << endl << endl;
+        executeFor();
+        cout << endl << endl << "Out of the FOR case" << endl << endl;
+        if (!PC)
+            return nullptr;
+
+        break;
+    case Node::Type::WHILE:
+        cout << endl << endl << "Within WHILE case" << endl << endl;
+
+        executeWhile();
+        cout << endl << endl << "Out of the WHILE case" << endl << endl;
+        if (!PC)
+            return nullptr;
+
+        break;
+    case Node::Type::PRINTF:
+        cout << endl << endl << "Within PRINTF case" << endl << endl;
+        executePrintF(PC);
+        cout << endl << endl << "Out of PRINTF case" << endl << endl;
+        if (!PC)
+            return nullptr;
+
+        break;
+    case Node::Type::RETURN:
+        cout << endl << endl << "Within RETURN case" << endl << endl;
+        executeReturn();
+        cout << endl << endl << "Out of the RETURN case" << endl << endl;
+
+        scopeStack.pop();
+        if (!PC)
+            return nullptr;
+
+        break;
+    default:
+        break;
     }
 
-    // Move to next node by default (override in control flow handling)
-    PC = PC->Right() ? PC->Right() : PC->Left();
+    if (PC->getSemanticType() == Node::Type::END_BLOCK &&
+        PC->Left() == nullptr) {
+        cout << "! Within iterate PC and if block with PC value of: "
+             << PC->Value().value()
+             << " and line number : " << PC->Value().lineNum() << endl;
+        cout << "! Semantic type is: "
+             << PC->semanticTypeToString(PC->getSemanticType()) << endl;
 
-    cout << "HELLO " << PC->Value().value() << " " << PC->Value().lineNum()<< endl;
+        PC = nullptr;
+        return PC;
+    }
+    cout << endl
+         << "After Case and within iteratePC with PC value of: "
+         << PC->Value().value()
+         << " and line number : " << PC->Value().lineNum() << endl;
+    cout << "Semantic type is: "
+         << PC->semanticTypeToString(PC->getSemanticType()) << endl;
+
+    cout << "Current PC: " << PC->Value().value()
+         << ", Line Number: " << PC->Value().lineNum() << endl;
+    if (PC != nullptr) {
+        NodePtr nextNode = PC->Right() ? PC->Right() : PC->Left();
+        if (nextNode != nullptr) {
+            PC = nextNode;
+            cout << "Moved PC, now at: " << PC->Value().value()
+                 << ", Line Number: " << PC->Value().lineNum() << endl;
+        } else {
+            cout << "No further nodes to process, ending." << endl;
+            PC = nullptr;
+        }
+    }
 
     return PC;
 }
@@ -153,7 +212,7 @@ int Interpreter::findNumParamsOfFunctOrProc(const string name) {
     return count;
 }
 
-SymTblPtr Interpreter::getNthParamOfFuntOrProc (const string name, int num) {
+SymTblPtr Interpreter::getNthParamOfFuntOrProc(const string name, int num) {
     SymTblPtr currTable = rootTable;
     int count = 0;
 
@@ -173,7 +232,9 @@ SymTblPtr Interpreter::getNthParamOfFuntOrProc (const string name, int num) {
 }
 
 void Interpreter::executeAssignment(NodePtr node) {
-    cout << "Executing Assignment" << endl;
+    cout << endl << endl << "GOING WITHIN executeAssignment" << endl;
+    cout << "Node value of: " << node->Value().value()
+         << " and line number : " << node->Value().lineNum() << endl;
 
     bool stringMode = false;
     auto variableName = node->Value().value();
@@ -203,25 +264,31 @@ void Interpreter::executeAssignment(NodePtr node) {
                 }
             }
 
-
-            updateSymbolTable(variableName, nextNode->Value().value().at(i), i-1);
+            updateSymbolTable(variableName, nextNode->Value().value().at(i),
+                              i - 1);
         }
 
-    }
-    else {
+    } else {
 
         NodePtr expression = node;
 
         if (node->getSemanticType() == Node::Type::ASSIGNMENT)
             expression = node->Right();
-        int result = evaluateExpression(expression, nullptr,true);
-        updateSymbolTable(variableName, result);
 
+        cout << "Now calling evaluateExpression with root for expression "
+             << expression->Value().value()
+             << " and line number : " << PC->Value().lineNum() << endl;
+        int result = evaluateExpression(expression, nullptr, true);
+        cout << "Updating symbol table for variableName: " << variableName
+             << " and result:  " << result << endl
+             << endl;
+        updateSymbolTable(variableName, result);
     }
 }
 
 // Applying the Add/Sub operators based on Token Type
-int Interpreter::applyOperator(Token::Type op, int left, int right, bool inAssignment /*default false*/) {
+int Interpreter::applyOperator(Token::Type op, int left, int right,
+                               bool inAssignment /*default false*/) {
     switch (op) {
     case Token::Type::Plus:
         return left + right;
@@ -252,10 +319,11 @@ int Interpreter::applyOperator(Token::Type op, int left, int right, bool inAssig
     case Token::Type::GtEqual:
         return left >= right;
     case Token::Type::AssignmentOperator:
-        if (!inAssignment){
+        if (!inAssignment) {
             _globalErrorHandler.handle(33, PC->Value().lineNum());
         }
-        // just return the right side of the equals, then evalExp will return it too
+        // just return the right side of the equals, then evalExp will return it
+        // too
         return right;
 
     default:
@@ -263,10 +331,11 @@ int Interpreter::applyOperator(Token::Type op, int left, int right, bool inAssig
     }
 }
 
-int Interpreter::evaluateExpression(NodePtr exprRoot, const NodePtr endCase /*default is nullptr*/, const bool inAssignment/*default is false*/)
-{
+int Interpreter::evaluateExpression(
+    NodePtr exprRoot, const NodePtr endCase /*default is nullptr*/,
+    const bool inAssignment /*default is false*/) {
 
-    cout << "Evaluating Expression" << endl;
+    cout << endl << endl << "GOING WITHIN evaluateExpression" << endl;
 
     // Current stack being evaluated
     stack<int> evalStack;
@@ -291,25 +360,24 @@ int Interpreter::evaluateExpression(NodePtr exprRoot, const NodePtr endCase /*de
                 currentNode = currentNode->Right();
             }
 
-
             // push array access
             evalStack.push(0);
 
             // start on next part of expression
             currentNode = currentNode->Right();
-        }
-        else {
+        } else {
             evalStack.push(0);
         }
-
     }
 
     while (currentNode != endCase) {
-        cout << "Parsing" << " " << currentNode->Value().value()  << endl;
+        cout << "Parsing"
+             << " " << currentNode->Value().value() << endl;
         if (isOperand(currentNode->Value())) {
             if (currentNode->Value().type() == Token::Type::Identifier) {
                 // handle array access cases
-                if (currentNode->Right()->Value().type() == Token::Type::LBracket) {
+                if (currentNode->Right()->Value().type() ==
+                    Token::Type::LBracket) {
                     string id = currentNode->Value().value();
 
                     // set current node to beginning of inside []
@@ -318,10 +386,10 @@ int Interpreter::evaluateExpression(NodePtr exprRoot, const NodePtr endCase /*de
                     NodePtr temp = currentNode;
 
                     // skip to end bracket
-                    while (currentNode->Value().type() != Token::Type::RBracket) {
+                    while (currentNode->Value().type() !=
+                           Token::Type::RBracket) {
                         currentNode = currentNode->Right();
                     }
-
 
                     int arrayIdx = evaluateExpression(temp, currentNode);
 
@@ -330,8 +398,7 @@ int Interpreter::evaluateExpression(NodePtr exprRoot, const NodePtr endCase /*de
 
                     // start on next part of expression
                     currentNode = currentNode->Right();
-                }
-                else {
+                } else {
                     string id = currentNode->Value().value();
                     SymTblPtr table = getSymbolTable(id);
 
@@ -339,24 +406,31 @@ int Interpreter::evaluateExpression(NodePtr exprRoot, const NodePtr endCase /*de
 
                         int numParams = findNumParamsOfFunctOrProc(id);
 
-                        currentNode = currentNode->Right(); // iterate to next node
-                        // get args for params and set the values for the appropriate symbol tables
+                        currentNode =
+                            currentNode->Right(); // iterate to next node
+                        // get args for params and set the values for the
+                        // appropriate symbol tables
                         for (int i = 1; i <= numParams; ++i) {
 
-                            SymTblPtr currParamTbl = getNthParamOfFuntOrProc(id, i);
+                            SymTblPtr currParamTbl =
+                                getNthParamOfFuntOrProc(id, i);
 
                             if (!currParamTbl->GetIsDeclared()) {
                                 executeDeclaration(currParamTbl->GetName());
                             }
 
                             // set table value of param before call
-                            if (currentNode->Value().type() == Token::Type::Identifier) {
-                                SymTblPtr currArgTable = getSymbolTable(currentNode->Value().value());
+                            if (currentNode->Value().type() ==
+                                Token::Type::Identifier) {
+                                SymTblPtr currArgTable = getSymbolTable(
+                                    currentNode->Value().value());
                                 int argIndex = 0;
 
                                 if (currArgTable->isArray()) {
-                                    if (currentNode->Right()->Value().type() != Token::Type::LBracket){
-                                        _globalErrorHandler.handle(38, currentNode->Value().lineNum());
+                                    if (currentNode->Right()->Value().type() !=
+                                        Token::Type::LBracket) {
+                                        _globalErrorHandler.handle(
+                                            38, currentNode->Value().lineNum());
                                     }
 
                                     // save identifier
@@ -366,72 +440,88 @@ int Interpreter::evaluateExpression(NodePtr exprRoot, const NodePtr endCase /*de
                                     // pass [
                                     currentNode = currentNode->Right();
 
-                                    if (currentNode->Value().type() == Token::Type::Identifier){
-                                        argIndex = getSymbolTableValue(currentNode->Value().value());
-                                    }
-                                    else {
-                                        argIndex = stoi(currentNode->Value().value());
+                                    if (currentNode->Value().type() ==
+                                        Token::Type::Identifier) {
+                                        argIndex = getSymbolTableValue(
+                                            currentNode->Value().value());
+                                    } else {
+                                        argIndex =
+                                            stoi(currentNode->Value().value());
                                     }
 
                                     // skip argIndex
                                     currentNode = currentNode->Right();
 
-                                    updateSymbolTable(currParamTbl->GetName(),
-                                                      getSymbolTableValue(identifier->Value().value(), argIndex));
+                                    updateSymbolTable(
+                                        currParamTbl->GetName(),
+                                        getSymbolTableValue(
+                                            identifier->Value().value(),
+                                            argIndex));
 
-
+                                } else {
+                                    updateSymbolTable(
+                                        currParamTbl->GetName(),
+                                        getSymbolTableValue(
+                                            currentNode->Value().value(),
+                                            argIndex));
                                 }
-                                else{
-                                    updateSymbolTable(currParamTbl->GetName(),
-                                                      getSymbolTableValue(currentNode->Value().value(), argIndex));
-                                }
 
-
-
-
-                            }
-                            else {
-                                updateSymbolTable(currParamTbl->GetName(), stoi(currentNode->Value().value()));
+                            } else {
+                                updateSymbolTable(
+                                    currParamTbl->GetName(),
+                                    stoi(currentNode->Value().value()));
                             }
 
-                            currentNode = currentNode->Right(); // iterate to next node
+                            currentNode =
+                                currentNode->Right(); // iterate to next node
                         }
 
                         // push current node on call stack
                         pc_stack.push(currentNode);
-
+                        cout << endl << endl << endl << endl;
+                        cout << "Pushing program counter to make function "
+                                "call. Current node is: "
+                             << currentNode->Value().value() << endl;
+                        cout << "Current PC value is: " << PC->Value().value()
+                             << endl;
                         // find begin block node of function
                         PC = findFunctOrProcStart(id);
 
                         // change scope
-                        scopeStack.push( getSymbolTable(id)->GetScope());
+                        scopeStack.push(getSymbolTable(id)->GetScope());
 
                         // exec function
                         executeFunctionOrProcedureCall();
+                        cout << "Finishing the executeFunctionOrProcedureCall: "
+                             << endl
+                             << endl;
+                        if (!PC) {
+                            cout << "PC is null return " << endl;
+                            return evalStack.top();
+                        }
                         currentNode = PC;
-
                     }
                     evalStack.push(getSymbolTableValue(id));
                 }
-            }
-            else {
+            } else {
                 // push token values, with true/false mapping
                 if (currentNode->Value().type() == Token::Type::BooleanTrue) {
                     evalStack.push(1);
-                }
-                else if (currentNode->Value().type() == Token::Type::BooleanFalse) {
+                } else if (currentNode->Value().type() ==
+                           Token::Type::BooleanFalse) {
                     evalStack.push(0);
-                }
-                else if (currentNode->Value().type() == Token::Type::SingleQuotedString ||
-                         currentNode->Value().type() == Token::Type::DoubleQuotedString) {
+                } else if (currentNode->Value().type() ==
+                               Token::Type::SingleQuotedString ||
+                           currentNode->Value().type() ==
+                               Token::Type::DoubleQuotedString) {
                     // check that is a single char (string of size 1 + quotes)
                     if (currentNode->Value().value().size() != 3)
-                        _globalErrorHandler.handle(36, currentNode->Value().lineNum());
+                        _globalErrorHandler.handle(
+                            36, currentNode->Value().lineNum());
 
                     int ascii = currentNode->Value().value()[1];
                     evalStack.push(ascii);
-                }
-                else {
+                } else {
                     evalStack.push(stoi(currentNode->Value().value()));
                 }
             }
@@ -440,19 +530,17 @@ int Interpreter::evaluateExpression(NodePtr exprRoot, const NodePtr endCase /*de
 
             Token::Type op = currentNode->Value().type();
 
-            if (op == Token::Type::BooleanNot) {    // only unary case
+            if (op == Token::Type::BooleanNot) { // only unary case
                 int operand = evalStack.top();
                 evalStack.pop();
                 evalStack.push(!operand);
-            }
-            else {
+            } else {
                 // In postfix order first get right then left
                 int right = evalStack.top();
                 evalStack.pop();
                 int left = evalStack.top();
                 evalStack.pop();
-                int result =
-                    applyOperator(op, left, right, inAssignment);
+                int result = applyOperator(op, left, right, inAssignment);
                 evalStack.push(result);
             }
         }
@@ -470,24 +558,17 @@ bool Interpreter::isOperand(Token t) {
 }
 
 bool Interpreter::isOperator(Token t) {
-    if (
-            t.type() == Token::Type::Plus ||
-            t.type() == Token::Type::Minus||
-            t.type() == Token::Type::Slash ||
-            t.type() == Token::Type::Asterisk ||
-            t.type() == Token::Type::Modulo ||
-            t.type() == Token::Type::Caret ||
-            t.type() == Token::Type::Lt ||
-            t.type() == Token::Type::Gt ||
-            t.type() == Token::Type::LtEqual ||
-            t.type() == Token::Type::GtEqual ||
-            t.type() == Token::Type::BooleanAnd ||
-            t.type() == Token::Type::BooleanOr ||
-            t.type() == Token::Type::BooleanNot ||
-            t.type() == Token::Type::BooleanEqual ||
-            t.type() == Token::Type::BooleanNotEqual ||
-            t.type() == Token::Type::AssignmentOperator
-        )
+    if (t.type() == Token::Type::Plus || t.type() == Token::Type::Minus ||
+        t.type() == Token::Type::Slash || t.type() == Token::Type::Asterisk ||
+        t.type() == Token::Type::Modulo || t.type() == Token::Type::Caret ||
+        t.type() == Token::Type::Lt || t.type() == Token::Type::Gt ||
+        t.type() == Token::Type::LtEqual || t.type() == Token::Type::GtEqual ||
+        t.type() == Token::Type::BooleanAnd ||
+        t.type() == Token::Type::BooleanOr ||
+        t.type() == Token::Type::BooleanNot ||
+        t.type() == Token::Type::BooleanEqual ||
+        t.type() == Token::Type::BooleanNotEqual ||
+        t.type() == Token::Type::AssignmentOperator)
         return true;
     return false;
 }
@@ -505,28 +586,29 @@ void Interpreter::executeIF() {
     // evaluate expression
     int result = evaluateExpression(PC);
 
+    if (result != 0) { // execute if block and skip the else (if it exists)
+        cout << "Entering IF block" << endl;
 
-
-    if (result != 0) {      // execute if block and skip the else (if it exists)
-
-        while (PC->getSemanticType() != Node::Type::BEGIN_BLOCK){
+        while (PC->getSemanticType() != Node::Type::BEGIN_BLOCK) {
             PC = peekNext(PC);
         }
 
         choseIf = true;
-        while (PC->getSemanticType() != Node::Type::END_BLOCK){
+        while (PC->getSemanticType() != Node::Type::END_BLOCK) {
             iteratePC();
+            if (!PC)
+                return;
         }
 
-
-
         if (peekNext(PC)->getSemanticType() == Node::Type::ELSE) {
+            cout << "Skipping ELSE block" << endl;
 
-            PC = peekNext(PC);  // skip end block
+            PC = peekNext(PC); // skip end block
 
             cout << "skip else" << endl;
             // skip over else block
-            while (bCount > 0 || PC->getSemanticType() != Node::Type::END_BLOCK) {
+            while (bCount > 0 ||
+                   PC->getSemanticType() != Node::Type::END_BLOCK) {
                 PC = peekNext(PC);
                 if (PC->getSemanticType() == Node::Type::BEGIN_BLOCK)
                     bCount++;
@@ -534,13 +616,11 @@ void Interpreter::executeIF() {
                     bCount--;
             }
 
-
-            //step past end block of else
+            // step past end block of else
         }
 
-
-    }
-    else {      // skip if block and execute else block (if it exists)
+    } else { // skip if block and execute else block (if it exists)
+        cout << "Skipping IF block, checking for ELSE" << endl;
 
         // skip over if block
         while (bCount > 0 || PC->getSemanticType() != Node::Type::END_BLOCK) {
@@ -551,64 +631,66 @@ void Interpreter::executeIF() {
                 bCount--;
         }
 
-
-
-        //look for else
+        // look for else
         if (peekNext(PC)->getSemanticType() == Node::Type::ELSE) {
-            //step past end block of if
+            // step past end block of if
             PC = peekNext(PC);
 
             cout << "entering else" << endl;
-            while (PC->getSemanticType() != Node::Type::END_BLOCK){
+            while (PC->getSemanticType() != Node::Type::END_BLOCK) {
                 iteratePC();
+                if (!PC)
+                    return;
             }
         }
     }
 
     cout << "exiting if" << endl;
-
+    cout << endl
+         << "The current PC value of: " << PC->Value().value()
+         << " and line number : " << PC->Value().lineNum() << endl;
+    if (PC)
+        PC = peekNext(PC); // Move past the last END_BLOCK
 }
 
-int Interpreter::getSymbolTableValue (const string &name, int index /*default 0*/) {
+int Interpreter::getSymbolTableValue(const string &name,
+                                     int index /*default 0*/) {
     SymTblPtr currTable = rootTable;
     while (currTable->GetName() != name) {
         currTable = currTable->GetNextTable();
         if (currTable == nullptr) {
-            throw std::runtime_error("No Symbol Table for " +
-                                     name);
+            throw std::runtime_error("No Symbol Table for " + name);
         }
     }
-
-
 
     return currTable->GetValue().at(index);
 }
 
-void Interpreter::updateSymbolTable(const string &name, int value, int index /*default 0*/) {
+void Interpreter::updateSymbolTable(const string &name, int value,
+                                    int index /*default 0*/) {
     // Needs logic to update the symbol table entry for 'name' with 'value'
     // Will be used in assignments
     SymTblPtr tempRoot = rootTable;
 
-    if(UpdateTable(tempRoot, name, value, index)){
+    if (UpdateTable(tempRoot, name, value, index)) {
         return;
-    }
-    else{
-        cout<<"failed to update symbol table value with name ("<<name<<") to value ("<<value<<")"<<endl;
+    } else {
+        cout << "failed to update symbol table value with name (" << name
+             << ") to value (" << value << ")" << endl;
         exit(377);
     }
-
 }
 
-bool Interpreter::UpdateTable(SymTblPtr root,const string &name,int value, int index){
-    if(root ==nullptr){
+bool Interpreter::UpdateTable(SymTblPtr root, const string &name, int value,
+                              int index) {
+    if (root == nullptr) {
         return false;
     }
-    if(root->GetName()==name){
+    if (root->GetName() == name) {
         root->setValue(value, index);
         return true;
     }
-    return UpdateTable(root->GetNextTable(),name,value,index);
-
+    return UpdateTable(root->GetNextTable(), name, value, index);
 }
 
 void Interpreter::executeFor() {
@@ -617,14 +699,12 @@ void Interpreter::executeFor() {
     PC = peekNext(PC);
 
     // grab initial statement
-    NodePtr initStmt = peekNext(PC);  // skip to var name
-
+    NodePtr initStmt = peekNext(PC); // skip to var name
 
     // skip to condition
-    while (PC->Right()){
+    while (PC->Right()) {
         PC = PC->Right();
     }
-
 
     NodePtr condition = PC->Left()->Right();
     PC = condition;
@@ -633,7 +713,6 @@ void Interpreter::executeFor() {
     while (PC->Right())
         PC = PC->Right();
     NodePtr updateStmt = PC->Left()->Right();
-
 
     // skip to body
     while (peekNext(PC)->getSemanticType() != Node::Type::BEGIN_BLOCK) {
@@ -644,112 +723,137 @@ void Interpreter::executeFor() {
 
     executeAssignment(initStmt);
 
+    while (evaluateExpression(condition)) {
+        cout << "While evaluating expression in for loop" << endl
+             << endl
+             << endl;
 
-    while (evaluateExpression(condition) ) {
-
-        PC = body;
+        PC = body; // Proceed after the for-loop
 
         while (peekNext(PC)->getSemanticType() != Node::Type::END_BLOCK) {
             iteratePC();
+            if (!PC)
+                return;
         }
 
         executeAssignment(updateStmt);
-
     }
 
-
     // Move PC past the for loop
-    //PC = peekNext(PC);  // Assuming body->Right() is END_BLOCK
-
-    cout << "!!!!!: " << PC->Value().value() << " " << PC->Value().lineNum()<< endl;
+    PC = peekNext(PC);
 
     cout << "Exiting For" << endl;
-
 }
 
 void Interpreter::executeWhile() {
-    NodePtr condition = PC->Right();
-    NodePtr body = condition->Right();
+    cout << endl << endl << "ENTERING WHILE LOOP" << endl;
 
-    while (true) {
-        // Evaluate the condition
-        int conditionResult = evaluateExpression(condition);
-        if (conditionResult == 0) break;
+    // grab initial statement
+    NodePtr condition = peekNext(PC); // skip to var name
+    cout << "condition is: " << condition->Value().value() << endl;
+    PC = condition;
 
-        // Execute the body
-        NodePtr current = body;
-        pc_stack.push(PC);  // Save the current location
-        while (current != nullptr && current->getSemanticType() != Node::Type::END_BLOCK) {
-            PC = current;
-            iteratePC();
-            current = peekNext(current);
-        }
-        PC = pc_stack.top();  // Restore PC to the start of the loop
-        pc_stack.pop();
+    // skip to body (FOR NOW JUST ONE STATEMENT IN WHILE)
+    while (peekNext(PC)->getSemanticType() != Node::Type::BEGIN_BLOCK) {
+        PC = peekNext(PC);
     }
 
-    // Move PC past the while loop
-    PC = peekNext(body->Right());
+    NodePtr body = peekNext(PC);
+
+    while (evaluateExpression(condition)) {
+        cout << "During evaluating expression in While loop" << endl
+             << endl
+             << endl;
+        PC = body; // Proceed after while loop
+        cout << "PC value for body is now: " << PC->Value().value() << endl;
+
+        while (peekNext(PC)->getSemanticType() != Node::Type::END_BLOCK) {
+            iteratePC();
+            cout << endl << endl << "After IteratePC in While loop" << endl;
+            cout << endl
+                 << "PC value is: " << PC->Value().value()
+                 << " and line number : " << PC->Value().lineNum() << endl;
+
+            if (PC->getSemanticType() == Node::Type::END_BLOCK &&
+                PC->Left() == nullptr) {
+                cout << "! Within iterate PC and if block with PC value of: "
+                     << PC->Value().value()
+                     << " and line number : " << PC->Value().lineNum() << endl;
+                cout << "!! Semantic type is: "
+                     << PC->semanticTypeToString(PC->getSemanticType()) << endl;
+
+                PC = nullptr;
+                return;
+            }
+        }
+    }
+    cout << endl << endl << "After condition is false." << endl;
+    cout << endl
+         << "PC value is: " << PC->Value().value()
+         << " and line number : " << PC->Value().lineNum() << endl;
+
+    // Move PC past the for loop
+    PC = peekNext(PC);
+
+    cout << endl << endl << "EXITING WHILE LOOP" << endl;
 }
 
 void Interpreter::executePrintF(NodePtr Node) {
-    cout<<"Executing printf ..."<<endl;
-    //copy of original node
+    cout << "Executing printf ..." << endl;
+    // copy of original node
     NodePtr currNode = Node;
 
-    //first node should be printf so the next one will contain the string
-    currNode = currNode ->Right();
+    // first node should be printf so the next one will contain the string
+    currNode = currNode->Right();
 
-    //obtain the string value from the node
+    // obtain the string value from the node
     string printStatement = currNode->Value().value();
 
-    //move the currnode to either a nullptr or first argument
-    currNode = currNode ->Right();
+    // move the currnode to either a nullptr or first argument
+    currNode = currNode->Right();
 
     vector<string> arguments;
-    int arg_Index=0;
+    int arg_Index = 0;
 
-    //go until the end of the printf statement
+    // go until the end of the printf statement
 
+    while (currNode != nullptr) {
 
-    while(currNode!=nullptr){
-
-        //if the value is a string argument add the to the corresponding vector
-        if(currNode->Value().type() == Token::Type::Identifier){
+        // if the value is a string argument add the to the corresponding vector
+        if (currNode->Value().type() == Token::Type::Identifier) {
             arguments.push_back(currNode->Value().value());
         }
-        //if the value is a int argument add the to the corresponding vector
+        // if the value is a int argument add the to the corresponding vector
 
         currNode = currNode->Right();
     }
 
-
-    //if both vectors are empty then no arguments were used so just print the string and exit function
-    if(arguments.empty()){
-        for (int i = 1; i < printStatement.size()-1; ++i)
-            cout<<printStatement[i];
+    // if both vectors are empty then no arguments were used so just print the
+    // string and exit function
+    if (arguments.empty()) {
+        for (int i = 1; i < printStatement.size() - 1; ++i)
+            cout << printStatement[i];
         cout << endl;
 
         while (PC->Right())
             PC = PC->Right();
 
-
-        cout<<"Done executing printf"<<endl;
+        cout << "Done executing printf" << endl;
 
         return;
     }
 
-    //we do have arguments passed so parse the print statement printing character by character
-    //if we come across a % check the next character to print the right argument
-    //if we see a \ then check for an n to add space character
-    for(int i=0;i < printStatement.size();i++){
-        if(printStatement.at(i) =='%'){
+    // we do have arguments passed so parse the print statement printing
+    // character by character if we come across a % check the next character to
+    // print the right argument if we see a \ then check for an n to add space
+    // character
+    for (int i = 0; i < printStatement.size(); i++) {
+        if (printStatement.at(i) == '%') {
             i++;
-            if(printStatement.at(i) =='d'){
-                cout<<getSymbolTableValue(arguments.at(arg_Index));
+            if (printStatement.at(i) == 'd') {
+                cout << getSymbolTableValue(arguments.at(arg_Index));
                 arg_Index++;
-            }
-            else if(printStatement.at(i) =='s'){
+            } else if (printStatement.at(i) == 's') {
                 SymTblPtr currTable = rootTable;
                 while (currTable->GetName() != arguments.at(arg_Index)) {
                     currTable = currTable->GetNextTable();
@@ -759,56 +863,50 @@ void Interpreter::executePrintF(NodePtr Node) {
                     }
                 }
 
-                vector<int> astring= currTable->GetValue();
-                for(int i=0;i<astring.size();i++){
-                    if(astring.at(i)=='\\'){
+                vector<int> astring = currTable->GetValue();
+                for (int i = 0; i < astring.size(); i++) {
+                    if (astring.at(i) == '\\') {
                         i++;
-                        if(astring.at(i)=='x'){
+                        if (astring.at(i) == 'x') {
                             i++;
-                            if(astring.at(i)=='0'){
+                            if (astring.at(i) == '0') {
                                 break;
                             }
                         }
                     }
-                    cout<<astring.at(i);
+                    cout << astring.at(i);
                 }
                 arg_Index++;
 
-
-            }else{
+            } else {
                 exit(411);
             }
 
-        }
-        else if(printStatement.at(i) =='\\'){
+        } else if (printStatement.at(i) == '\\') {
             i++;
-            if(printStatement.at(i) =='n'){
-                cout<<" ";
-            }else{
+            if (printStatement.at(i) == 'n') {
+                cout << " ";
+            } else {
                 exit(412);
             }
 
-        }
-        else{
-            if(printStatement[i] !='"')
-                cout<<printStatement[i];
+        } else {
+            if (printStatement[i] != '"')
+                cout << printStatement[i];
         }
     }
-    cout<<endl;
+    cout << endl;
 
-    cout<<"Done executing printf"<<endl;
+    cout << "Done executing printf" << endl;
 
     while (PC->Right())
         PC = PC->Right();
 
-
     return;
-
 }
 
-NodePtr Interpreter::findFunctOrProcStart (const string name) {
+NodePtr Interpreter::findFunctOrProcStart(const string name) {
     cout << "Searching for function/procedure: " << name << endl;
-
 
     NodePtr currNode = astRoot;
     SymTblPtr currTable = rootTable;
@@ -821,7 +919,7 @@ NodePtr Interpreter::findFunctOrProcStart (const string name) {
 
             if (currTable->GetName() == name) {
 
-                while(currNode->getSemanticType() != Node::Type::BEGIN_BLOCK) {
+                while (currNode->getSemanticType() != Node::Type::BEGIN_BLOCK) {
                     currNode = peekNext(currNode);
                 }
 
@@ -830,8 +928,8 @@ NodePtr Interpreter::findFunctOrProcStart (const string name) {
 
             currTable = currTable->GetNextTable();
 
-            //iterate past tables formed by params
-            while (currTable->GetIdType()== SymbolTable::IDType::parameterList)
+            // iterate past tables formed by params
+            while (currTable->GetIdType() == SymbolTable::IDType::parameterList)
                 currTable = currTable->GetNextTable();
         }
         currNode = peekNext(currNode);
@@ -844,8 +942,7 @@ SymTblPtr Interpreter::getSymbolTable(const std::string &name) {
     while (currTable->GetName() != name) {
         currTable = currTable->GetNextTable();
         if (currTable == nullptr) {
-            throw std::runtime_error("No Symbol Table for " +
-                                     name);
+            throw std::runtime_error("No Symbol Table for " + name);
         }
     }
 
@@ -864,8 +961,7 @@ SymTblPtr Interpreter::getSTofFuncOrProcByScope(const int scope) {
 
         currTable = currTable->GetNextTable();
         if (currTable == nullptr) {
-            throw std::runtime_error("No funct or proc for scope " +
-                                     scope);
+            throw std::runtime_error("No funct or proc for scope " + scope);
         }
     }
 
@@ -873,32 +969,42 @@ SymTblPtr Interpreter::getSTofFuncOrProcByScope(const int scope) {
 }
 
 void Interpreter::executeFunctionOrProcedureCall() {
-    cout << "Executing function/procedure" << endl;
+    cout << "Entering function/procedure call..." << endl;
 
-    int scopeCheck = scopeStack.top();
+    // Save curr scope for comparison
+    int initialScope = scopeStack.top();
 
-    while (scopeCheck == scopeStack.top()) {
+    // While in same scope (function has not returned)
+    while (scopeStack.top() == initialScope) {
+        cout << "Current PC before iterating: " << PC->Value().value()
+             << ", Line: " << PC->Value().lineNum() << endl;
         iteratePC();
+        if (!PC)
+            break;
     }
-    cout << "Finished function/procedure" << endl;
+
+    // After returning from function
+    cout << "Exiting function/procedure call..." << endl;
+    // Ensure PC is restored
+    if (!pc_stack.empty()) {
+        PC = pc_stack.top();
+        pc_stack.pop();
+        cout << "PC restored to: " << PC->Value().value()
+             << ", Line: " << PC->Value().lineNum() << endl;
+    }
 }
 
 void Interpreter::executeReturn() {
     cout << "Executing return" << endl;
     int retValue;
 
-    if (PC->Right()->Value().type() == Token::Type::Identifier){
+    if (PC->Right()->Value().type() == Token::Type::Identifier) {
         retValue = getSymbolTableValue(PC->Right()->Value().value());
-    }
-    else {
+    } else {
         retValue = stoi(PC->Right()->Value().value());
     }
 
-
-
     string tblID = getSTofFuncOrProcByScope(scopeStack.top())->GetName();
-
-
 
     // store return value in value of func/proc
     executeDeclaration(tblID);
