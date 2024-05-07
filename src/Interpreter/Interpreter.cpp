@@ -192,7 +192,17 @@ void Interpreter::executeAssignment(NodePtr node) {
 
         // update symbol table and ignore quotes
         for (int i = 1; i < nextNode->Value().value().size() - 1; ++i) {
-            updateSymbolTable(variableName, nextNode->Value().value()[i], i);
+            if (nextNode->Value().value().at(i) == '\\') {
+                i++;
+                if (nextNode->Value().value().at(i) == 'x') {
+                    i++;
+                    if (nextNode->Value().value().at(i) == '0') {
+                        break;
+                    }
+                }
+            }
+
+            updateSymbolTable(variableName, nextNode->Value().value().at(i), i-1);
         }
 
     }
@@ -616,8 +626,6 @@ void Interpreter::executeFor() {
 
     while (evaluateExpression(condition)) {
 
-        cout << getSymbolTableValue("i") << endl;
-
         PC = body;
 
         while (peekNext(PC)->getSemanticType() != Node::Type::END_BLOCK) {
@@ -800,12 +808,20 @@ SymTblPtr Interpreter::getSymbolTable(const std::string &name) {
 
     return currTable;
 }
-SymTblPtr Interpreter::getSymbolTableByScope(const int scope) {
+SymTblPtr Interpreter::getSTofFuncOrProcByScope(const int scope) {
     SymTblPtr currTable = rootTable;
-    while (currTable->GetScope() != scope) {
+    while (currTable) {
+
+        if (currTable->GetIdType() == SymbolTable::IDType::function ||
+            currTable->GetIdType() == SymbolTable::IDType::procedure) {
+
+            if (currTable->GetScope() == scope)
+                return currTable;
+        }
+
         currTable = currTable->GetNextTable();
         if (currTable == nullptr) {
-            throw std::runtime_error("No Symbol Table for scope " +
+            throw std::runtime_error("No funct or proc for scope " +
                                      scope);
         }
     }
@@ -835,7 +851,7 @@ void Interpreter::executeReturn() {
         retValue = stoi(PC->Right()->Value().value());
     }
 
-    string tblID = getSymbolTableByScope(scopeStack.top())->GetName();
+    string tblID = getSTofFuncOrProcByScope(scopeStack.top())->GetName();
 
     // store return value in value of func/proc
     executeDeclaration(tblID);

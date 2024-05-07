@@ -24,7 +24,7 @@ class Interpreter {
     void updateSymbolTable(const string &name, int value, int index = 0);
     int getSymbolTableValue(const string &name, int index = 0);
     SymTblPtr getSymbolTable(const string &name);
-    SymTblPtr getSymbolTableByScope(const int scope);
+    SymTblPtr getSTofFuncOrProcByScope(const int scope);
 
     NodePtr findFunctOrProcStart (const string name);
     int findNumParamsOfFunctOrProc(const string name);
@@ -50,6 +50,8 @@ class Interpreter {
     NodePtr astRoot;
 
     stack<int> scopeStack;
+
+
 
     NodePtr PC;
 
