@@ -89,7 +89,6 @@ NodePtr Interpreter::iteratePC() {
         case Node::Type::BEGIN_BLOCK:
             break;
         case Node::Type::END_BLOCK: // return to last PC in stack
-            cout << PC->Value().value() << PC->Value().lineNum() << endl;
             if (!pc_stack.empty()) {
                 this->PC = pc_stack.top();
                 pc_stack.pop();
@@ -124,9 +123,10 @@ NodePtr Interpreter::iteratePC() {
             break;
     }
 
-
     // Move to next node by default (override in control flow handling)
     PC = PC->Right() ? PC->Right() : PC->Left();
+
+    cout << "HELLO " << PC->Value().value() << " " << PC->Value().lineNum()<< endl;
 
     return PC;
 }
@@ -507,13 +507,12 @@ void Interpreter::executeIF() {
     int result = evaluateExpression(PC);
 
 
+
     if (result != 0) {      // execute if block and skip the else (if it exists)
 
         while (PC->getSemanticType() != Node::Type::BEGIN_BLOCK){
             PC = peekNext(PC);
         }
-
-        cout << "entering if" << endl;
 
         choseIf = true;
         while (PC->getSemanticType() != Node::Type::END_BLOCK){
@@ -528,12 +527,12 @@ void Interpreter::executeIF() {
 
             cout << "skip else" << endl;
             // skip over else block
-            while (!(PC->getSemanticType() == Node::Type::END_BLOCK && bCount == 0)) {
+            while (bCount > 0 || PC->getSemanticType() != Node::Type::END_BLOCK) {
+                PC = peekNext(PC);
                 if (PC->getSemanticType() == Node::Type::BEGIN_BLOCK)
                     bCount++;
                 if (PC->getSemanticType() == Node::Type::END_BLOCK)
                     bCount--;
-                PC = peekNext(PC);
             }
 
 
@@ -544,15 +543,15 @@ void Interpreter::executeIF() {
     }
     else {      // skip if block and execute else block (if it exists)
 
-        cout << "skip if" << endl;
         // skip over if block
-        while (!(PC->getSemanticType() == Node::Type::END_BLOCK && bCount == 0)) {
+        while (bCount > 0 || PC->getSemanticType() != Node::Type::END_BLOCK) {
+            PC = peekNext(PC);
             if (PC->getSemanticType() == Node::Type::BEGIN_BLOCK)
                 bCount++;
             if (PC->getSemanticType() == Node::Type::END_BLOCK)
                 bCount--;
-            PC = peekNext(PC);
         }
+
 
 
         //look for else
@@ -663,6 +662,8 @@ void Interpreter::executeFor() {
 
     // Move PC past the for loop
     PC = peekNext(PC);  // Assuming body->Right() is END_BLOCK
+
+    cout << "Exiting For" << endl;
 }
 
 void Interpreter::executeWhile() {
@@ -708,6 +709,8 @@ void Interpreter::executePrintF(NodePtr Node) {
     int arg_Index=0;
 
     //go until the end of the printf statement
+
+
     while(currNode!=nullptr){
 
         //if the value is a string argument add the to the corresponding vector
@@ -719,9 +722,19 @@ void Interpreter::executePrintF(NodePtr Node) {
         currNode = currNode->Right();
     }
 
+
     //if both vectors are empty then no arguments were used so just print the string and exit function
     if(arguments.empty()){
-        cout<<printStatement<<endl;
+        for (int i = 1; i < printStatement.size()-1; ++i)
+            cout<<printStatement[i];
+        cout << endl;
+
+        while (PC->Right())
+            PC = PC->Right();
+
+
+        cout<<"Done executing printf"<<endl;
+
         return;
     }
 
@@ -783,6 +796,11 @@ void Interpreter::executePrintF(NodePtr Node) {
     cout<<endl;
 
     cout<<"Done executing printf"<<endl;
+
+    while (PC->Right())
+        PC = PC->Right();
+
+
     return;
 
 }
