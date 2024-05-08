@@ -4,7 +4,7 @@
 
 The goal of this project is to build an interpreter for a C-like language by following a comprehensive development process. This process includes several critical stages, each contributing to the interpreter's capability to parse and execute C-like code efficiently.
 
-The development stages are:
+The development stages were:
 
 1. **Ignoring Comments**
 2. **Tokenizing**

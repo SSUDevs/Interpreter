@@ -1,0 +1,69 @@
+p.MsoNormal,
+li.MsoNormal,
+div.MsoNormal {
+  margin-top: 12pt;
+  margin-right: 0in;
+  margin-bottom: 12pt;
+  margin-left: 0.5in;
+  text-indent: -0.25in;
+  font-size: 11pt;
+  font-family: "Courier New";
+}
+p.MsoListParagraphCxSpFirst,
+li.MsoListParagraphCxSpFirst,
+div.MsoListParagraphCxSpFirst {
+  margin-top: 12pt;
+  margin-right: 0in;
+  margin-bottom: 0in;
+  margin-left: 0.5in;
+  text-indent: -0.25in;
+  font-size: 11pt;
+  font-family: "Courier New";
+}
+p.MsoListParagraphCxSpMiddle,
+li.MsoListParagraphCxSpMiddle,
+div.MsoListParagraphCxSpMiddle {
+  margin-top: 0in;
+  margin-right: 0in;
+  margin-bottom: 0in;
+  margin-left: 0.5in;
+  text-indent: -0.25in;
+  font-size: 11pt;
+  font-family: "Courier New";
+}
+p.MsoListParagraphCxSpLast,
+li.MsoListParagraphCxSpLast,
+div.MsoListParagraphCxSpLast {
+  margin-top: 0in;
+  margin-right: 0in;
+  margin-bottom: 12pt;
+  margin-left: 0.5in;
+  text-indent: -0.25in;
+  font-size: 11pt;
+  font-family: "Courier New";
+}
+span.Heading1Char {
+  font-family: "Arial", sans-serif;
+  font-weight: bold;
+}
+span.Heading2Char {
+  font-family: "Arial", sans-serif;
+  font-weight: bold;
+}
+span.Heading3Char {
+  font-family: "Courier New";
+  font-weight: bold;
+}
+.MsoChpDefault {
+  font-family: "Calibri", sans-serif;
+}
+.MsoPapDefault {
+  margin-top: 12pt;
+  margin-right: 0in;
+  margin-bottom: 12pt;
+  margin-left: 0.5in;
+  text-indent: -0.25in;
+}
+div.WordSection1 {
+  page: WordSection1;
+}
