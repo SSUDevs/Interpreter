@@ -8,10 +8,10 @@
   "scripts": {
     "render": "concurrently \"npm run start:blue\" \"npm run start:frontend\"",
     "start:blue": "cd Blue_Interpreter && node blueApi.js",
-    "start:frontend": "cd Frontend && npm run dev",
+    "start:frontend": "cd Frontend && vite --host 0.0.0.0 --port $PORT",
     "build:render": "npm run build:blue && npm run build:frontend",
     "build:blue": "cd Blue_Interpreter && npm install && make",
-    "build:frontend": "cd Frontend && npm install"
+    "build:frontend": "cd Frontend && npm run build"
   },
   "dependencies": {
     "concurrently": "^6.0.0",
