@@ -86,8 +86,6 @@ int main(int argc, char *argv[])
 
     if (option == "ast")
     {
-        cout << "Within the run function" << endl;
-
         OutPutGenerator ASOutput;
         ASOutput.PrintAST(astRoot);
         return 0;
