@@ -7,12 +7,12 @@ const app = express();
 
 const dotenv = require("dotenv");
 dotenv.config();
-const port = 3000;
+const port = process.env.BLUE_PORT || 10000;
 
 app.use(express.json());
 app.use(
   cors({
-    origin: ["http://localhost:3000", "https://interpreter-5za8~.onrender.com"],
+    origin: ["http://localhost:3000", "https://interpreter-5za8.onrender.com"],
   })
 );
 
@@ -20,9 +20,12 @@ app.post("/execute-blue-code/:type", async (req, res) => {
   const { sourceCode } = req.body;
   const { type } = req.params; // "run", "tokens", "cst", or "symbolTable"
   const filePath = "./tempSourceCode.c";
+  console.log("sourceCode is: ", sourceCode);
+  console.log("type is: ", type);
 
   try {
     await fs.writeFile(filePath, sourceCode);
+    console.log("Writing to file");
     exec(`./main ${filePath} ${type}`, (error, stdout, stderr) => {
       if (error) {
         return res.status(500).send({ error: error.message });
