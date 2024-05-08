@@ -9,12 +9,12 @@
     "render": "concurrently \"npm run start:blue\" \"npm run start:frontend\"",
     "start:blue": "cd Blue_Interpreter && node blueApi.js",
     "start:frontend": "cd Frontend && npm run dev",
-
     "build:render": "npm run build:blue && npm run build:frontend",
     "build:blue": "cd Blue_Interpreter && npm install && make",
     "build:frontend": "cd Frontend && npm install"
   },
   "dependencies": {
-    "concurrently": "^6.0.0"
+    "concurrently": "^6.0.0",
+    "dotenv": "^16.4.5"
   }
 }
