@@ -9,7 +9,7 @@ dotenv.config();
 const port = process.env.BLUE_PORT || 10000;
 
 const corsOptions = {
-  origin: 'https://interpreter-mqqc.onrender.com/', 
+  origin: 'https://interpreter-mqqc.onrender.com', 
   optionsSuccessStatus: 200 
 };
 
@@ -18,7 +18,7 @@ app.use(cors(corsOptions));
 app.use(express.json());
 
 app.post("/execute-blue-code/:type", async (req, res) => {
-  const { sourceCode } = req.body;
+  const { sourceCode } = req.body; 
   const { type } = req.params; // "run", "tokens", "cst", or "symbolTable"
   const filePath = "./tempSourceCode.c";
 
