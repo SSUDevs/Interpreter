@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --host 0.0.0.0 --port $BLUE_URL",
+    "dev": "vite ",
     "build": "vite build",
     "serve": "vite preview --host 0.0.0.0 --port $BLUE_URL"
   },

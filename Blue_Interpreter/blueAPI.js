@@ -24,7 +24,7 @@ app.post("/execute-blue-code/:type", async (req, res) => {
   console.log("sourceCode is: ", sourceCode);
   console.log("type is: ", type);
 
-  const command = `./main ${filePath} ${type}`;
+  const command = `./Blue_Interpreter/main ${filePath} ${type}`;
   console.log("Executing command:", command);
   try {
     await fs.writeFile(filePath, sourceCode);
