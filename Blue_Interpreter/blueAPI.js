@@ -19,7 +19,7 @@ app.use(
 app.post("/execute-blue-code/:type", async (req, res) => {
   const { sourceCode } = req.body;
   const { type } = req.params; // "run", "tokens", "cst", or "symbolTable"
-  const filePath = "./tempSourceCode.c";
+  const filePath = "./Blue_Interpreter/tempSourceCode.c";
 
   console.log("sourceCode is: ", sourceCode);
   console.log("type is: ", type);
