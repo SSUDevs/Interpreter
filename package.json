@@ -6,7 +6,7 @@
     "Frontend"
   ],
   "scripts": {
-    "start:blue": "cd Blue_Interpreter && node blueApi.js",
+    "start:blue": "cd Blue_Interpreter && node blueAPI.js",
     "start:frontend": "cd Frontend && npm run serve",
     "build:render": "npm run build:blue && npm run build:frontend",
     "build:blue": "cd Blue_Interpreter && npm install && make",
