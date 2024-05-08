@@ -6,7 +6,7 @@ const { exec } = require("child_process");
 const app = express();
 const dotenv = require("dotenv");
 dotenv.config();
-const port = process.env.BLUE_PORT || 10000;
+const port = 10000;
 
 const corsOptions = {
   origin: 'https://interpreter-mqqc.onrender.com', 
