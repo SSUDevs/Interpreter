@@ -15,7 +15,7 @@ class fileAsArray {
         SLASH,                // State after finding '/'
         LINE_COMMENT,         // State after finding '//'
         BLOCK_COMMENT,        // State after finding '/*'
-        ENDING_BLOCK_COMMENT, // State after finding '*/'
+        ENDING_BLOCK_COMMENT, // State after finding '*' in BLOCK_COMMENT
         SINGLE_QUOTE,         // Ensures whats in quotes remains untouched
         DOUBLE_QUOTE,         // Ensures whats in quotes remains untouched
     };
