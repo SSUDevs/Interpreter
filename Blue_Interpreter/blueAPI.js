@@ -4,9 +4,10 @@ const colors = require("colors");
 const fs = require("fs").promises;
 const { exec } = require("child_process");
 const app = express();
+
 const dotenv = require("dotenv");
 dotenv.config();
-const port = process.env.BLUE_PORT || 10000;
+const port = 3000;
 
 app.use(express.json());
 app.use(
