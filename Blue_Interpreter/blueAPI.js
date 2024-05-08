@@ -27,12 +27,13 @@ app.post("/execute-blue-code/:type", async (req, res) => {
   const command = `./main ${filePath} ${type}`;
   console.log("Executing command:", command);
   try {
+    await fs.writeFile(filePath, sourceCode);
     console.log("Writing to file");
     exec(command, (error, stdout, stderr) => {
       if (error) {
         return res.status(500).send({ error: error.message });
       }
-      console.log("Output is: ", { output: stdout, stderr: stderr });
+      console.log("output: ", { output: stdout, stderr: stderr });
 
       res.send({ output: stdout, stderr: stderr });
     });
