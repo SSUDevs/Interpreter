@@ -11,7 +11,7 @@
     "build:render": "npm run build:blue && npm run build:frontend",
     "build:blue": "cd Blue_Interpreter && npm install && make",
     "build:frontend": "cd Frontend && npm install",
-    "deploy": "concurrently \"npm run start:blue\" \"npm run start:frontend\""
+    "render": "concurrently \"npm run start:blue\" \"npm run start:frontend\""
   },
   "dependencies": {
     "concurrently": "^6.0.0",
