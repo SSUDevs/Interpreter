@@ -87,8 +87,16 @@ This sandbox allows one to write and execute code in the browser utilizing an in
 Either one can
 1. Clone the repository: `git clone <repository-url>`
 2. In root directory:
-  - Build: `./build.sh`
-  - Start servers: `./start.sh`
+  1. Give Permissions to scripts: 
+    - `chmod +x build.sh`
+    - `chmod +x start.sh`
+      - Permissions explained:
+      - User (owner) permissions change from read/write (rw-) to read/write/execute (rwx).
+      - Group permissions change from read-only (r--) to read/execute (r-x).
+      - Others permissions also change from read-only (r--) to read/execute (r-x).
+  2. Run scripts:
+    - Build: `./build.sh`
+    - Start servers: `./start.sh`
 
 Or visit Blue at: 
 
