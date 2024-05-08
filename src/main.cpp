@@ -69,6 +69,7 @@ int main(int argc, char *argv[]) {
         tables.parse(); // Parse the CST to generate symbol tables
 
     // // Print the Symbol Tables
+
     //output.PrintSymbolTables(symTableRoot);
 
     // Now, generate the AST from the CST
@@ -77,7 +78,7 @@ int main(int argc, char *argv[]) {
 
     // Optionally print the AST using a similar method
     //output.PrintAST(astRoot);
-
+//
 //    while (astRoot != nullptr){
 //        cout<<astRoot->Value().value()<<" ";
 //        if(astRoot->Right()!=nullptr){

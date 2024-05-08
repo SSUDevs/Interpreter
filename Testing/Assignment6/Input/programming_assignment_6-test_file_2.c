@@ -40,7 +40,7 @@ function int hexdigit2int (char hex_digit)
 procedure main (void)
 {
   char hexnum[9];
-  int i, digit, number; 
+  int i, digit, number;
 
   number = 0;
   hexnum = "feed\x0";
