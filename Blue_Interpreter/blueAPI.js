@@ -30,6 +30,6 @@ app.post("/execute-blue-code/:type", async (req, res) => {
   }
 });
 
-app.listen(port, "0.0.0.0", () =>
+app.listen(port, () =>
   console.log(`Server running on port ${port}`.cyan)
 );
