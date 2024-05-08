@@ -39,7 +39,7 @@ Interpreter::Interpreter(const NodePtr &astRoot, const SymTblPtr &symTblRoot) {
     debug << "Finished Execution" << endl;
 }
 
-void Interpreter::executeDeclaration(string variable,int scope) {
+void Interpreter::executeDeclaration(string variable) {
 
     SymTblPtr currTable = rootTable;
     while (currTable->GetName() != variable || (currTable->GetScope() != scopeStack.top() && currTable->GetScope() != 0)) {
