@@ -11,7 +11,7 @@ const port = process.env.BLUE_PORT || 10000;
 app.use(express.json());
 app.use(
   cors({
-    origin: ["http://localhost:3000", "https://interpreter-mqqc.onrender.com"],
+    origin: ["http://localhost:3000", "https://interpreter-5za8.onrender.com"],
   })
 );
 
