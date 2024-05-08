@@ -13,7 +13,7 @@ const Output = ({ editorRef, language }) => {
   async function executeBlueCode(sourceCode, type = "run") {
     try {
       const response = await fetch(
-        `https://interpreter-mqqc.onrender.com/execute-blue-code/${type}`, 
+        `https://interpreter-5za8-api.onrender.com/execute-blue-code/${type}`, 
         {
           method: "POST",
           headers: {

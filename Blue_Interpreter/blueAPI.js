@@ -12,7 +12,7 @@ const port = 3000;
 app.use(express.json());
 app.use(
   cors({
-    origin: ["http://localhost:3000", "https://interpreter-5za8.onrender.com"],
+    origin: ["http://localhost:3000", "https://interpreter-5za8~.onrender.com"],
   })
 );
 
