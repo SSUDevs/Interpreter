@@ -60,7 +60,7 @@ Creates symbol tables for all the defined variables (including their type and sc
 - Utilizes an LCRS binary tree (Left-Child, Right-Sibling) to store the AST. 
 - Allows for the isplay of the resulting AST in breadth-first order.
 
-### 🚧 Program Execution (In Progress)
+### ✅ Program Execution 
 
 - Maintains a stack data structure and a program counter to keep track of the flow-of-control as your program interprets and executes an input program.
 - Uses the symbol table to maintain variable values during program interpretation and execution.
@@ -69,7 +69,30 @@ Creates symbol tables for all the defined variables (including their type and sc
 - The AST contains Boolean and numerical expressions in postfix notation to make it easy to evaluate the expressions during program interpretation and execution.
 - Uses a stack data structure to evaluate the postfix notation expression.
 
-_In Progress_
+
+# Browser code editor 
+
+## Overview
+
+This sandbox allows one to write and execute code in the browser utilizing an interpreter for a C-like language built by my colleagues and I as well as a variety of others through Pistin API
+
+### Tools
+- React + Vite
+- Piston API [https://piston.readthedocs.io/en/latest/api-v2/#request](https://piston.readthedocs.io/en/latest/api-v2/#request)
+- Monaco React Editor: [https://www.npmjs.com/package/@monaco...](https://www.npmjs.com/package/@monaco-editor/react)
+- Chakra UI: [https://chakra-ui.com](https://chakra-ui.com/)
+
+
+## Installation & Usage
+Either one can
+1. Clone the repository: `git clone <repository-url>`
+2. In root directory:
+  - Build: `./build.sh`
+  - Start servers: `./start.sh`
+
+Or visit Blue at: 
+
+**Have Fun & let me know of any errors please!**
 
 ## Contributors
 
@@ -77,3 +100,6 @@ _In Progress_
 - [harrisb002](https://github.com/harrisb002)
 - [EvanW2k](https://github.com/EvanW2k)
 - [Zeroxa](https://github.com/Zeroxa)
+
+
+
