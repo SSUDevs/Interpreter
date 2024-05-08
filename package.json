@@ -14,7 +14,7 @@
     "build:blue": "cd Blue_Interpreter && npm install && make",
     "build:frontend": "cd Frontend && npm install"
   },
-  "devDependencies": {
-    "concurrently": "^8.2.2"
+  "dependencies": {
+    "concurrently": "^6.0.0"
   }
 }
