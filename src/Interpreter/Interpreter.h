@@ -18,7 +18,6 @@ class Interpreter {
     NodePtr iteratePC();
     NodePtr peekNext(NodePtr node);
 
-    void executeAssignment(NodePtr node);
     int evaluateExpression(NodePtr exprRoot, NodePtr endCase = nullptr, bool inAssignment = false);
 
     void updateSymbolTable(const string &name, int value, int scope, int index = 0 );
@@ -30,21 +29,21 @@ class Interpreter {
     NodePtr findFunctOrProcStart (const string name);
     int findNumParamsOfFunctOrProc(const string name);
 
-    void executeIF();
 
     bool isOperand(Token t);
     bool isOperator(Token t);
     int applyOperator(Token::Type op, int left, int right, bool inAssignment = false);
     bool UpdateTable(SymTblPtr root,const string &name,int value, int index, int scope);
-    void executePrintF(NodePtr Node);
     void executeFunctionOrProcedureCall();
 
+    void executeDeclaration(string variable, int scope = -1);
+    void executeAssignment(NodePtr node);
+    void executeIF();
     void executeFor();
     void executeWhile();
-
-    void executeDeclaration(string variable, int scope = -1);
-    void executeReturn ();
     void executeCall();
+    void executePrintF(NodePtr node);
+    void executeReturn ();
 
   private:
     SymTblPtr rootTable;

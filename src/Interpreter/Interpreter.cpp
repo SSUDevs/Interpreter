@@ -29,10 +29,6 @@ Interpreter::Interpreter(const NodePtr &astRoot, const SymTblPtr &symTblRoot) {
     // start execution of program
 
     while (PC != nullptr) {
-        debug << "START with value of: " << PC->Value().value()
-             << " and line number: " << PC->Value().lineNum() << endl
-             << endl;
-
         iteratePC();
     }
 
