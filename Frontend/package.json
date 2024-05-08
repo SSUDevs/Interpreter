@@ -4,9 +4,9 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --host 0.0.0.0 --port $PORT",
+    "dev": "vite --host 0.0.0.0 --port $BLUE_PORT",
     "build": "vite build",
-    "serve": "vite preview --host 0.0.0.0 --port $PORT"
+    "serve": "vite preview --host 0.0.0.0 --port $BLUE_PORT"
   },
   "dependencies": {
     "concurrently": "^6.0.0",
