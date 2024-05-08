@@ -73,11 +73,11 @@ NodePtr Interpreter::iteratePC() {
 
     if (PC->getSemanticType() == Node::Type::END_BLOCK &&
         PC->Left() == nullptr) {
-//        debug << "! Within iterate PC and if block with PC value of: "
-//             << PC->Value().value()
-//             << " and line number : " << PC->Value().lineNum() << endl;
-//        debug << "!!! Semantic type is: "
-//             << PC->semanticTypeToString(PC->getSemanticType()) << endl;
+        debug << "! Within iterate PC and if block with PC value of: "
+             << PC->Value().value()
+             << " and line number : " << PC->Value().lineNum() << endl;
+        debug << "!!! Semantic type is: "
+             << PC->semanticTypeToString(PC->getSemanticType()) << endl;
 
         PC = nullptr;
         return PC;
@@ -99,8 +99,7 @@ NodePtr Interpreter::iteratePC() {
              << pc_stack.top() << endl
              << endl;
         if (!pc_stack.empty()) {
-            PC = pc_stack.top();
-            pc_stack.pop();
+                scopeStack.pop();
             debug << "Returning to previous block, current PC restored to "
                  << PC->Value().value() << endl;
         } else {
@@ -898,9 +897,18 @@ void Interpreter::executePrintF(NodePtr Node) {
     // if both vectors are empty then no arguments were used so just print the
     // string and exit function
     if (arguments.empty()) {
-        for (int i = 1; i < printStatement.size() - 1; ++i)
-            cout << printStatement[i];
-        cout << endl;
+        for (int i = 1; i < printStatement.size() - 1; ++i) {
+
+            if (printStatement[i] == '\\'){
+                i++;
+                if (printStatement[i] == '\n'){
+                    cout << endl;
+                }
+            }
+            else
+                cout << printStatement[i];
+        }
+
 
         while (PC->Right())
             PC = PC->Right();
