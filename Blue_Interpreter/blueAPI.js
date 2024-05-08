@@ -6,10 +6,15 @@ const { exec } = require("child_process");
 const app = express();
 const dotenv = require("dotenv");
 dotenv.config();
-
 const port = process.env.BLUE_PORT || 10000;
 
-app.use(cors());
+const corsOptions = {
+  origin: 'https://interpreter-mqqc.onrender.com/', 
+  optionsSuccessStatus: 200 
+};
+
+app.use(cors(corsOptions));
+
 app.use(express.json());
 
 app.post("/execute-blue-code/:type", async (req, res) => {
@@ -31,4 +36,4 @@ app.post("/execute-blue-code/:type", async (req, res) => {
   }
 });
 
-app.listen(port, () => console.log(`Server running on port ${port}`.cyan));
+app.listen(port, '0.0.0.0', () => console.log(`Server running on port ${port}`.cyan));
