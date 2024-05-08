@@ -6,19 +6,17 @@ const { exec } = require("child_process");
 const app = express();
 const dotenv = require("dotenv");
 dotenv.config();
-const port = 10000;
-
-const corsOptions = {
-  origin: 'https://interpreter-mqqc.onrender.com', 
-  optionsSuccessStatus: 200 
-};
-
-app.use(cors(corsOptions));
+const port = process.env.BLUE_PORT || 10000;
 
 app.use(express.json());
+app.use(
+  cors({
+    origin: ["http://localhost:3000", "https://interpreter-mqqc.onrender.com"],
+  })
+);
 
 app.post("/execute-blue-code/:type", async (req, res) => {
-  const { sourceCode } = req.body; 
+  const { sourceCode } = req.body;
   const { type } = req.params; // "run", "tokens", "cst", or "symbolTable"
   const filePath = "./tempSourceCode.c";
 
@@ -36,4 +34,6 @@ app.post("/execute-blue-code/:type", async (req, res) => {
   }
 });
 
-app.listen(port, '0.0.0.0', () => console.log(`Server running on port ${port}`.cyan));
+app.listen(port, "0.0.0.0", () =>
+  console.log(`Server running on port ${port}`.cyan)
+);
