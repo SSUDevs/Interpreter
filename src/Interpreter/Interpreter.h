@@ -21,7 +21,7 @@ class Interpreter {
     void executeAssignment(NodePtr node);
     int evaluateExpression(NodePtr exprRoot, NodePtr endCase = nullptr, bool inAssignment = false);
 
-    void updateSymbolTable(const string &name, int value, int scope, int index = 0);
+    void updateSymbolTable(const string &name, int value, int scope, int index = 0 );
     int getSymbolTableValue(const string &name, int scope, int index = 0);
     SymTblPtr getSymbolTable(const string &name, int scope, bool isProOrFun = false);
     SymTblPtr getSTofFuncOrProcByScope(const int scope);
@@ -42,8 +42,9 @@ class Interpreter {
     void executeFor();
     void executeWhile();
 
-    void executeDeclaration(string variable);
+    void executeDeclaration(string variable, int scope = -1);
     void executeReturn ();
+    void executeCall();
 
   private:
     SymTblPtr rootTable;
