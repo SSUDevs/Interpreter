@@ -6,7 +6,7 @@
 #include <cmath>
 
 // Define a DEBUG flag
-#define DEBUG false
+#define DEBUG true
 // Define custom debug macro
 #if DEBUG
 #define debug std::cout
@@ -39,21 +39,26 @@ Interpreter::Interpreter(const NodePtr &astRoot, const SymTblPtr &symTblRoot) {
     debug << "Finished Execution" << endl;
 }
 
-void Interpreter::executeDeclaration(string variable) {
+void Interpreter::executeDeclaration(string variable,int scope) {
+
     SymTblPtr currTable = rootTable;
-    while (currTable->GetName() != variable) {
+    while (currTable->GetName() != variable || (currTable->GetScope() != scopeStack.top() && currTable->GetScope() != 0)) {
         currTable = currTable->GetNextTable();
         if (currTable == nullptr) {
-            throw std::runtime_error("No Symbol Table for " + variable);
+            throw std::runtime_error("3: No Symbol Table for " + variable);
         }
     }
+
     currTable->setDeclared(true);
 
     // if an array set value to an array of the declared size
     if (currTable->isArray()) {
         currTable->setValueSize(currTable->GetArraySize());
     } else {
+        cout<<"Setting Value Size to 1 for "<<currTable->GetName()<<endl;
+        cout<<currTable->GetScope()<<endl;
         currTable->setValueSize(1);
+
     }
 }
 
@@ -377,6 +382,7 @@ int Interpreter::evaluateExpression(
         }
     }
 
+
     while (currentNode != endCase) {
         debug << "Parsing"
              << " " << currentNode->Value().value() << endl;
@@ -401,6 +407,7 @@ int Interpreter::evaluateExpression(
                     int arrayIdx = evaluateExpression(temp, currentNode);
 
                     // push array access
+
                     evalStack.push(getSymbolTableValue(id, arrayIdx, scopeStack.top()));
 
                     // start on next part of expression
@@ -449,8 +456,10 @@ int Interpreter::evaluateExpression(
 
                                     if (currentNode->Value().type() ==
                                         Token::Type::Identifier) {
+
                                         argIndex = getSymbolTableValue(
                                             currentNode->Value().value(), 0, scopeStack.top());
+
                                     } else {
                                         argIndex =
                                             stoi(currentNode->Value().value());
@@ -492,6 +501,7 @@ int Interpreter::evaluateExpression(
 
                         // change scope
                         scopeStack.push(getSymbolTable(id, scopeStack.top(), true)->GetScope());
+                       cout<<"adding scope: "<< getSymbolTable(id, scopeStack.top(), true)->GetScope()<<endl;
 
                         // exec function
                         executeFunctionOrProcedureCall();
@@ -504,7 +514,11 @@ int Interpreter::evaluateExpression(
                         }
                         currentNode = PC;
                     }
+                    cout<<"id: "<<id<<endl;
+                    cout<<"Current Scope: "<<scopeStack.top()<<endl;
+                    cout<<"Getting Symbol table value for "<<id<<endl;
                     evalStack.push(getSymbolTableValue(id, scopeStack.top()));
+                    cout<<"got it"<<endl;
                 }
             } else {
                 // push token values, with true/false mapping
@@ -550,6 +564,8 @@ int Interpreter::evaluateExpression(
 
         currentNode = currentNode->Right();
     }
+
+    cout<<"Returning value from top of stakc"<<endl;
     // Whats left on the stack is the result
     return evalStack.top();
 }
@@ -656,17 +672,21 @@ void Interpreter::executeIF() {
         PC = peekNext(PC); // Move past the last END_BLOCK
 }
 
-int Interpreter::getSymbolTableValue(const string &name,int index /*default 0*/, int scope) {
+int Interpreter::getSymbolTableValue(const string &name,int scope, int index /*default 0*/) {
     SymTblPtr currTable = rootTable;
-
+    cout<<"Getting symbol table "<<name<< " With scope "<<scope<<endl;
 
     while (currTable->GetName() != name || (currTable->GetScope() != scope && currTable->GetScope() != 0)) {
+
+
         currTable = currTable->GetNextTable();
+
         if (currTable == nullptr) {
-            throw std::runtime_error("No Symbol Table for " + name);
+            throw std::runtime_error("4: No Symbol Table for " + name);
         }
     }
-
+    cout<<"Current Index "<<index<<endl;
+    cout<<"Returning table "<<currTable->GetName()<<" with value size "<<currTable->GetValue().size()<<endl;
     return currTable->GetValue().at(index);
 }
 
@@ -694,6 +714,7 @@ bool Interpreter::UpdateTable(SymTblPtr root, const string &name, int value,
         root->setValue(value, index);
         return true;
     }
+
     return UpdateTable(root->GetNextTable(), name, value, index, scope);
 }
 
@@ -855,6 +876,7 @@ void Interpreter::executePrintF(NodePtr Node) {
         if (printStatement.at(i) == '%') {
             i++;
             if (printStatement.at(i) == 'd') {
+
                 cout << getSymbolTableValue(arguments.at(arg_Index), scopeStack.top());
                 arg_Index++;
             } else if (printStatement.at(i) == 's') {
@@ -862,7 +884,7 @@ void Interpreter::executePrintF(NodePtr Node) {
                 while (currTable->GetName() != arguments.at(arg_Index)) {
                     currTable = currTable->GetNextTable();
                     if (currTable == nullptr) {
-                        throw std::runtime_error("No Symbol Table for " +
+                        throw std::runtime_error("5: o Symbol Table for " +
                                                  arguments.at(arg_Index));
                     }
                 }
@@ -945,30 +967,32 @@ NodePtr Interpreter::findFunctOrProcStart(const string name) {
 SymTblPtr Interpreter::getSymbolTable(const std::string &name, int scope, bool isProOrFun) {
     SymTblPtr currTable = rootTable;
 
-    cout << "HERERER " << name <<" " << scope << endl;
-
     if (isProOrFun){
         while (currTable->GetName() != name ||
                (currTable->GetIdType() != SymbolTable::IDType::procedure && currTable->GetIdType() != SymbolTable::IDType::function))
         {
+
             currTable = currTable->GetNextTable();
             if (currTable == nullptr) {
-                throw std::runtime_error("No Symbol Table for " + name);
+                throw std::runtime_error("1: No Symbol Table for " + name);
             }
         }
 
         return currTable;
     }
 
-    while (currTable->GetName() != name || (currTable->GetScope() != scope && currTable->GetScope() != 0)) {
+    while (currTable->GetName() != name ) {
+
         currTable = currTable->GetNextTable();
+
         if (currTable == nullptr) {
-            throw std::runtime_error("No Symbol Table for " + name);
+            throw std::runtime_error("2:No Symbol Table for " + name);
         }
     }
 
     return currTable;
 }
+
 SymTblPtr Interpreter::getSTofFuncOrProcByScope(const int scope) {
     SymTblPtr currTable = rootTable;
     while (currTable) {

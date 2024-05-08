@@ -31,7 +31,9 @@ class SymbolTable {
 
     void SetNextTable(const SymTblPtr &next);
     void setDeclared(const bool dec) {_isDeclared = dec;}
-    void setValueSize(const int size) {_value.resize(size);}
+    void setValueSize(const int size) {
+
+        _value.resize(size);}
     void setValue(int newVal , int index = 0) {
         if (_dataType == "bool") {
             if (newVal != 0) {

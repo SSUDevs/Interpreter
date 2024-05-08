@@ -42,7 +42,7 @@ class Interpreter {
     void executeFor();
     void executeWhile();
 
-    void executeDeclaration(string variable);
+    void executeDeclaration(string variable,int scope);
     void executeReturn ();
 
   private:
