@@ -468,14 +468,18 @@ int Interpreter::evaluateExpression(
                                     // skip argIndex
                                     currentNode = currentNode->Right();
 
+
                                     updateSymbolTable(
                                         currParamTbl->GetName(),
                                         getSymbolTableValue(identifier->Value().value(),scopeStack.top(),argIndex ), scopeStack.top());
 
                                 } else {
+
+                                    int scopeOfFunct = getSymbolTable(id,0, true)->GetScope();
+
                                     updateSymbolTable(
                                         currParamTbl->GetName(),
-                                        getSymbolTableValue(currentNode->Value().value(),scopeStack.top(),argIndex), scopeStack.top());
+                                        getSymbolTableValue(currentNode->Value().value(), scopeOfFunct,argIndex), scopeStack.top());
                                 }
 
                             } else {
